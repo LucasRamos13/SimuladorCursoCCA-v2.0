@@ -39,9 +39,15 @@ body {font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-
 .credito-valores {font-size:18px;font-weight:700;margin-top:4px;display:block}
 .credito-pct {font-size:12px;font-weight:600;padding:2px 6px;border-radius:12px;margin-left:5px;vertical-align:middle;background:var(--c-verde-bg);color:var(--c-verde-txt)}
 .manual-input {width:64px;font-size:16px;font-weight:700;text-align:center;border:1px solid var(--input-border);border-radius:5px;padding:4px 5px;background:var(--input-bg);color:var(--ink)}
-.manual-input.small {width:34px;font-size:13px}
-.compl-type {font-size:11px;font-weight:700;margin-bottom:5px}
-.compl-type.bad {color:var(--c-verm-txt)} .compl-type.good {color:var(--c-verde-txt)}
+.manual-input.small {width:34px;font-size:13px;padding:2px 4px;}
+.compl-type {
+    font-size:11.5px; font-weight:600; margin-bottom:8px;
+    background:var(--input-bg); border:1px solid var(--input-border); 
+    border-radius:6px; padding:6px 10px;
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+}
+.compl-type.bad {color:var(--c-verm-txt); border-color:var(--c-verm-border);} 
+.compl-type.good {color:var(--c-verde-txt); border-color:var(--c-verde-border);}
 .total-conclusao {margin-top:12px;padding:12px 14px;background:var(--painel-bg);border:1px solid var(--cinza);border-radius:8px;text-align:center;font-weight:700}
 .total-conclusao .big {font-size:25px;display:block}
 .total-conclusao.good {border-color:var(--c-verde-border);background:var(--c-verde-bg)}
@@ -84,13 +90,13 @@ select {background:var(--input-bg);color:var(--ink);padding:8px;border-radius:4p
 <body>
 <div class="header">
  <div class="topo-controles">
-  <div style="display:flex;align-items:center;gap:12px;width:100%">
+  <div style="display:flex;align-items:center;gap:15px;width:100%">
    <button class="btn-theme" onclick="toggleTema()">🌓 Tema</button>
-   <h2 style="margin:0;font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Simulador do Curso</h2>
+   <h2 style="margin:0;font-size:28px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Simulador do Curso</h2>
   </div>
-  <div>
-   <label style="color:var(--sub);font-size:12px;font-weight:700;display:block;margin-bottom:6px">FDC:</label>
-   <select id="seletor-fdc" onchange="atualizarTudo()">
+  <div style="display:flex; align-items:center; gap:12px;">
+   <label style="color:var(--sub);font-size:13px;font-weight:700;white-space:nowrap;">FDC:</label>
+   <select id="seletor-fdc" onchange="atualizarTudo()" style="flex-grow:1;">
     <option value="cadcam">Sistemas Discretos CAD/CAM</option>
     <option value="mecanica">Controle Avançado de Sistemas Mecânicos</option>
     <option value="potencia">Eletrônica de Potência e Acionamento</option>
@@ -231,7 +237,7 @@ select {background:var(--input-bg);color:var(--ink);padding:8px;border-radius:4p
         ];
 
 const METAS = {obr:222, ele:8, compl:6, extPadrao:420, tiposCompl:2};
-const STORAGE_KEY = 'eca_simulador_status_v5';
+const STORAGE_KEY = 'eca_simulador_status_v6';
 const DEFAULT_STATE = {status:{}, compl:0, ext:0, extNecessaria:420, complTipos:0, tema:'dark', fdc:'cadcam', aba:'organograma'};
 let estadoUsuario = carregarEstado();
 window.ultimoHover = null;
@@ -245,7 +251,6 @@ function carregarEstado() {
             status: {...DEFAULT_STATE.status, ...(salvo.status || {})}
         };
     } catch(e) {
-        console.warn('Estado local inválido; restaurando padrão.', e);
         return structuredClone(DEFAULT_STATE);
     }
 }
@@ -316,13 +321,21 @@ function atualizarTudo() {
     const fdcAtual=document.getElementById('seletor-fdc').value;
     estadoUsuario.fdc=fdcAtual;
     const statusOf=(id)=>estadoUsuario.status[id]||'pendente';
-    let obr=0,ele=0, timeline={};
-    disciplinas.forEach(d=>{if(statusOf(d.id)==='concluida'){if(d.fdc[fdcAtual]==='obrigatoria')obr+=d.creditos;if(d.fdc[fdcAtual]==='eletiva')ele+=d.creditos}});
-    const metaExt=Math.max(0,Number(estadoUsuario.extNecessaria)||0),compl=Math.max(0,Number(estadoUsuario.compl)||0),tipos=Math.max(0,Number(estadoUsuario.complTipos)||0);
+    
+    let obr=0, ele=0;
+    disciplinas.forEach(d=>{
+        if(statusOf(d.id)==='concluida') {
+            if(d.fdc[fdcAtual]==='obrigatoria') obr+=d.creditos;
+            if(d.fdc[fdcAtual]==='eletiva') ele+=d.creditos;
+        }
+    });
+
+    const metaExt=Math.max(0,Number(estadoUsuario.extNecessaria)||0), compl=Math.max(0,Number(estadoUsuario.compl)||0), tipos=Math.max(0,Number(estadoUsuario.complTipos)||0);
     const extProjetos=disciplinas.filter(d=>d.nome.toLowerCase().includes('projeto integrado')&&statusOf(d.id)==='concluida').length*100;
     const extManual=Math.max(0,Number(estadoUsuario.ext)||0);
     const extObtida=extManual+extProjetos;
     const pct=(v,m)=>m>0?Math.min(100,Math.round(v/m*100)):100;
+    
     document.getElementById('cred-obr').textContent=Math.min(obr,METAS.obr);
     document.getElementById('cred-ele').textContent=Math.min(ele,METAS.ele);
     document.getElementById('pct-obr').textContent=pct(obr,METAS.obr)+'%';
@@ -332,8 +345,10 @@ function atualizarTudo() {
     document.getElementById('inp-ext-necessaria').value=metaExt;
     document.getElementById('cred-ext').textContent=extObtida;
     document.getElementById('pct-ext').textContent=pct(extObtida,metaExt)+'%';
+    
     const typeEl=document.getElementById('compl-type'); typeEl.className='compl-type '+(tipos>=METAS.tiposCompl?'good':'bad');
     document.getElementById('inp-compl-tipos').value=tipos;
+    
     const totalObt=Math.min(obr,METAS.obr)+Math.min(ele,METAS.ele)+Math.min(compl,METAS.compl)+Math.min(extObtida,metaExt);
     const totalNec=METAS.obr+METAS.ele+METAS.compl+metaExt;
     const totalPct=pct(totalObt,totalNec);
@@ -341,30 +356,42 @@ function atualizarTudo() {
     document.getElementById('total-detalhe').textContent=`${totalObt} / ${totalNec}`;
     document.getElementById('total-conclusao').className='total-conclusao '+(totalPct>=100?'good':'partial');
 
-    let pos={};disciplinas.forEach(d=>pos[d.id]=d.semIdeal);
+    let pos={};
+    disciplinas.forEach(d=>pos[d.id]=d.semIdeal);
     for(let loop=0;loop<4;loop++) disciplinas.forEach(d=>{
-        const st=statusOf(d.id);if(st==='concluida')return;
-        let late=0;d.prereqs.forEach(req=>{if(statusOf(req)!=='concluida')late=Math.max(late,pos[req])});
-        let ns=Math.max(d.semIdeal,late+1);if(st==='reprovada')ns=Math.max(ns,pos[d.id]+1);
-        while(!ofertaValida(ns,d.oferta))ns++;pos[d.id]=ns;
+        const st=statusOf(d.id); if(st==='concluida') return;
+        let late=0;
+        d.prereqs.forEach(req=>{if(statusOf(req)!=='concluida') late=Math.max(late,pos[req])});
+        let ns=Math.max(d.semIdeal,late+1);
+        if(st==='reprovada') ns=Math.max(ns,pos[d.id]+1);
+        while(!ofertaValida(ns,d.oferta)) ns++;
+        pos[d.id]=ns;
     });
+
+    let timeline={}, mapa={};
     disciplinas.forEach(d=>{
-        const st=statusOf(d.id),tipo=d.fdc[fdcAtual];let cor='status-bloqueada';
-        if(st==='concluida')cor='status-concluida';else if(st==='cursando')cor='status-cursando';else if(st==='reprovada')cor='status-reprovada';
-        else if(d.prereqs.every(req=>statusOf(req)==='concluida')&&(obr+ele)>=d.reqCreditos)cor='status-liberada';
-        const render={...d,corAtual:cor,statusReal:st,tipoNesteFDC:tipo};
-        if(!timeline[pos[d.id]])timeline[pos[d.id]]=[];timeline[pos[d.id]].push(render);
+        const st=statusOf(d.id), tipo=d.fdc[fdcAtual];
+        let cor='status-bloqueada';
+        if(st==='concluida') cor='status-concluida'; 
+        else if(st==='cursando') cor='status-cursando'; 
+        else if(st==='reprovada') cor='status-reprovada';
+        else if(d.prereqs.every(req=>statusOf(req)==='concluida') && (obr+ele)>=d.reqCreditos) cor='status-liberada';
+        
+        const renderInfo = {...d, corAtual:cor, statusReal:st, tipoNesteFDC:tipo};
+        mapa[d.id] = renderInfo;
+        if(!timeline[pos[d.id]]) timeline[pos[d.id]]=[];
+        timeline[pos[d.id]].push(renderInfo);
     });
     
     RenderizarSimulador(timeline);
-    RenderizarOrganograma(Object.fromEntries(disciplinas.map(d=>[d.id,{...d,corAtual:(statusOf(d.id)==='concluida'?'status-concluida':statusOf(d.id)==='cursando'?'status-cursando':statusOf(d.id)==='reprovada'?'status-reprovada':'status-bloqueada'),statusReal:statusOf(d.id),tipoNesteFDC:d.fdc[fdcAtual]}])));
+    RenderizarOrganograma(mapa);
     RenderizarPlano(pos);
     salvarEstado();
 }
 function ofertaValida(semestre,regra){if(regra==='ambos'||!regra)return true;if(regra==='impar')return semestre%2!==0;if(regra==='par')return semestre%2===0;return false}
 
 function RenderizarSimulador(timeline) {
-    const c=document.getElementById('semestres-container');
+    const c=document.getElementById('semestres-container'); if(!c) return;
     c.innerHTML='';
     const sems=Object.keys(timeline).map(Number).sort((a,b)=>a-b);
     const fdcAtual=document.getElementById('seletor-fdc').value;
@@ -377,12 +404,23 @@ function RenderizarSimulador(timeline) {
     const eletivas=disciplinas.filter(d=>d.fdc[fdcAtual]==='eletiva');
     if(eletivas.length){
         const bloco=criarBlocoSemestre('Eletivas',eletivas,true);
-        const obtidas=eletivas
-            .filter(d=>(estadoUsuario.status[d.id]||'pendente')==='concluida')
-            .reduce((s,d)=>s+d.creditos,0);
+        const obtidas=eletivas.filter(d=>(estadoUsuario.status[d.id]||'pendente')==='concluida').reduce((s,d)=>s+d.creditos,0);
         bloco.querySelector('h3').innerHTML=`Eletivas <span style="font-size:13px;color:var(--sub);font-weight:600">(${Math.min(obtidas,METAS.ele)} / ${METAS.ele} créditos)</span>`;
         c.appendChild(bloco);
     }
+}
+
+function RenderizarOrganograma(mapa) {
+    const board=document.getElementById('org-board'), ele=document.getElementById('org-eletivas');
+    if (!board || !ele) return;
+    board.innerHTML=''; ele.innerHTML='';
+    for(let s=1;s<=10;s++){const col=document.createElement('div');col.className='coluna-semestre';col.innerHTML=`<h4>Etapa ${s}</h4>`;board.appendChild(col)}
+    disciplinas.forEach(d=>{
+        const info=mapa[d.id];
+        const html=`<div id="org-card-${info.id}" class="org-card ${info.corAtual}" onclick="cliqueCadeira('${info.id}')" onmouseenter="mostrarLinhas('${info.id}')" onmouseleave="esconderLinhas()"><span class="tag-info">${info.id}</span><div style="font-size:11px;margin-top:3px">${info.nome}</div></div>`;
+        if(info.tipoNesteFDC==='eletiva') ele.insertAdjacentHTML('beforeend',html);
+        else board.children[Math.min(info.semIdeal,10)-1].insertAdjacentHTML('beforeend',html);
+    });
 }
 
 function RenderizarPlano(pos) {
@@ -393,7 +431,6 @@ function RenderizarPlano(pos) {
     const statusOf = (id) => estadoUsuario.status[id] || 'pendente';
     const fdcAtual = document.getElementById('seletor-fdc').value;
 
-    // 1. Semestre Atual (Cursando)
     const cursando = disciplinas.filter(d => statusOf(d.id) === 'cursando');
     if (cursando.length > 0) {
         const blocoAtual = criarBlocoSemestre('📚 Cursando Atualmente', cursando.map(d => ({...d, corAtual: 'status-cursando', statusReal: 'cursando'})), false);
@@ -402,12 +439,11 @@ function RenderizarPlano(pos) {
         container.insertAdjacentHTML('beforeend', '<div class="semestre" style="text-align:center;padding:30px;"><p style="color:var(--sub);margin:0">Você não tem disciplinas marcadas como "Cursando".<br>Clique 1x em uma disciplina no organograma para marcar.</p></div>');
     }
 
-    // 2. Próximos Semestres
     let porSemestre = {};
     disciplinas.forEach(d => {
         const st = statusOf(d.id);
         if (st === 'concluida' || st === 'cursando') return;
-        if (d.fdc[fdcAtual] === 'eletiva') return; // Eletivas ficam fora da previsão estrita
+        if (d.fdc[fdcAtual] === 'eletiva') return; 
 
         const p = pos[d.id];
         if (!porSemestre[p]) porSemestre[p] = [];
@@ -450,7 +486,8 @@ function criarBlocoSemestre(titulo,lista,isEletivas) {
 }
 
 function inicializar() {
-    sincronizarInputs();mudarAba(estadoUsuario.aba||'organograma');
+    sincronizarInputs();
+    mudarAba(estadoUsuario.aba||'organograma');
     ['inp-compl','inp-ext-atual','inp-ext-necessaria','inp-compl-tipos'].forEach(id=>document.getElementById(id).addEventListener('change',e=>{
         if(id==='inp-compl')estadoUsuario.compl=Math.max(0,Number(e.target.value)||0);
         if(id==='inp-ext-atual')estadoUsuario.ext=Math.max(0,Number(e.target.value)||0);

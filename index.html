@@ -426,14 +426,30 @@ function RenderizarOrganograma(mapa) {
 function RenderizarPlano(pos) {
     const container = document.getElementById('plano');
     if (!container) return;
-    container.innerHTML = '<p class="instrucoes" style="margin-bottom:20px;"><strong>Organização Automática:</strong> Veja o que você está cursando agora e a previsão dos próximos semestres.</p>';
+    container.innerHTML = '<p class="instrucoes" style="margin-bottom:20px;"><strong>Organização Automática:</strong> Veja o que você está cursando agora e a previsão dos próximos semestres com base nos pré-requisitos.</p>';
 
     const statusOf = (id) => estadoUsuario.status[id] || 'pendente';
     const fdcAtual = document.getElementById('seletor-fdc').value;
 
+    // Função interna para obter a estimativa de ano e semestre
+    function obterPeriodoFormatado(incrementoFuturo) {
+        const data = new Date();
+        let ano = data.getFullYear();
+        // A UFRGS e maioria das federais costumam virar para o 2º semestre no mês de julho/agosto (mês 6 ou 7)
+        let semestre = data.getMonth() >= 6 ? 2 : 1; 
+        
+        semestre += incrementoFuturo;
+        while(semestre > 2) {
+            semestre -= 2;
+            ano++;
+        }
+        return `${ano}/${semestre}`;
+    }
+
     const cursando = disciplinas.filter(d => statusOf(d.id) === 'cursando');
     if (cursando.length > 0) {
-        const blocoAtual = criarBlocoSemestre('📚 Cursando Atualmente', cursando.map(d => ({...d, corAtual: 'status-cursando', statusReal: 'cursando'})), false);
+        const periodoAtual = obterPeriodoFormatado(0);
+        const blocoAtual = criarBlocoSemestre(`📚 Cursando Atualmente <span style="font-size:13px;color:var(--sub);font-weight:600">(${periodoAtual})</span>`, cursando.map(d => ({...d, corAtual: 'status-cursando', statusReal: 'cursando'})), false);
         container.appendChild(blocoAtual);
     } else {
         container.insertAdjacentHTML('beforeend', '<div class="semestre" style="text-align:center;padding:30px;"><p style="color:var(--sub);margin:0">Você não tem disciplinas marcadas como "Cursando".<br>Clique 1x em uma disciplina no organograma para marcar.</p></div>');
@@ -461,7 +477,8 @@ function RenderizarPlano(pos) {
         divFuturos.innerHTML = '<h3 style="margin: 40px 0 20px; border-bottom: 2px solid var(--cinza); padding-bottom: 10px; text-align:center;">🔮 Previsão dos Próximos Semestres</h3>';
         let contador = 1;
         semsFuturos.forEach(s => {
-            const bloco = criarBlocoSemestre(`Próximo Semestre ${contador} <span style="font-size:13px;color:var(--sub);font-weight:600">(Etapa Base: ${s})</span>`, porSemestre[s], false);
+            const periodoEst = obterPeriodoFormatado(contador);
+            const bloco = criarBlocoSemestre(`Próximo Semestre ${contador} <span style="font-size:13px;color:var(--sub);font-weight:600">(${periodoEst} - Etapa Base: ${s})</span>`, porSemestre[s], false);
             divFuturos.appendChild(bloco);
             contador++;
         });

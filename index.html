@@ -63,7 +63,7 @@ select {background:var(--input-bg);color:var(--ink);padding:8px;border-radius:4p
 .status-liberada {background:var(--c-laranja-bg);color:var(--c-laranja-txt);border-color:var(--c-laranja-border)}
 .status-bloqueada {background:var(--c-cinza-bg);color:var(--c-cinza-txt);border-color:var(--c-cinza-border);opacity:.9}
 .status-reprovada {background:var(--c-verm-bg);color:var(--c-verm-txt);border-color:var(--c-verm-border)}
-#orga-wrapper {position:relative;overflow-x:auto;padding-bottom:20px}
+#orga-wrapper {position:relative;overflow-x:auto;padding-bottom:20px; scroll-behavior: auto;}
 .org-board {display:flex;gap:55px;min-width:max-content}
 .coluna-semestre {width:170px;flex-shrink:0}
 .coluna-semestre h4 {margin:0 0 15px;text-align:center;color:var(--sub);font-size:14px;text-transform:uppercase;border-bottom:1px solid var(--cinza);padding-bottom:8px}
@@ -137,7 +137,7 @@ select {background:var(--input-bg);color:var(--ink);padding:8px;border-radius:4p
 </div>
 
 <div id="organograma" class="container">
- <p class="instrucoes"><strong>Instruções:</strong> Clique 1x: Cursando | Clique 2x: Concluída | Clique 3x: Pendente.</p>
+ <p class="instrucoes"><strong>Instruções:</strong> Use a <b>roda do mouse (scroll)</b> aqui para navegar pelas etapas. Clique 1x: Cursando | Clique 2x: Concluída | Clique 3x: Pendente.</p>
  <div class="legend">
   <span class="status-concluida">🟩 Concluída</span><span class="status-cursando">🟦 Cursando</span>
   <span class="status-liberada">🟧 Liberada</span><span class="status-bloqueada">⬜ Bloqueada</span><span class="status-reprovada">🟥 Reprovada</span>
@@ -496,6 +496,21 @@ function inicializar() {
         salvarEstado();atualizarTudo();
     }));
     atualizarTudo();
+
+    // ROLAGEM HORIZONTAL COM O MOUSE WHEEL NO ORGANOGRAMA
+    const orgaWrapper = document.getElementById('orga-wrapper');
+    orgaWrapper.addEventListener('wheel', (e) => {
+        // Se o scroll for majoritariamente vertical (rodinha do mouse convencional)
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+            e.preventDefault(); // Previne que a página role para baixo
+            orgaWrapper.scrollLeft += e.deltaY; // Joga a rolagem para os lados
+        }
+    }, { passive: false });
+
+    // ATUALIZAR LINHAS DE PRÉ-REQUISITOS DURANTE A ROLAGEM
+    orgaWrapper.addEventListener('scroll', () => {
+        if(window.ultimoHover) mostrarLinhas(window.ultimoHover);
+    });
 }
 window.addEventListener('resize',()=>{if(window.ultimoHover)mostrarLinhas(window.ultimoHover)});
 inicializar();

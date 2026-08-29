@@ -29,20 +29,38 @@
         .semestre h3 { margin-top: 0; border-bottom: 2px solid #185fa5; padding-bottom: 5px; color: #185fa5;}
         
         .disciplinas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-        .disciplina { padding: 12px; border-radius: 8px; border: 2px solid transparent; display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,.03);}
+        .disciplina, .org-card { padding: 12px; border-radius: 8px; border: 2px solid transparent; display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,.03);}
         
         /* Cores de Status */
         .status-concluida { background-color: #e1f5ee; color: var(--ink); border-color: var(--verde); }
         .status-cursando { background-color: #fffde7; color: var(--ink); border-color: #fbc02d; }
         .status-liberada { background-color: #faeeda; color: var(--ink); border-color: var(--amarelo-escuro); }
-        .status-bloqueada { background-color: #ffffff; color: #6b6a63; border-color: var(--cinza); opacity: 0.6; }
+        .status-bloqueada { background-color: #ffffff; color: #6b6a63; border-color: var(--cinza); opacity: 0.7; }
         .status-reprovada { background-color: #faece7; color: var(--ink); border-color: var(--vermelho); }
 
         select.status-selector { padding: 5px; border-radius: 4px; font-weight: 600; border: 1px solid #ccc; font-family: inherit;}
         .tag-info { font-size: 10px; color: #6b6a63; font-family: ui-monospace,Menlo,monospace; }
+
+        /* ORGANOGRAMA ESPECÍFICO */
+        #organograma { display: block; } /* Tela Principal */
+        #simulador { display: none; }
         
-        #organograma { display: none; }
-        .orga-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+        #orga-wrapper { position: relative; overflow-x: auto; padding-bottom: 20px; }
+        .org-board { display: flex; gap: 20px; min-width: max-content; }
+        .coluna-semestre { width: 155px; flex-shrink: 0; }
+        .coluna-semestre h4 { margin-top: 0; text-align: center; color: var(--sub); font-size: 12px; text-transform: uppercase; border-bottom: 1px solid var(--cinza); padding-bottom: 5px; }
+        
+        .org-card { width: 100%; cursor: pointer; text-align: center; margin-bottom: 10px; z-index: 2; position: relative;}
+        .org-card:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .org-card.hover-focus { border-color: #185fa5; box-shadow: 0 0 0 2px #e6f1fb; }
+        .org-card.hover-req { border-color: var(--vermelho); background-color: #faece7; color: var(--vermelho);}
+        .org-card.hover-succ { border-color: var(--verde); background-color: #e1f5ee; color: var(--verde);}
+
+        .eletivas-container { margin-top: 30px; border-top: 2px dashed var(--cinza); padding-top: 20px; }
+        .eletivas-row { display: flex; flex-wrap: wrap; gap: 10px; }
+        .eletivas-row .org-card { width: 155px; }
+        
+        #lines-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 1;}
     </style>
 </head>
 <body>
@@ -70,19 +88,13 @@
     </div>
 
     <div class="tabs" style="margin-bottom: 20px;">
-        <button id="btn-simulador" class="active" onclick="mudarAba('simulador')">Simulador de Semestres</button>
-        <button id="btn-organograma" onclick="mudarAba('organograma')">Organograma / Situação</button>
+        <button id="btn-organograma" class="active" onclick="mudarAba('organograma')">Organograma / Situação</button>
+        <button id="btn-simulador" onclick="mudarAba('simulador')">Simulador de Semestres (Matrícula)</button>
     </div>
 
-    <!-- TELA 1: SIMULADOR -->
-    <div id="simulador" class="container">
-        <p style="color: #6b6a63; font-size: 14px;">Marque o status das disciplinas. Ao marcar "Reprovada" ou deixar "Pendente", o sistema recalculará os próximos semestres automaticamente considerando a disponibilidade (Anual/Semestral) e os pré-requisitos.</p>
-        <div id="semestres-container"></div>
-    </div>
-
-    <!-- TELA 2: ORGANOGRAMA -->
+    <!-- TELA 1: ORGANOGRAMA (Principal) -->
     <div id="organograma" class="container">
-        <p style="color: #6b6a63; font-size: 14px;">Visão geral de todas as disciplinas com base no seu progresso atual.</p>
+        <p style="color: #6b6a63; font-size: 14px; margin-top:0;"><strong>Instruções:</strong> 1º Clique: Cursando (cumpre pré-requisitos automáticos). 2º Clique: Concluída. 3º Clique: Reseta.</p>
         <div style="margin-bottom: 20px; font-size: 12px; font-weight: 600; display: flex; gap: 10px; flex-wrap: wrap;">
             <span style="background: #e1f5ee; border: 1px solid var(--verde); padding: 5px 10px; border-radius: 4px;">🟩 Concluída</span>
             <span style="background: #fffde7; border: 1px solid #fbc02d; padding: 5px 10px; border-radius: 4px;">🟨 Cursando</span>
@@ -90,11 +102,24 @@
             <span style="background: #ffffff; border: 1px solid var(--cinza); color: #6b6a63; padding: 5px 10px; border-radius: 4px;">⬜ Bloqueada (Falta Requisitos)</span>
             <span style="background: #faece7; border: 1px solid var(--vermelho); padding: 5px 10px; border-radius: 4px;">🟥 Reprovada</span>
         </div>
-        <div id="orga-container" class="orga-grid"></div>
+        
+        <div id="orga-wrapper">
+            <svg id="lines-svg"></svg>
+            <div id="org-board" class="org-board"></div>
+            <div class="eletivas-container">
+                <h4 style="color: var(--sub); font-size: 12px; text-transform: uppercase;">Eletivas Disponíveis</h4>
+                <div id="org-eletivas" class="eletivas-row"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA 2: SIMULADOR -->
+    <div id="simulador" class="container">
+        <p style="color: #6b6a63; font-size: 14px;">Simulação com deslocamento automático de semestres em caso de atrasos e sazonaldade (par/ímpar).</p>
+        <div id="semestres-container"></div>
     </div>
 
     <script>
-        // BANCO DE DADOS COMPLETO E UNIFICADO DAS DISCIPLINAS CEECA - UFRGS (2026/1)
         const disciplinas = [
             {"id": "INF01202", "nome": "Algoritmos e Programação", "creditos": 6, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
             {"id": "MAT01353", "nome": "Cálculo e Geometria Analítica I", "creditos": 6, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
@@ -147,9 +172,8 @@
             {"id": "ENG03387", "nome": "Sistemas de Fabricação", "creditos": 4, "semIdeal": 8, "oferta": "par", "prereqs": ["ENG03021"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
             {"id": "ENG10027", "nome": "Eletrônica Fundamental II-B", "creditos": 4, "semIdeal": 8, "oferta": "par", "prereqs": ["ENG10002", "ENG10044"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "eletiva", "mecanica": "eletiva"}},
             {"id": "ENG07087", "nome": "Controle Avançado de Processos", "creditos": 3, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG07042"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            // Adicionado Exemplo de Trava de Créditos para Estágio/TCC (Ajuste "reqCreditos" para o valor oficial se for diferente de 160)
-            {"id": "ESTAGIO", "nome": "Estágio Supervisionado", "creditos": 0, "semIdeal": 9, "oferta": "ambos", "prereqs": ["ENG03027", "ENG10018"], "reqCreditos": 160, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "TCC1", "nome": "Trab. de Conclusão CCA - I", "creditos": 0, "semIdeal": 9, "oferta": "ambos", "prereqs": ["ENG03027", "ENG10005", "ENG10048", "ENG10049"], "reqCreditos": 170, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ESTAGIO", "nome": "Estágio Supervisionado", "creditos": 0, "semIdeal": 9, "oferta": "ambos", "prereqs": ["ENG03027", "ENG10018"], "reqCreditos": 165, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "TCC1", "nome": "Trab. de Conclusão CCA - I", "creditos": 0, "semIdeal": 9, "oferta": "ambos", "prereqs": ["ENG03027", "ENG10005", "ENG10048", "ENG10049"], "reqCreditos": 165, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
             {"id": "ENG10050", "nome": "Laboratório de Máquinas e Acionamentos Elétricos", "creditos": 2, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG10049"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "eletiva", "mecanica": "eletiva"}},
             {"id": "ENG10046", "nome": "Princípios de Eletrônica de Potência", "creditos": 2, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG10044"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "eletiva", "mecanica": "eletiva"}},
             {"id": "ENG03010", "nome": "Ciência, Tecnologia e Ambiente", "creditos": 3, "semIdeal": 10, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
@@ -181,18 +205,12 @@
             {"id": "ENG03047", "nome": "Projetos de Sistemas Mecânicos", "creditos": 4, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG03044", "ENG03045"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "obrigatoria"}}
         ];
 
-        // Regras Totais (Você pode ajustar o limite de eletivas oficiais na UFRGS - coloquei 18 de ex.)
-        const metasCreditos = {
-            cadcam: { obr: 222, ele: 18 },
-            mecanica: { obr: 222, ele: 18 },
-            potencia: { obr: 222, ele: 18 }
-        };
+        const metasCreditos = { cadcam: { obr: 222, ele: 18 }, mecanica: { obr: 222, ele: 18 }, potencia: { obr: 222, ele: 18 } };
 
-        // Carrega estado salvo
-        let estadoUsuario = JSON.parse(localStorage.getItem('eca_simulador_status_v2')) || {};
+        let estadoUsuario = JSON.parse(localStorage.getItem('eca_simulador_status_v3')) || {};
 
         function salvarEstado() {
-            localStorage.setItem('eca_simulador_status_v2', JSON.stringify(estadoUsuario));
+            localStorage.setItem('eca_simulador_status_v3', JSON.stringify(estadoUsuario));
             atualizarTudo();
         }
 
@@ -203,13 +221,97 @@
             document.getElementById('btn-organograma').className = aba === 'organograma' ? 'active' : '';
         }
 
+        // --- SISTEMA DE CLIQUE E PRÉ-REQUISITOS RECURSIVOS ---
+        window.cliqueCadeira = function(id) {
+            let status = estadoUsuario[id] || "pendente";
+            if (status === "cursando") {
+                estadoUsuario[id] = "concluida";
+            } else if (status === "concluida") {
+                estadoUsuario[id] = "pendente"; // Toggle para desfazer
+            } else {
+                estadoUsuario[id] = "cursando";
+                marcarRequisitosRecursivo(id); // Marca todo o caminho passado como concluído
+            }
+            salvarEstado();
+            esconderLinhas(); // Limpa as setas ao atualizar o DOM
+        }
+
+        function marcarRequisitosRecursivo(id) {
+            let disc = disciplinas.find(d => d.id === id);
+            if(!disc) return;
+            disc.prereqs.forEach(reqId => {
+                estadoUsuario[reqId] = "concluida";
+                marcarRequisitosRecursivo(reqId);
+            });
+        }
+
+        // --- SISTEMA DE HOVER (LINHAS CURVAS) ---
+        window.mostrarLinhas = function(id) {
+            const svg = document.getElementById('lines-svg');
+            svg.innerHTML = '';
+            
+            const cardHover = document.getElementById('org-card-' + id);
+            if(cardHover) cardHover.classList.add('hover-focus');
+
+            const d = disciplinas.find(x => x.id === id);
+            if(!d) return;
+
+            // Pré-requisitos (De onde vem)
+            d.prereqs.forEach(req => {
+                desenharSeta(req, id, 'var(--vermelho)');
+                const el = document.getElementById('org-card-' + req);
+                if(el) el.classList.add('hover-req');
+            });
+
+            // Libera / Sucessoras (Para onde vai)
+            disciplinas.forEach(succ => {
+                if(succ.prereqs.includes(id)) {
+                    desenharSeta(id, succ.id, 'var(--verde)');
+                    const el = document.getElementById('org-card-' + succ.id);
+                    if(el) el.classList.add('hover-succ');
+                }
+            });
+        }
+
+        window.esconderLinhas = function() {
+            document.getElementById('lines-svg').innerHTML = '';
+            document.querySelectorAll('.org-card').forEach(el => {
+                el.classList.remove('hover-focus', 'hover-req', 'hover-succ');
+            });
+        }
+
+        function desenharSeta(fromId, toId, color) {
+            const el1 = document.getElementById('org-card-' + fromId);
+            const el2 = document.getElementById('org-card-' + toId);
+            if (!el1 || !el2) return;
+            
+            const wrap = document.getElementById('orga-wrapper');
+            const wrapRect = wrap.getBoundingClientRect();
+            const r1 = el1.getBoundingClientRect();
+            const r2 = el2.getBoundingClientRect();
+            
+            const x1 = r1.right - wrapRect.left + wrap.scrollLeft;
+            const y1 = r1.top + r1.height/2 - wrapRect.top + wrap.scrollTop;
+            const x2 = r2.left - wrapRect.left + wrap.scrollLeft;
+            const y2 = r2.top + r2.height/2 - wrapRect.top + wrap.scrollTop;
+            
+            const midX = (x1 + x2) / 2;
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', `M${x1},${y1} C${midX},${y1} ${midX},${y2} ${x2},${y2}`);
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', color);
+            path.setAttribute('stroke-width', '1.8');
+            path.setAttribute('opacity', '0.7');
+            document.getElementById('lines-svg').appendChild(path);
+        }
+
+        // --- ATUALIZAÇÃO E RENDERIZAÇÃO DOM ---
         function atualizarTudo() {
             const fdcAtual = document.getElementById('seletor-fdc').value;
-            let creditosFeitosObr = 0;
-            let creditosFeitosEle = 0;
-            let timelineSemestres = {};
+            let creditosFeitosObr = 0; let creditosFeitosEle = 0;
+            let timelineSemestres = {}; let mapaParaOrganograma = {};
 
-            // 1. Somar os Créditos
+            // 1. Somar Créditos
             disciplinas.forEach(d => {
                 let statusReal = estadoUsuario[d.id] || "pendente";
                 let tipoNesteFDC = d.fdc[fdcAtual];
@@ -224,44 +326,32 @@
             document.getElementById('meta-obr').innerText = metasCreditos[fdcAtual].obr;
             document.getElementById('meta-ele').innerText = metasCreditos[fdcAtual].ele;
 
-            // 2. Motor de Reagendamento Iterativo
-            // Fazemos múltiplas passadas para garantir que a 'cascata' de pré-requisitos funcione
+            // 2. Definir Posições Simulador
             let posicoesFinais = {};
-            
-            // Passada 1: Cadeira já concluídas ou travadas na matriz base
             disciplinas.forEach(d => posicoesFinais[d.id] = d.semIdeal);
 
-            // Algoritmo de "Gotejamento" topológico simples para atrasos
             for(let loop = 0; loop < 4; loop++) {
                 disciplinas.forEach(d => {
                     let statusReal = estadoUsuario[d.id] || "pendente";
-                    if(statusReal === "concluida") return; // Fica onde está
-
+                    if(statusReal === "concluida") return;
                     let semMaisTardioPrereq = 0;
                     d.prereqs.forEach(req => {
                         if ((estadoUsuario[req] || "pendente") !== "concluida") {
                             semMaisTardioPrereq = Math.max(semMaisTardioPrereq, posicoesFinais[req]);
                         }
                     });
-
-                    // Atrasa pela barreira de PRÉ-REQUISITO ou REPROVAÇÃO
                     let novoSem = Math.max(d.semIdeal, semMaisTardioPrereq + 1);
                     if (statusReal === "reprovada") novoSem = Math.max(novoSem, posicoesFinais[d.id] + 1);
-
-                    // Atrasa pela SAZONALIDADE (Ímpar/Par)
                     while (!ofertaValida(novoSem, d.oferta)) { novoSem++; }
-
                     posicoesFinais[d.id] = novoSem;
                 });
             }
 
-            // 3. Organizar nos Semestres Simulado
+            // 3. Montar Objetos Renderizados
             disciplinas.forEach(d => {
                 let statusReal = estadoUsuario[d.id] || "pendente";
                 let tipoNesteFDC = d.fdc[fdcAtual];
-                let semSimulado = posicoesFinais[d.id];
-
-                // Regras de Cor e Disponibilidade
+                
                 let cor = "status-bloqueada";
                 if(statusReal === "concluida") cor = "status-concluida";
                 else if(statusReal === "cursando") cor = "status-cursando";
@@ -272,11 +362,16 @@
                     if(cumprePrereq && cumpreCreditos) cor = "status-liberada";
                 }
 
+                let dRender = {...d, corAtual: cor, statusReal, tipoNesteFDC};
+                mapaParaOrganograma[d.id] = dRender;
+                
+                let semSimulado = posicoesFinais[d.id];
                 if (!timelineSemestres[semSimulado]) timelineSemestres[semSimulado] = [];
-                timelineSemestres[semSimulado].push({...d, corAtual: cor, statusReal, tipoNesteFDC});
+                timelineSemestres[semSimulado].push(dRender);
             });
 
-            RenderizarTelas(timelineSemestres);
+            RenderizarSimulador(timelineSemestres);
+            RenderizarOrganograma(mapaParaOrganograma);
         }
 
         function ofertaValida(semestre, regra) {
@@ -286,12 +381,9 @@
             return false;
         }
 
-        function RenderizarTelas(timeline) {
+        function RenderizarSimulador(timeline) {
             const containerSim = document.getElementById('semestres-container');
-            const containerOrg = document.getElementById('orga-container');
             containerSim.innerHTML = "";
-            containerOrg.innerHTML = "";
-
             let sems = Object.keys(timeline).map(Number).sort((a,b)=>a-b);
 
             sems.forEach(sem => {
@@ -301,22 +393,12 @@
                 let grid = divSem.querySelector('.disciplinas-grid');
 
                 timeline[sem].forEach(d => {
-                    // Ignora eletivas que não estão sendo cursadas e não são do FDC, para não poluir o semestres futuros
                     if (d.tipoNesteFDC === 'eletiva' && (d.statusReal === 'pendente' || d.statusReal === 'bloqueada') && sem > 10) return;
-
-                    let iconeFDC = d.tipoNesteFDC === "obrigatoria" ? "📌 Obr." : "⭐ Eletiva";
-                    let avisoCred = d.reqCreditos > 0 ? `<br><span style="color:#d32f2f">Exige ${d.reqCreditos}cr</span>` : "";
-
-                    // HTML p/ Simulador
                     let card = document.createElement('div');
                     card.className = `disciplina ${d.corAtual}`;
                     card.innerHTML = `
-                        <div style="display:flex; justify-content:space-between;">
-                            <span class="tag-info">${d.id}</span>
-                            <span class="tag-info">${iconeFDC}</span>
-                        </div>
+                        <div style="display:flex; justify-content:space-between;"><span class="tag-info">${d.id}</span></div>
                         <div style="font-size: 14px; margin: 4px 0;">${d.nome}</div>
-                        <div class="tag-info">Créditos: ${d.creditos} | Oferta: ${d.oferta.toUpperCase()} ${avisoCred}</div>
                         <select class="status-selector" onchange="estadoUsuario['${d.id}'] = this.value; salvarEstado();">
                             <option value="pendente" ${d.statusReal === 'pendente' ? 'selected' : ''}>Pendente / Bloqueada</option>
                             <option value="concluida" ${d.statusReal === 'concluida' ? 'selected' : ''}>Concluída</option>
@@ -325,17 +407,41 @@
                         </select>
                     `;
                     grid.appendChild(card);
-
-                    // HTML p/ Organograma (Mostra tudo)
-                    let boxOrg = document.createElement('div');
-                    boxOrg.className = `disciplina ${d.corAtual}`;
-                    boxOrg.style.width = "140px";
-                    boxOrg.style.textAlign = "center";
-                    boxOrg.innerHTML = `<span class="tag-info">${d.id}</span><br><strong>${d.nome}</strong>`;
-                    containerOrg.appendChild(boxOrg);
                 });
-                
                 if (grid.children.length > 0) containerSim.appendChild(divSem);
+            });
+        }
+
+        function RenderizarOrganograma(mapa) {
+            const orgBoard = document.getElementById('org-board');
+            const orgEletivas = document.getElementById('org-eletivas');
+            orgBoard.innerHTML = ''; orgEletivas.innerHTML = '';
+
+            for(let s=1; s<=10; s++) {
+                let col = document.createElement('div');
+                col.className = 'coluna-semestre';
+                col.innerHTML = `<h4>Etapa ${s}</h4>`;
+                orgBoard.appendChild(col);
+            }
+
+            disciplinas.forEach(d => {
+                const info = mapa[d.id];
+                let htmlCard = `
+                    <div id="org-card-${info.id}" class="org-card ${info.corAtual}" 
+                         onclick="cliqueCadeira('${info.id}')" 
+                         onmouseenter="mostrarLinhas('${info.id}')" 
+                         onmouseleave="esconderLinhas()">
+                        <span class="tag-info">${info.id}</span>
+                        <div style="font-size: 11px; margin-top: 3px;">${info.nome}</div>
+                    </div>
+                `;
+
+                if (info.tipoNesteFDC === 'eletiva') {
+                    orgEletivas.insertAdjacentHTML('beforeend', htmlCard);
+                } else {
+                    let targetSem = Math.min(info.semIdeal, 10);
+                    orgBoard.children[targetSem-1].insertAdjacentHTML('beforeend', htmlCard);
+                }
             });
         }
 

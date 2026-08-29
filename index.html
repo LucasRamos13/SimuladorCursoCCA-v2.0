@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador ECA - UFRGS</title>
+    <style>
+        :root {
+            --bg-color: #f6f5f1;
+            --verde: #0f6e56;
+            --amarelo-claro: #ffeb3b;
+            --amarelo-escuro: #d49526;
+            --cinza: #d8d6cc;
+            --vermelho: #993c1d;
+            --card: #ffffff;
+            --ink: #1c1c1a;
+        }
+        body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; background-color: var(--bg-color); color: var(--ink); margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; background: var(--card); padding: 15px 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.04); margin-bottom: 20px; border: 1px solid var(--cinza); flex-wrap: wrap; gap: 15px;}
+        
+        .tabs button { padding: 10px 20px; cursor: pointer; border: 1px solid var(--cinza); background: #eee; font-weight: 600; border-radius: 6px; margin-right: 5px; transition: 0.2s;}
+        .tabs button.active { background: #185fa5; color: white; border-color: #185fa5; }
+        
+        .painel-creditos { display: flex; gap: 15px; }
+        .card-credito { background: #f0ebf8; padding: 10px 15px; border-radius: 6px; text-align: center; border: 1px solid #6b4fa0;}
+        
+        .container { background: var(--card); padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.04); border: 1px solid var(--cinza); }
+        .semestre { margin-bottom: 25px; border: 1px solid var(--cinza); border-radius: 8px; padding: 15px; background: #faf9f5;}
+        .semestre h3 { margin-top: 0; border-bottom: 2px solid #185fa5; padding-bottom: 5px; color: #185fa5;}
+        
+        .disciplinas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+        .disciplina { padding: 12px; border-radius: 8px; border: 2px solid transparent; display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 500; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,.03);}
+        
+        /* Cores de Status */
+        .status-concluida { background-color: #e1f5ee; color: var(--ink); border-color: var(--verde); }
+        .status-cursando { background-color: #fffde7; color: var(--ink); border-color: #fbc02d; }
+        .status-liberada { background-color: #faeeda; color: var(--ink); border-color: var(--amarelo-escuro); }
+        .status-bloqueada { background-color: #ffffff; color: #6b6a63; border-color: var(--cinza); opacity: 0.6; }
+        .status-reprovada { background-color: #faece7; color: var(--ink); border-color: var(--vermelho); }
+
+        select.status-selector { padding: 5px; border-radius: 4px; font-weight: 600; border: 1px solid #ccc; font-family: inherit;}
+        .tag-info { font-size: 10px; color: #6b6a63; font-family: ui-monospace,Menlo,monospace; }
+        
+        #organograma { display: none; }
+        .orga-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div>
+            <h2 style="margin: 0 0 10px 0;">Simulador do Curso - CEECA</h2>
+            <label><strong>Escolha seu FDC (Ênfase):</strong></label><br>
+            <select id="seletor-fdc" onchange="atualizarTudo()" style="margin-top: 5px; padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-weight: 600;">
+                <option value="cadcam">Sistemas Discretos CAD/CAM</option>
+                <option value="mecanica">Controle Avançado de Sistemas Mecânicos</option>
+                <option value="potencia">Eletrônica de Potência e Acionamento</option>
+            </select>
+        </div>
+        <div class="painel-creditos">
+            <div class="card-credito">
+                <span style="font-size: 12px; color: #6b4fa0; font-weight: 600;">CRÉDITOS OBRIGATÓRIOS</span><br>
+                <strong style="font-size: 20px;"><span id="cred-obr">0</span> / <span id="meta-obr">222</span></strong>
+            </div>
+            <div class="card-credito" style="background: #e6f1fb; border-color: #185fa5;">
+                <span style="font-size: 12px; color: #185fa5; font-weight: 600;">CRÉDITOS ELETIVOS</span><br>
+                <strong style="font-size: 20px;"><span id="cred-ele">0</span> / <span id="meta-ele">18</span></strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabs" style="margin-bottom: 20px;">
+        <button id="btn-simulador" class="active" onclick="mudarAba('simulador')">Simulador de Semestres</button>
+        <button id="btn-organograma" onclick="mudarAba('organograma')">Organograma / Situação</button>
+    </div>
+
+    <!-- TELA 1: SIMULADOR -->
+    <div id="simulador" class="container">
+        <p style="color: #6b6a63; font-size: 14px;">Marque o status das disciplinas. Ao marcar "Reprovada" ou deixar "Pendente", o sistema recalculará os próximos semestres automaticamente considerando a disponibilidade (Anual/Semestral) e os pré-requisitos.</p>
+        <div id="semestres-container"></div>
+    </div>
+
+    <!-- TELA 2: ORGANOGRAMA -->
+    <div id="organograma" class="container">
+        <p style="color: #6b6a63; font-size: 14px;">Visão geral de todas as disciplinas com base no seu progresso atual.</p>
+        <div style="margin-bottom: 20px; font-size: 12px; font-weight: 600; display: flex; gap: 10px; flex-wrap: wrap;">
+            <span style="background: #e1f5ee; border: 1px solid var(--verde); padding: 5px 10px; border-radius: 4px;">🟩 Concluída</span>
+            <span style="background: #fffde7; border: 1px solid #fbc02d; padding: 5px 10px; border-radius: 4px;">🟨 Cursando</span>
+            <span style="background: #faeeda; border: 1px solid var(--amarelo-escuro); padding: 5px 10px; border-radius: 4px;">🟧 Cumpre Requisitos (Liberada)</span>
+            <span style="background: #ffffff; border: 1px solid var(--cinza); color: #6b6a63; padding: 5px 10px; border-radius: 4px;">⬜ Bloqueada (Falta Requisitos)</span>
+            <span style="background: #faece7; border: 1px solid var(--vermelho); padding: 5px 10px; border-radius: 4px;">🟥 Reprovada</span>
+        </div>
+        <div id="orga-container" class="orga-grid"></div>
+    </div>
+
+    <script>
+        // BANCO DE DADOS COMPLETO E UNIFICADO DAS DISCIPLINAS CEECA - UFRGS (2026/1)
+        const disciplinas = [
+            {"id": "INF01202", "nome": "Algoritmos e Programação", "creditos": 6, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "MAT01353", "nome": "Cálculo e Geometria Analítica I", "creditos": 6, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "FIS01181", "nome": "Física I-C", "creditos": 6, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ARQ03317", "nome": "Geometria Descritiva II-A", "creditos": 2, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "CCA99001", "nome": "Introdução à Eng. de Controle e Automação", "creditos": 2, "semIdeal": 1, "oferta": "impar", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "QUI01009", "nome": "Química Fundamental A", "creditos": 4, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "MAT01355", "nome": "Álgebra Linear I-A", "creditos": 4, "semIdeal": 2, "oferta": "ambos", "prereqs": ["MAT01353"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "MAT01354", "nome": "Cálculo e Geometria Analítica II-A", "creditos": 6, "semIdeal": 2, "oferta": "ambos", "prereqs": ["MAT01353"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ARQ03319", "nome": "Desenho Técnico II-A", "creditos": 4, "semIdeal": 2, "oferta": "ambos", "prereqs": ["ARQ03317"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "FIS01182", "nome": "Física Geral - Eletromagnetismo", "creditos": 6, "semIdeal": 2, "oferta": "ambos", "prereqs": ["FIS01181"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG03041", "nome": "Mecânica Aplicada I", "creditos": 4, "semIdeal": 2, "oferta": "ambos", "prereqs": ["CCA99001", "FIS01181", "MAT01353"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "INF01057", "nome": "Programação Orientada a Objeto", "creditos": 4, "semIdeal": 2, "oferta": "par", "prereqs": ["INF01202"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10001", "nome": "Circuitos Elétricos I-C", "creditos": 4, "semIdeal": 3, "oferta": "ambos", "prereqs": ["FIS01182", "MAT01354"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "MAT01167", "nome": "Equações Diferenciais II", "creditos": 6, "semIdeal": 3, "oferta": "ambos", "prereqs": ["MAT01354", "MAT01355"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "FIS01183", "nome": "Física III-C", "creditos": 6, "semIdeal": 3, "oferta": "ambos", "prereqs": ["FIS01182"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG03043", "nome": "Materiais para Engenharia A", "creditos": 4, "semIdeal": 3, "oferta": "impar", "prereqs": ["QUI01009"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG03042", "nome": "Mecânica Aplicada II", "creditos": 4, "semIdeal": 3, "oferta": "ambos", "prereqs": ["ENG03041"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "MAT02219", "nome": "Probabilidade e Estatística", "creditos": 4, "semIdeal": 3, "oferta": "ambos", "prereqs": ["MAT01353"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10042", "nome": "Sistemas Digitais-A", "creditos": 4, "semIdeal": 3, "oferta": "impar", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "MAT01169", "nome": "Cálculo Numérico", "creditos": 6, "semIdeal": 4, "oferta": "ambos", "prereqs": ["INF01202", "MAT01167"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10002", "nome": "Circuitos Elétricos II-C", "creditos": 4, "semIdeal": 4, "oferta": "ambos", "prereqs": ["ENG10001", "MAT01167"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10043", "nome": "Laboratório de Sistemas Digitais", "creditos": 2, "semIdeal": 4, "oferta": "par", "prereqs": ["ENG10042"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "MAT01168", "nome": "Matemática Aplicada II", "creditos": 6, "semIdeal": 4, "oferta": "ambos", "prereqs": ["MAT01167"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG03092", "nome": "Mecânica dos Sólidos I-A", "creditos": 4, "semIdeal": 4, "oferta": "ambos", "prereqs": ["ENG03041", "ENG03043"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG03316", "nome": "Mecanismos I", "creditos": 4, "semIdeal": 4, "oferta": "ambos", "prereqs": ["ENG03042"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG03044", "nome": "Modelagem de Sistemas Mecânicos", "creditos": 4, "semIdeal": 4, "oferta": "ambos", "prereqs": ["ENG10001", "FIS01183", "MAT01167"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10044", "nome": "Eletrônica Fundamental I-B", "creditos": 4, "semIdeal": 5, "oferta": "impar", "prereqs": ["ENG10002"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10003", "nome": "Laboratório de Circuitos Elétricos", "creditos": 2, "semIdeal": 5, "oferta": "ambos", "prereqs": ["ENG10002"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG03004", "nome": "Mecânica dos Sólidos II", "creditos": 4, "semIdeal": 5, "oferta": "ambos", "prereqs": ["ENG03092", "MAT01169"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10017", "nome": "Sistemas e Sinais", "creditos": 6, "semIdeal": 5, "oferta": "ambos", "prereqs": ["MAT01168"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG07086", "nome": "Termodinâmica e Transf. de Calor", "creditos": 5, "semIdeal": 5, "oferta": "impar", "prereqs": ["FIS01183"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10026", "nome": "Robótica / Robótica A", "creditos": 4, "semIdeal": 5, "oferta": "ambos", "prereqs": ["ENG03316"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10047", "nome": "Fundamentos de Máquinas Elétricas", "creditos": 4, "semIdeal": 6, "oferta": "par", "prereqs": ["ENG10002"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10022", "nome": "Instrum. Fundamental p/ Controle e Automação", "creditos": 4, "semIdeal": 6, "oferta": "par", "prereqs": ["ENG10044", "MAT02219"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10045", "nome": "Laboratório de Eletrônica", "creditos": 2, "semIdeal": 6, "oferta": "ambos", "prereqs": ["ENG10003", "ENG10044"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG07069", "nome": "Princípios da Mecânica de Fluidos", "creditos": 2, "semIdeal": 6, "oferta": "ambos", "prereqs": ["ENG07086"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10023", "nome": "Sistemas de Automação", "creditos": 4, "semIdeal": 6, "oferta": "par", "prereqs": ["ENG10043", "INF01057"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10004", "nome": "Sistemas de Controle I-B", "creditos": 4, "semIdeal": 6, "oferta": "par", "prereqs": ["ENG03044", "ENG10017"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10049", "nome": "Acionamento de Máq. Elétricas-A", "creditos": 4, "semIdeal": 7, "oferta": "impar", "prereqs": ["ENG10045", "ENG10047"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10005", "nome": "Laboratório de Controle", "creditos": 2, "semIdeal": 7, "oferta": "impar", "prereqs": ["ENG10004"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG04475", "nome": "Microprocessadores I", "creditos": 5, "semIdeal": 7, "oferta": "ambos", "prereqs": ["ENG10043", "ENG10044"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG03021", "nome": "Processos Discretos de Produção", "creditos": 4, "semIdeal": 7, "oferta": "ambos", "prereqs": ["ENG03043"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10048", "nome": "Protocolos de Comunicação-A", "creditos": 4, "semIdeal": 7, "oferta": "impar", "prereqs": ["ENG10023"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10018", "nome": "Sistemas de Controle II", "creditos": 4, "semIdeal": 7, "oferta": "impar", "prereqs": ["ENG10004"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG03027", "nome": "Sistemas Hidráulicos e Pneumáticos", "creditos": 4, "semIdeal": 7, "oferta": "ambos", "prereqs": ["ENG07069"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG03045", "nome": "Elementos de Máquinas", "creditos": 4, "semIdeal": 8, "oferta": "par", "prereqs": ["ENG03004", "ENG03021"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG07042", "nome": "Modelagem e Controle de Proc. Industriais", "creditos": 4, "semIdeal": 8, "oferta": "par", "prereqs": ["ENG07069", "ENG10018"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10019", "nome": "Sistemas de Controle Digitais", "creditos": 4, "semIdeal": 8, "oferta": "par", "prereqs": ["ENG04475", "ENG10004"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG03387", "nome": "Sistemas de Fabricação", "creditos": 4, "semIdeal": 8, "oferta": "par", "prereqs": ["ENG03021"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10027", "nome": "Eletrônica Fundamental II-B", "creditos": 4, "semIdeal": 8, "oferta": "par", "prereqs": ["ENG10002", "ENG10044"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "ENG07087", "nome": "Controle Avançado de Processos", "creditos": 3, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG07042"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            // Adicionado Exemplo de Trava de Créditos para Estágio/TCC (Ajuste "reqCreditos" para o valor oficial se for diferente de 160)
+            {"id": "ESTAGIO", "nome": "Estágio Supervisionado", "creditos": 0, "semIdeal": 9, "oferta": "ambos", "prereqs": ["ENG03027", "ENG10018"], "reqCreditos": 160, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "TCC1", "nome": "Trab. de Conclusão CCA - I", "creditos": 0, "semIdeal": 9, "oferta": "ambos", "prereqs": ["ENG03027", "ENG10005", "ENG10048", "ENG10049"], "reqCreditos": 170, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG10050", "nome": "Laboratório de Máquinas e Acionamentos Elétricos", "creditos": 2, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG10049"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "ENG10046", "nome": "Princípios de Eletrônica de Potência", "creditos": 2, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG10044"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "ENG03010", "nome": "Ciência, Tecnologia e Ambiente", "creditos": 3, "semIdeal": 10, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "ENG03048", "nome": "Gerência e Adm. de Projetos", "creditos": 4, "semIdeal": 10, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "TCC2", "nome": "Trab. de Conclusão CCA - II", "creditos": 0, "semIdeal": 10, "oferta": "ambos", "prereqs": ["ENG03045", "ENG07042", "ENG10019", "TCC1"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
+            {"id": "EDU03071", "nome": "Libras", "creditos": 2, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "CCA99005", "nome": "Tópicos Especiais em ECA I", "creditos": 2, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "CCA99006", "nome": "Tópicos Especiais em ECA II", "creditos": 4, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "CCA99007", "nome": "Tópicos Especiais em ECA III", "creditos": 6, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "INF01126", "nome": "Estruturas de Dados I", "creditos": 4, "semIdeal": 2, "oferta": "ambos", "prereqs": ["INF01202"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "INF01017", "nome": "Aprendizado de Máquina", "creditos": 4, "semIdeal": 3, "oferta": "ambos", "prereqs": ["INF01057"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "INF01037", "nome": "Computação Evolutiva", "creditos": 4, "semIdeal": 3, "oferta": "ambos", "prereqs": ["INF01057"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "ADM01135", "nome": "Engenharia Econômica e Avaliações", "creditos": 2, "semIdeal": 4, "oferta": "ambos", "prereqs": ["MAT02219"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "CCA99008", "nome": "Projeto Integrado I", "creditos": 9, "semIdeal": 6, "oferta": "ambos", "prereqs": ["ENG03044", "ENG03316", "ENG07086", "ENG10003", "ENG10042"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "ENG10052", "nome": "Laboratório de Robótica", "creditos": 2, "semIdeal": 6, "oferta": "par", "prereqs": ["ENG10026"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "ENG10054", "nome": "Robótica Móvel", "creditos": 4, "semIdeal": 6, "oferta": "ambos", "prereqs": ["ENG10017", "INF01057", "MAT02219"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "CCA99011", "nome": "Tópicos em Proc. Digital de Sinais I", "creditos": 4, "semIdeal": 6, "oferta": "ambos", "prereqs": ["ENG10017"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "ENG10021", "nome": "Sistemas a Eventos Discretos", "creditos": 4, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG10023"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "obrigatoria", "mecanica": "eletiva"}},
+            {"id": "ENG10051", "nome": "Dinâmica e Controle de Robôs", "creditos": 4, "semIdeal": 7, "oferta": "impar", "prereqs": ["ENG10004", "ENG10026"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "CCA99009", "nome": "Projeto Integrado II", "creditos": 9, "semIdeal": 8, "oferta": "ambos", "prereqs": ["CCA99008", "ENG03021", "ENG04475", "ENG07069", "ENG10004", "ENG10022", "ENG10023"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "ENG07043", "nome": "Instrumentação de Processos Industriais", "creditos": 2, "semIdeal": 8, "oferta": "ambos", "prereqs": ["ENG07069", "ENG10018"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "ENG09023", "nome": "Planejamento Estratégico da Produção", "creditos": 2, "semIdeal": 8, "oferta": "ambos", "prereqs": ["ENG03021"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "ENG03046", "nome": "Controle de Sistemas Fluído-Mecânicos", "creditos": 4, "semIdeal": 8, "oferta": "par", "prereqs": ["ENG03027", "ENG10018"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "obrigatoria"}},
+            {"id": "ENG03386", "nome": "Fabricação Auxiliada por Computador", "creditos": 4, "semIdeal": 8, "oferta": "ambos", "prereqs": ["ENG03021"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "obrigatoria", "mecanica": "eletiva"}},
+            {"id": "ENG10055", "nome": "Sistemas de Tempo Real - I", "creditos": 4, "semIdeal": 8, "oferta": "ambos", "prereqs": ["ENG04475"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "CCA99010", "nome": "Projeto Integrado III", "creditos": 9, "semIdeal": 9, "oferta": "ambos", "prereqs": ["CCA99009"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "ENG07012", "nome": "Laboratório de Controle e Operação de Processos", "creditos": 3, "semIdeal": 9, "oferta": "ambos", "prereqs": ["ENG07042"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "ENG07062", "nome": "Otimização Aplicada", "creditos": 3, "semIdeal": 9, "oferta": "ambos", "prereqs": ["ENG07042"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
+            {"id": "ENG03047", "nome": "Projetos de Sistemas Mecânicos", "creditos": 4, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG03044", "ENG03045"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "obrigatoria"}}
+        ];
+
+        // Regras Totais (Você pode ajustar o limite de eletivas oficiais na UFRGS - coloquei 18 de ex.)
+        const metasCreditos = {
+            cadcam: { obr: 222, ele: 18 },
+            mecanica: { obr: 222, ele: 18 },
+            potencia: { obr: 222, ele: 18 }
+        };
+
+        // Carrega estado salvo
+        let estadoUsuario = JSON.parse(localStorage.getItem('eca_simulador_status_v2')) || {};
+
+        function salvarEstado() {
+            localStorage.setItem('eca_simulador_status_v2', JSON.stringify(estadoUsuario));
+            atualizarTudo();
+        }
+
+        function mudarAba(aba) {
+            document.getElementById('simulador').style.display = aba === 'simulador' ? 'block' : 'none';
+            document.getElementById('organograma').style.display = aba === 'organograma' ? 'block' : 'none';
+            document.getElementById('btn-simulador').className = aba === 'simulador' ? 'active' : '';
+            document.getElementById('btn-organograma').className = aba === 'organograma' ? 'active' : '';
+        }
+
+        function atualizarTudo() {
+            const fdcAtual = document.getElementById('seletor-fdc').value;
+            let creditosFeitosObr = 0;
+            let creditosFeitosEle = 0;
+            let timelineSemestres = {};
+
+            // 1. Somar os Créditos
+            disciplinas.forEach(d => {
+                let statusReal = estadoUsuario[d.id] || "pendente";
+                let tipoNesteFDC = d.fdc[fdcAtual];
+                if (statusReal === "concluida") {
+                    if(tipoNesteFDC === "obrigatoria") creditosFeitosObr += d.creditos;
+                    if(tipoNesteFDC === "eletiva") creditosFeitosEle += d.creditos;
+                }
+            });
+
+            document.getElementById('cred-obr').innerText = creditosFeitosObr;
+            document.getElementById('cred-ele').innerText = creditosFeitosEle;
+            document.getElementById('meta-obr').innerText = metasCreditos[fdcAtual].obr;
+            document.getElementById('meta-ele').innerText = metasCreditos[fdcAtual].ele;
+
+            // 2. Motor de Reagendamento Iterativo
+            // Fazemos múltiplas passadas para garantir que a 'cascata' de pré-requisitos funcione
+            let posicoesFinais = {};
+            
+            // Passada 1: Cadeira já concluídas ou travadas na matriz base
+            disciplinas.forEach(d => posicoesFinais[d.id] = d.semIdeal);
+
+            // Algoritmo de "Gotejamento" topológico simples para atrasos
+            for(let loop = 0; loop < 4; loop++) {
+                disciplinas.forEach(d => {
+                    let statusReal = estadoUsuario[d.id] || "pendente";
+                    if(statusReal === "concluida") return; // Fica onde está
+
+                    let semMaisTardioPrereq = 0;
+                    d.prereqs.forEach(req => {
+                        if ((estadoUsuario[req] || "pendente") !== "concluida") {
+                            semMaisTardioPrereq = Math.max(semMaisTardioPrereq, posicoesFinais[req]);
+                        }
+                    });
+
+                    // Atrasa pela barreira de PRÉ-REQUISITO ou REPROVAÇÃO
+                    let novoSem = Math.max(d.semIdeal, semMaisTardioPrereq + 1);
+                    if (statusReal === "reprovada") novoSem = Math.max(novoSem, posicoesFinais[d.id] + 1);
+
+                    // Atrasa pela SAZONALIDADE (Ímpar/Par)
+                    while (!ofertaValida(novoSem, d.oferta)) { novoSem++; }
+
+                    posicoesFinais[d.id] = novoSem;
+                });
+            }
+
+            // 3. Organizar nos Semestres Simulado
+            disciplinas.forEach(d => {
+                let statusReal = estadoUsuario[d.id] || "pendente";
+                let tipoNesteFDC = d.fdc[fdcAtual];
+                let semSimulado = posicoesFinais[d.id];
+
+                // Regras de Cor e Disponibilidade
+                let cor = "status-bloqueada";
+                if(statusReal === "concluida") cor = "status-concluida";
+                else if(statusReal === "cursando") cor = "status-cursando";
+                else if(statusReal === "reprovada") cor = "status-reprovada";
+                else {
+                    let cumprePrereq = d.prereqs.every(req => estadoUsuario[req] === "concluida");
+                    let cumpreCreditos = (creditosFeitosObr + creditosFeitosEle) >= d.reqCreditos;
+                    if(cumprePrereq && cumpreCreditos) cor = "status-liberada";
+                }
+
+                if (!timelineSemestres[semSimulado]) timelineSemestres[semSimulado] = [];
+                timelineSemestres[semSimulado].push({...d, corAtual: cor, statusReal, tipoNesteFDC});
+            });
+
+            RenderizarTelas(timelineSemestres);
+        }
+
+        function ofertaValida(semestre, regra) {
+            if (regra === "ambos" || !regra) return true;
+            if (regra === "impar" && semestre % 2 !== 0) return true;
+            if (regra === "par" && semestre % 2 === 0) return true;
+            return false;
+        }
+
+        function RenderizarTelas(timeline) {
+            const containerSim = document.getElementById('semestres-container');
+            const containerOrg = document.getElementById('orga-container');
+            containerSim.innerHTML = "";
+            containerOrg.innerHTML = "";
+
+            let sems = Object.keys(timeline).map(Number).sort((a,b)=>a-b);
+
+            sems.forEach(sem => {
+                let divSem = document.createElement('div');
+                divSem.className = "semestre";
+                divSem.innerHTML = `<h3>Semestre ${sem}</h3> <div class="disciplinas-grid"></div>`;
+                let grid = divSem.querySelector('.disciplinas-grid');
+
+                timeline[sem].forEach(d => {
+                    // Ignora eletivas que não estão sendo cursadas e não são do FDC, para não poluir o semestres futuros
+                    if (d.tipoNesteFDC === 'eletiva' && (d.statusReal === 'pendente' || d.statusReal === 'bloqueada') && sem > 10) return;
+
+                    let iconeFDC = d.tipoNesteFDC === "obrigatoria" ? "📌 Obr." : "⭐ Eletiva";
+                    let avisoCred = d.reqCreditos > 0 ? `<br><span style="color:#d32f2f">Exige ${d.reqCreditos}cr</span>` : "";
+
+                    // HTML p/ Simulador
+                    let card = document.createElement('div');
+                    card.className = `disciplina ${d.corAtual}`;
+                    card.innerHTML = `
+                        <div style="display:flex; justify-content:space-between;">
+                            <span class="tag-info">${d.id}</span>
+                            <span class="tag-info">${iconeFDC}</span>
+                        </div>
+                        <div style="font-size: 14px; margin: 4px 0;">${d.nome}</div>
+                        <div class="tag-info">Créditos: ${d.creditos} | Oferta: ${d.oferta.toUpperCase()} ${avisoCred}</div>
+                        <select class="status-selector" onchange="estadoUsuario['${d.id}'] = this.value; salvarEstado();">
+                            <option value="pendente" ${d.statusReal === 'pendente' ? 'selected' : ''}>Pendente / Bloqueada</option>
+                            <option value="concluida" ${d.statusReal === 'concluida' ? 'selected' : ''}>Concluída</option>
+                            <option value="cursando" ${d.statusReal === 'cursando' ? 'selected' : ''}>Cursando</option>
+                            <option value="reprovada" ${d.statusReal === 'reprovada' ? 'selected' : ''}>Reprovada</option>
+                        </select>
+                    `;
+                    grid.appendChild(card);
+
+                    // HTML p/ Organograma (Mostra tudo)
+                    let boxOrg = document.createElement('div');
+                    boxOrg.className = `disciplina ${d.corAtual}`;
+                    boxOrg.style.width = "140px";
+                    boxOrg.style.textAlign = "center";
+                    boxOrg.innerHTML = `<span class="tag-info">${d.id}</span><br><strong>${d.nome}</strong>`;
+                    containerOrg.appendChild(boxOrg);
+                });
+                
+                if (grid.children.length > 0) containerSim.appendChild(divSem);
+            });
+        }
+
+        atualizarTudo();
+    </script>
+</body>
+</html>

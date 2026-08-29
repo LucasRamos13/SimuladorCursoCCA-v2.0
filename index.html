@@ -27,10 +27,11 @@ body.light-mode {
 }
 body {font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg-color);color:var(--ink);margin:0;padding:20px;transition:.3s}
 .header,.container {background:var(--card);padding:20px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.2);border:1px solid var(--cinza)}
-.header {display:grid;grid-template-columns:minmax(320px,1fr) minmax(520px,700px);align-items:start;margin-bottom:20px;gap:28px}
-.topo-controles {display:flex;flex-direction:column;gap:18px;min-width:0;padding-top:2px}
-.tabs {display:flex;gap:5px}
-.tabs button,.btn-theme {padding:8px 16px;cursor:pointer;border:1px solid var(--cinza);background:var(--painel-bg);color:var(--ink);font-weight:600;border-radius:6px}
+.header {display:grid;grid-template-columns:minmax(380px,1fr) minmax(500px,1.3fr);align-items:stretch;margin-bottom:20px;gap:28px}
+.topo-controles {display:flex;flex-direction:column;justify-content:space-between;gap:15px;background:var(--painel-bg);padding:18px;border-radius:8px;border:1px solid var(--cinza);box-sizing:border-box;}
+.tabs {display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
+.tabs button,.btn-theme {padding:8px 12px;cursor:pointer;border:1px solid var(--cinza);background:var(--card);color:var(--ink);font-weight:600;border-radius:6px;font-size:13px;text-align:center;}
+.btn-theme {background:var(--painel-bg);flex-shrink:0;}
 .tabs button.active {background:#185fa5;color:#fff;border-color:#185fa5}
 .painel-creditos {display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:12px;width:100%}
 .card-credito {background:var(--painel-bg);padding:14px 16px;border-radius:8px;text-align:center;border:1px solid var(--cinza);position:relative;min-height:70px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center}
@@ -45,8 +46,9 @@ body {font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-
 .total-conclusao .big {font-size:25px;display:block}
 .total-conclusao.good {border-color:var(--c-verde-border);background:var(--c-verde-bg)}
 .total-conclusao.partial {border-color:#d49526}
-select {background:var(--input-bg);color:var(--ink);padding:6px;border-radius:4px;border:1px solid var(--input-border);font-weight:600}
-#organograma {display:block} #simulador {display:none}
+select {background:var(--input-bg);color:var(--ink);padding:8px;border-radius:4px;border:1px solid var(--input-border);font-weight:600;width:100%;font-size:14px;}
+#organograma, #simulador, #plano {display:none} 
+#organograma {display:block}
 .instrucoes {color:var(--sub);font-size:14px;margin-top:0}
 .legend {margin-bottom:25px;font-size:12px;font-weight:600;display:flex;gap:10px;flex-wrap:wrap}
 .status-concluida,.status-cursando,.status-liberada,.status-bloqueada,.status-reprovada {padding:5px 10px;border-radius:4px;border-width:1px;border-style:solid}
@@ -82,11 +84,12 @@ select {background:var(--input-bg);color:var(--ink);padding:6px;border-radius:4p
 <body>
 <div class="header">
  <div class="topo-controles">
-  <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
-   <h2 style="margin:0">Simulador do Curso - CEECA</h2>
+  <div style="display:flex;align-items:center;gap:12px;width:100%">
    <button class="btn-theme" onclick="toggleTema()">🌓 Tema</button>
+   <h2 style="margin:0;font-size:20px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Simulador do Curso</h2>
   </div>
-  <div><label style="color:var(--sub);font-size:12px;font-weight:700">FDC (ÊNFASE):</label>
+  <div>
+   <label style="color:var(--sub);font-size:12px;font-weight:700;display:block;margin-bottom:6px">FDC:</label>
    <select id="seletor-fdc" onchange="atualizarTudo()">
     <option value="cadcam">Sistemas Discretos CAD/CAM</option>
     <option value="mecanica">Controle Avançado de Sistemas Mecânicos</option>
@@ -95,7 +98,8 @@ select {background:var(--input-bg);color:var(--ink);padding:6px;border-radius:4p
   </div>
   <div class="tabs">
    <button id="btn-organograma" class="active" onclick="mudarAba('organograma')">Organograma</button>
-   <button id="btn-simulador" onclick="mudarAba('simulador')">Simulador de Matrícula</button>
+   <button id="btn-simulador" onclick="mudarAba('simulador')">Matrícula</button>
+   <button id="btn-plano" onclick="mudarAba('plano')">Plano de Estudos</button>
   </div>
  </div>
  <div style="width:min(100%,700px)">
@@ -138,6 +142,7 @@ select {background:var(--input-bg);color:var(--ink);padding:6px;border-radius:4p
 </div>
 
 <div id="simulador" class="container"><div id="semestres-container"></div></div>
+<div id="plano" class="container"></div>
 
 <script>
         const disciplinas = [
@@ -265,8 +270,10 @@ function mudarAba(aba) {
     estadoUsuario.aba=aba; salvarEstado();
     document.getElementById('simulador').style.display=aba==='simulador'?'block':'none';
     document.getElementById('organograma').style.display=aba==='organograma'?'block':'none';
+    document.getElementById('plano').style.display=aba==='plano'?'block':'none';
     document.getElementById('btn-simulador').className=aba==='simulador'?'active':'';
     document.getElementById('btn-organograma').className=aba==='organograma'?'active':'';
+    document.getElementById('btn-plano').className=aba==='plano'?'active':'';
     if(aba==='organograma') setTimeout(()=>{if(window.ultimoHover) mostrarLinhas(window.ultimoHover)},50);
 }
 function cliqueCadeira(id) {
@@ -348,10 +355,14 @@ function atualizarTudo() {
         const render={...d,corAtual:cor,statusReal:st,tipoNesteFDC:tipo};
         if(!timeline[pos[d.id]])timeline[pos[d.id]]=[];timeline[pos[d.id]].push(render);
     });
-    RenderizarSimulador(timeline);RenderizarOrganograma(Object.fromEntries(disciplinas.map(d=>[d.id,{...d,corAtual:(statusOf(d.id)==='concluida'?'status-concluida':statusOf(d.id)==='cursando'?'status-cursando':statusOf(d.id)==='reprovada'?'status-reprovada':'status-bloqueada'),statusReal:statusOf(d.id),tipoNesteFDC:d.fdc[fdcAtual]}])));
+    
+    RenderizarSimulador(timeline);
+    RenderizarOrganograma(Object.fromEntries(disciplinas.map(d=>[d.id,{...d,corAtual:(statusOf(d.id)==='concluida'?'status-concluida':statusOf(d.id)==='cursando'?'status-cursando':statusOf(d.id)==='reprovada'?'status-reprovada':'status-bloqueada'),statusReal:statusOf(d.id),tipoNesteFDC:d.fdc[fdcAtual]}])));
+    RenderizarPlano(pos);
     salvarEstado();
 }
 function ofertaValida(semestre,regra){if(regra==='ambos'||!regra)return true;if(regra==='impar')return semestre%2!==0;if(regra==='par')return semestre%2===0;return false}
+
 function RenderizarSimulador(timeline) {
     const c=document.getElementById('semestres-container');
     c.innerHTML='';
@@ -373,6 +384,55 @@ function RenderizarSimulador(timeline) {
         c.appendChild(bloco);
     }
 }
+
+function RenderizarPlano(pos) {
+    const container = document.getElementById('plano');
+    if (!container) return;
+    container.innerHTML = '<p class="instrucoes" style="margin-bottom:20px;"><strong>Organização Automática:</strong> Veja o que você está cursando agora e a previsão dos próximos semestres.</p>';
+
+    const statusOf = (id) => estadoUsuario.status[id] || 'pendente';
+    const fdcAtual = document.getElementById('seletor-fdc').value;
+
+    // 1. Semestre Atual (Cursando)
+    const cursando = disciplinas.filter(d => statusOf(d.id) === 'cursando');
+    if (cursando.length > 0) {
+        const blocoAtual = criarBlocoSemestre('📚 Cursando Atualmente', cursando.map(d => ({...d, corAtual: 'status-cursando', statusReal: 'cursando'})), false);
+        container.appendChild(blocoAtual);
+    } else {
+        container.insertAdjacentHTML('beforeend', '<div class="semestre" style="text-align:center;padding:30px;"><p style="color:var(--sub);margin:0">Você não tem disciplinas marcadas como "Cursando".<br>Clique 1x em uma disciplina no organograma para marcar.</p></div>');
+    }
+
+    // 2. Próximos Semestres
+    let porSemestre = {};
+    disciplinas.forEach(d => {
+        const st = statusOf(d.id);
+        if (st === 'concluida' || st === 'cursando') return;
+        if (d.fdc[fdcAtual] === 'eletiva') return; // Eletivas ficam fora da previsão estrita
+
+        const p = pos[d.id];
+        if (!porSemestre[p]) porSemestre[p] = [];
+        
+        let cor = 'status-bloqueada';
+        if (st === 'reprovada') cor = 'status-reprovada';
+        else if (d.prereqs.every(req => statusOf(req) === 'concluida' || statusOf(req) === 'cursando')) cor = 'status-liberada';
+        
+        porSemestre[p].push({...d, corAtual: cor, statusReal: st});
+    });
+
+    const semsFuturos = Object.keys(porSemestre).map(Number).sort((a,b)=>a-b);
+    if (semsFuturos.length > 0) {
+        const divFuturos = document.createElement('div');
+        divFuturos.innerHTML = '<h3 style="margin: 40px 0 20px; border-bottom: 2px solid var(--cinza); padding-bottom: 10px; text-align:center;">🔮 Previsão dos Próximos Semestres</h3>';
+        let contador = 1;
+        semsFuturos.forEach(s => {
+            const bloco = criarBlocoSemestre(`Próximo Semestre ${contador} <span style="font-size:13px;color:var(--sub);font-weight:600">(Etapa Base: ${s})</span>`, porSemestre[s], false);
+            divFuturos.appendChild(bloco);
+            contador++;
+        });
+        container.appendChild(divFuturos);
+    }
+}
+
 function criarBlocoSemestre(titulo,lista,isEletivas) {
     const div=document.createElement('div');div.className='semestre'+(isEletivas?' eletivas-semestre':'');
     const completas=lista.length>0&&lista.every(d=>d.statusReal==='concluida');
@@ -388,14 +448,7 @@ function criarBlocoSemestre(titulo,lista,isEletivas) {
         grid.appendChild(card);
     });return div;
 }
-function RenderizarOrganograma(mapa) {
-    const board=document.getElementById('org-board'),ele=document.getElementById('org-eletivas');board.innerHTML='';ele.innerHTML='';
-    for(let s=1;s<=10;s++){const col=document.createElement('div');col.className='coluna-semestre';col.innerHTML=`<h4>Etapa ${s}</h4>`;board.appendChild(col)}
-    disciplinas.forEach(d=>{
-        const info=mapa[d.id],html=`<div id="org-card-${info.id}" class="org-card ${info.corAtual}" onclick="cliqueCadeira('${info.id}')" onmouseenter="mostrarLinhas('${info.id}')" onmouseleave="esconderLinhas"><span class="tag-info">${info.id}</span><div style="font-size:11px;margin-top:3px">${info.nome}</div></div>`;
-        if(info.tipoNesteFDC==='eletiva')ele.insertAdjacentHTML('beforeend',html);else board.children[Math.min(info.semIdeal,10)-1].insertAdjacentHTML('beforeend',html);
-    });
-}
+
 function inicializar() {
     sincronizarInputs();mudarAba(estadoUsuario.aba||'organograma');
     ['inp-compl','inp-ext-atual','inp-ext-necessaria','inp-compl-tipos'].forEach(id=>document.getElementById(id).addEventListener('change',e=>{

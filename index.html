@@ -1,208 +1,136 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador ECA - UFRGS</title>
-    <style>
-        :root {
-            /* Tema Claro */
-            --bg-color: #f6f5f1;
-            --card: #ffffff;
-            --ink: #1c1c1a;
-            --cinza: #d8d6cc;
-            --sub: #6b6a63;
-            
-            --painel-bg: #ffffff;
-            --input-bg: #ffffff;
-            --input-border: #ccc;
-
-            /* Cores Semânticas de Status - Claro */
-            --c-verde-bg: #e1f5ee; --c-verde-border: #0f6e56; --c-verde-txt: #0f6e56;
-            --c-azul-bg: #e3f2fd; --c-azul-border: #1976d2; --c-azul-txt: #0d47a1;
-            --c-laranja-bg: #faeeda; --c-laranja-border: #d49526; --c-laranja-txt: #b07c1e;
-            --c-cinza-bg: #ffffff; --c-cinza-border: #d8d6cc; --c-cinza-txt: #6b6a63;
-            --c-verm-bg: #faece7; --c-verm-border: #993c1d; --c-verm-txt: #993c1d;
-
-            --linha-verde: #0f6e56;
-            --linha-verm: #993c1d;
-        }
-
-        body.dark-mode {
-            /* Tema Escuro */
-            --bg-color: #121212;
-            --card: #1e1e1e;
-            --ink: #e0e0e0;
-            --cinza: #333333;
-            --sub: #9e9e9e;
-            
-            --painel-bg: #2c2c2c;
-            --input-bg: #333;
-            --input-border: #555;
-
-            /* Cores Semânticas de Status - Escuro */
-            --c-verde-bg: #092e22; --c-verde-border: #168a6b; --c-verde-txt: #80cbc4;
-            --c-azul-bg: #092540; --c-azul-border: #2196f3; --c-azul-txt: #90caf9;
-            --c-laranja-bg: #362512; --c-laranja-border: #d49526; --c-laranja-txt: #ffcc80;
-            --c-cinza-bg: #1e1e1e; --c-cinza-border: #555555; --c-cinza-txt: #888888;
-            --c-verm-bg: #3d170b; --c-verm-border: #cc4d29; --c-verm-txt: #ef9a9a;
-
-            --linha-verde: #168a6b;
-            --linha-verm: #cc4d29;
-        }
-
-        body { font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; background-color: var(--bg-color); color: var(--ink); margin: 0; padding: 20px; transition: background-color 0.3s, color 0.3s;}
-        
-        .header { display: flex; justify-content: space-between; align-items: flex-start; background: var(--card); padding: 15px 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.1); margin-bottom: 20px; border: 1px solid var(--cinza); flex-wrap: wrap; gap: 15px;}
-        
-        .topo-controles { display: flex; flex-direction: column; gap: 15px; }
-        .tabs { display: flex; gap: 5px; }
-        .tabs button { padding: 8px 16px; cursor: pointer; border: 1px solid var(--cinza); background: var(--painel-bg); color: var(--ink); font-weight: 600; border-radius: 6px; transition: 0.2s;}
-        .tabs button.active { background: #185fa5; color: white; border-color: #185fa5; }
-        
-        .painel-creditos { display: flex; flex-wrap: wrap; gap: 10px; }
-        .card-credito { background: var(--painel-bg); padding: 10px 15px; border-radius: 6px; text-align: center; border: 1px solid var(--cinza); flex-grow: 1; min-width: 110px;}
-        .credito-titulo { font-size: 11px; font-weight: 700; color: var(--sub); letter-spacing: 0.05em; }
-        .credito-valores { font-size: 18px; font-weight: 700; margin-top: 4px; display: block;}
-        .credito-pct { font-size: 12px; font-weight: 600; color: var(--verde); background: var(--c-verde-bg); padding: 2px 6px; border-radius: 12px; margin-left: 5px; vertical-align: middle;}
-        
-        .manual-input { width: 50px; font-size: 16px; font-weight: 700; text-align: right; border: 1px solid var(--input-border); border-radius: 4px; padding: 2px 5px; background: var(--input-bg); color: var(--ink); font-family: inherit;}
-        
-        .btn-theme { background: transparent; border: 1px solid var(--cinza); color: var(--ink); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 5px;}
-        
-        select { background-color: var(--input-bg); color: var(--ink); padding: 6px; border-radius: 4px; border: 1px solid var(--input-border); font-weight: 600;}
-
-        .container { background: var(--card); padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.1); border: 1px solid var(--cinza); }
-        .semestre { margin-bottom: 25px; border: 1px solid var(--cinza); border-radius: 8px; padding: 15px; background: var(--bg-color);}
-        .semestre h3 { margin-top: 0; border-bottom: 2px solid #185fa5; padding-bottom: 5px; color: #185fa5;}
-        
-        .disciplinas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
-        .disciplina, .org-card { padding: 12px; border-radius: 8px; border: 2px solid transparent; display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600; transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 1px 2px rgba(0,0,0,.05);}
-        
-        /* Cores de Status - Mapeadas pelas variáveis CSS */
-        .status-concluida { background-color: var(--c-verde-bg); color: var(--c-verde-txt); border-color: var(--c-verde-border); }
-        .status-cursando { background-color: var(--c-azul-bg); color: var(--c-azul-txt); border-color: var(--c-azul-border); }
-        .status-liberada { background-color: var(--c-laranja-bg); color: var(--c-laranja-txt); border-color: var(--c-laranja-border); }
-        .status-bloqueada { background-color: var(--c-cinza-bg); color: var(--c-cinza-txt); border-color: var(--c-cinza-border); opacity: 0.75; }
-        .status-reprovada { background-color: var(--c-verm-bg); color: var(--c-verm-txt); border-color: var(--c-verm-border); }
-
-        select.status-selector { padding: 5px; border-radius: 4px; font-weight: 600; border: 1px solid var(--input-border); font-family: inherit; margin-top: auto;}
-        .tag-info { font-size: 10.5px; font-family: ui-monospace,Menlo,monospace; opacity: 0.8; }
-
-        /* ORGANOGRAMA ESPECÍFICO */
-        #organograma { display: block; } 
-        #simulador { display: none; }
-        
-        #orga-wrapper { position: relative; overflow-x: auto; padding-bottom: 20px; }
-        .org-board { display: flex; gap: 30px; min-width: max-content; }
-        .coluna-semestre { width: 170px; flex-shrink: 0; }
-        .coluna-semestre h4 { margin-top: 0; text-align: center; color: var(--sub); font-size: 14px; text-transform: uppercase; border-bottom: 1px solid var(--cinza); padding-bottom: 8px; margin-bottom: 15px;}
-        
-        .org-card { width: 100%; cursor: pointer; text-align: center; margin-bottom: 12px; z-index: 2; position: relative;}
-        .org-card:hover { transform: translateY(-3px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
-        .org-card.hover-focus { border-color: #185fa5; box-shadow: 0 0 0 2px rgba(24, 95, 165, 0.3); }
-        .org-card.hover-req { border-color: var(--c-verm-border); background-color: var(--c-verm-bg); color: var(--c-verm-txt);}
-        .org-card.hover-succ { border-color: var(--c-verde-border); background-color: var(--c-verde-bg); color: var(--c-verde-txt);}
-
-        .eletivas-container { margin-top: 40px; border-top: 2px dashed var(--cinza); padding-top: 20px; }
-        .eletivas-row { display: flex; flex-wrap: wrap; gap: 15px; }
-        .eletivas-row .org-card { width: 170px; }
-        
-        #lines-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 1;}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador ECA - UFRGS</title>
+<style>
+:root {
+    --bg-color:#121212; --card:#1e1e1e; --ink:#e0e0e0; --cinza:#333;
+    --sub:#9e9e9e; --painel-bg:#2c2c2c; --input-bg:#333; --input-border:#555;
+    --c-verde-bg:#092e22; --c-verde-border:#168a6b; --c-verde-txt:#80cbc4;
+    --c-azul-bg:#092540; --c-azul-border:#2196f3; --c-azul-txt:#90caf9;
+    --c-laranja-bg:#362512; --c-laranja-border:#d49526; --c-laranja-txt:#ffcc80;
+    --c-cinza-bg:#1e1e1e; --c-cinza-border:#555; --c-cinza-txt:#888;
+    --c-verm-bg:#3d170b; --c-verm-border:#cc4d29; --c-verm-txt:#ef9a9a;
+    --linha-verde:#168a6b; --linha-verm:#cc4d29;
+}
+body.light-mode {
+    --bg-color:#f6f5f1; --card:#fff; --ink:#1c1c1a; --cinza:#d8d6cc;
+    --sub:#6b6a63; --painel-bg:#fff; --input-bg:#fff; --input-border:#ccc;
+    --c-verde-bg:#e1f5ee; --c-verde-border:#0f6e56; --c-verde-txt:#0f6e56;
+    --c-azul-bg:#e3f2fd; --c-azul-border:#1976d2; --c-azul-txt:#0d47a1;
+    --c-laranja-bg:#faeeda; --c-laranja-border:#d49526; --c-laranja-txt:#b07c1e;
+    --c-cinza-bg:#fff; --c-cinza-border:#d8d6cc; --c-cinza-txt:#6b6a63;
+    --c-verm-bg:#faece7; --c-verm-border:#993c1d; --c-verm-txt:#993c1d;
+    --linha-verde:#0f6e56; --linha-verm:#993c1d;
+}
+body {font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg-color);color:var(--ink);margin:0;padding:20px;transition:.3s}
+.header,.container {background:var(--card);padding:20px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.2);border:1px solid var(--cinza)}
+.header {display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:15px}
+.topo-controles {display:flex;flex-direction:column;gap:15px;flex:1;min-width:300px}
+.tabs {display:flex;gap:5px}
+.tabs button,.btn-theme {padding:8px 16px;cursor:pointer;border:1px solid var(--cinza);background:var(--painel-bg);color:var(--ink);font-weight:600;border-radius:6px}
+.tabs button.active {background:#185fa5;color:#fff;border-color:#185fa5}
+.painel-creditos {display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:10px;width:min(100%,700px)}
+.card-credito {background:var(--painel-bg);padding:10px 15px;border-radius:6px;text-align:center;border:1px solid var(--cinza);position:relative}
+.credito-titulo {font-size:11px;font-weight:700;color:var(--sub);letter-spacing:.05em}
+.credito-valores {font-size:18px;font-weight:700;margin-top:4px;display:block}
+.credito-pct {font-size:12px;font-weight:600;padding:2px 6px;border-radius:12px;margin-left:5px;vertical-align:middle;background:var(--c-verde-bg);color:var(--c-verde-txt)}
+.manual-input {width:50px;font-size:16px;font-weight:700;text-align:right;border:1px solid var(--input-border);border-radius:4px;padding:2px 5px;background:var(--input-bg);color:var(--ink)}
+.manual-input.small {width:34px;font-size:13px}
+.compl-type {font-size:11px;font-weight:700;margin-bottom:5px}
+.compl-type.bad {color:var(--c-verm-txt)} .compl-type.good {color:var(--c-verde-txt)}
+.total-conclusao {margin-top:12px;padding:10px 14px;background:var(--painel-bg);border:1px solid var(--cinza);border-radius:7px;text-align:center;font-weight:700}
+.total-conclusao .big {font-size:25px;display:block}
+.total-conclusao.good {border-color:var(--c-verde-border);background:var(--c-verde-bg)}
+.total-conclusao.partial {border-color:#d49526}
+select {background:var(--input-bg);color:var(--ink);padding:6px;border-radius:4px;border:1px solid var(--input-border);font-weight:600}
+#organograma {display:block} #simulador {display:none}
+.instrucoes {color:var(--sub);font-size:14px;margin-top:0}
+.legend {margin-bottom:25px;font-size:12px;font-weight:600;display:flex;gap:10px;flex-wrap:wrap}
+.status-concluida,.status-cursando,.status-liberada,.status-bloqueada,.status-reprovada {padding:5px 10px;border-radius:4px;border-width:1px;border-style:solid}
+.status-concluida {background:var(--c-verde-bg);color:var(--c-verde-txt);border-color:var(--c-verde-border)}
+.status-cursando {background:var(--c-azul-bg);color:var(--c-azul-txt);border-color:var(--c-azul-border)}
+.status-liberada {background:var(--c-laranja-bg);color:var(--c-laranja-txt);border-color:var(--c-laranja-border)}
+.status-bloqueada {background:var(--c-cinza-bg);color:var(--c-cinza-txt);border-color:var(--c-cinza-border);opacity:.75}
+.status-reprovada {background:var(--c-verm-bg);color:var(--c-verm-txt);border-color:var(--c-verm-border)}
+#orga-wrapper {position:relative;overflow-x:auto;padding-bottom:20px}
+.org-board {display:flex;gap:55px;min-width:max-content}
+.coluna-semestre {width:170px;flex-shrink:0}
+.coluna-semestre h4 {margin:0 0 15px;text-align:center;color:var(--sub);font-size:14px;text-transform:uppercase;border-bottom:1px solid var(--cinza);padding-bottom:8px}
+.org-card {padding:12px;border-radius:8px;border:2px solid transparent;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.1);width:100%;box-sizing:border-box;cursor:pointer;text-align:center;margin-bottom:12px;z-index:2;position:relative}
+.org-card:hover {transform:translateY(-3px);box-shadow:0 6px 12px rgba(0,0,0,.25)}
+.hover-focus {border-color:#185fa5;box-shadow:0 0 0 2px rgba(24,95,165,.3)}
+.hover-req {border-color:var(--c-verm-border);background:var(--c-verm-bg);color:var(--c-verm-txt)}
+.hover-succ {border-color:var(--c-verde-border);background:var(--c-verde-bg);color:var(--c-verde-txt)}
+.eletivas-container {margin-top:40px;border-top:2px dashed var(--cinza);padding-top:20px}
+.eletivas-row {display:flex;flex-wrap:wrap;gap:15px}
+.eletivas-row .org-card {width:170px}
+#lines-svg {position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:1}
+.semestre {margin-bottom:18px;border:1px solid var(--cinza);border-radius:8px;padding:15px;background:var(--bg-color);transition:.25s}
+.semestre.semestre-completo {border-color:var(--c-verde-border);background:var(--c-verde-bg);box-shadow:0 0 0 1px var(--c-verde-border)}
+.semestre h3 {margin-top:0;border-bottom:2px solid #185fa5;padding-bottom:5px;color:#4da3ff;text-align:center}
+.semestre.eletivas-semestre {margin-top:28px;border-style:dashed}
+.semestre.eletivas-completo {border-color:var(--c-verde-border);background:var(--c-verde-bg)}
+.disciplinas-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.disciplina {padding:12px;border-radius:8px;border:2px solid transparent;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.tag-info {font-size:10.5px;font-family:ui-monospace,Menlo,monospace;opacity:.8}
+@media(max-width:900px) {.painel-creditos{grid-template-columns:repeat(2,1fr)}}
+</style>
 </head>
 <body>
+<div class="header">
+ <div class="topo-controles">
+  <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+   <h2 style="margin:0">Simulador do Curso - CEECA</h2>
+   <button class="btn-theme" onclick="toggleTema()">🌓 Tema</button>
+  </div>
+  <div><label style="color:var(--sub);font-size:12px;font-weight:700">FDC (ÊNFASE):</label>
+   <select id="seletor-fdc" onchange="atualizarTudo()">
+    <option value="cadcam">Sistemas Discretos CAD/CAM</option>
+    <option value="mecanica">Controle Avançado de Sistemas Mecânicos</option>
+    <option value="potencia">Eletrônica de Potência e Acionamento</option>
+   </select>
+  </div>
+  <div class="tabs">
+   <button id="btn-organograma" class="active" onclick="mudarAba('organograma')">Organograma</button>
+   <button id="btn-simulador" onclick="mudarAba('simulador')">Simulador de Matrícula</button>
+  </div>
+ </div>
+ <div style="width:min(100%,700px)">
+  <div class="painel-creditos">
+   <div class="card-credito"><span class="credito-titulo">OBRIGATÓRIOS</span><div class="credito-valores"><span id="cred-obr">0</span> / 222 <span id="pct-obr" class="credito-pct">0%</span></div></div>
+   <div class="card-credito"><span class="credito-titulo">ELETIVOS</span><div class="credito-valores"><span id="cred-ele">0</span> / 8 <span id="pct-ele" class="credito-pct">0%</span></div></div>
+   <div class="card-credito">
+    <div id="compl-type" class="compl-type bad">Tipos de crédito complementar: <input type="number" id="inp-compl-tipos" class="manual-input small" min="0">/2</div>
+    <span class="credito-titulo">COMPLEMENTARES</span>
+    <div class="credito-valores"><input type="number" id="inp-compl" class="manual-input" min="0"> / 6 <span id="pct-compl" class="credito-pct">0%</span></div>
+   </div>
+   <div class="card-credito">
+    <span class="credito-titulo">CARGA HORÁRIA DE EXTENSÃO</span>
+    <div class="credito-valores"><input type="number" id="inp-ext-necessaria" class="manual-input" min="0"> h necessárias</div>
+    <div style="margin-top:4px"><span id="cred-ext">0</span> h <span id="pct-ext" class="credito-pct">0%</span></div>
+   </div>
+  </div>
+  <div id="total-conclusao" class="total-conclusao">CONCLUSÃO TOTAL <span id="pct-total" class="big">0%</span><span id="total-detalhe" style="font-size:12px;color:var(--sub)">0 / 0</span></div>
+ </div>
+</div>
 
-    <div class="header">
-        <div class="topo-controles">
-            <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                <h2 style="margin: 0;">Simulador do Curso - CEECA</h2>
-                <button class="btn-theme" onclick="toggleTema()">🌓 Tema</button>
-            </div>
-            <div>
-                <label style="color:var(--sub); font-size:12px; font-weight:700;">FDC (ÊNFASE):</label>
-                <select id="seletor-fdc" onchange="atualizarTudo()">
-                    <option value="cadcam">Sistemas Discretos CAD/CAM</option>
-                    <option value="mecanica">Controle Avançado de Sistemas Mecânicos</option>
-                    <option value="potencia">Eletrônica de Potência e Acionamento</option>
-                </select>
-            </div>
-            <div class="tabs">
-                <button id="btn-organograma" class="active" onclick="mudarAba('organograma')">Organograma</button>
-                <button id="btn-simulador" onclick="mudarAba('simulador')">Simulador de Matrícula</button>
-            </div>
-        </div>
-        
-        <div class="painel-creditos">
-            <div class="card-credito" style="border-left: 4px solid #6b4fa0;">
-                <span class="credito-titulo">OBRIGATÓRIOS</span>
-                <div class="credito-valores">
-                    <span id="cred-obr">0</span> <span style="font-size:14px; color:var(--sub)">/ 222</span>
-                    <span id="pct-obr" class="credito-pct">0%</span>
-                </div>
-            </div>
-            <div class="card-credito" style="border-left: 4px solid #185fa5;">
-                <span class="credito-titulo">ELETIVOS</span>
-                <div class="credito-valores">
-                    <span id="cred-ele">0</span> <span style="font-size:14px; color:var(--sub)">/ 18</span>
-                    <span id="pct-ele" class="credito-pct" style="color:#185fa5; background:#e6f1fb;">0%</span>
-                </div>
-            </div>
-            <div class="card-credito">
-                <span class="credito-titulo">COMPLEMENTARES</span>
-                <div class="credito-valores" style="display:flex; align-items:center; justify-content:center; gap:5px; margin-top:8px;">
-                    <input type="number" id="inp-compl" class="manual-input" min="0" onchange="estadoUsuario.compl = this.value; salvarEstado();">
-                    <span style="font-size:14px; color:var(--sub)">/ 12</span>
-                </div>
-            </div>
-            <div class="card-credito">
-                <span class="credito-titulo">EXTENSÃO</span>
-                <div class="credito-valores" style="display:flex; align-items:center; justify-content:center; gap:5px; margin-top:8px;">
-                    <input type="number" id="inp-ext" class="manual-input" min="0" onchange="estadoUsuario.ext = this.value; salvarEstado();">
-                    <span style="font-size:14px; color:var(--sub)">/ 33</span>
-                </div>
-            </div>
-        </div>
-    </div>
+<div id="organograma" class="container">
+ <p class="instrucoes"><strong>Instruções:</strong> Clique 1x: Cursando | Clique 2x: Concluída | Clique 3x: Pendente.</p>
+ <div class="legend">
+  <span class="status-concluida">🟩 Concluída</span><span class="status-cursando">🟦 Cursando</span>
+  <span class="status-liberada">🟧 Liberada</span><span class="status-bloqueada">⬜ Bloqueada</span><span class="status-reprovada">🟥 Reprovada</span>
+ </div>
+ <div id="orga-wrapper"><svg id="lines-svg"></svg><div id="org-board" class="org-board"></div>
+  <div class="eletivas-container"><h4 style="color:var(--sub);font-size:14px;text-transform:uppercase;text-align:center;margin-bottom:20px">Eletivas Disponíveis</h4><div id="org-eletivas" class="eletivas-row"></div></div>
+ </div>
+</div>
 
-    <!-- TELA 1: ORGANOGRAMA (Principal) -->
-    <div id="organograma" class="container">
-        <p style="color: var(--sub); font-size: 14px; margin-top:0;"><strong>Instruções:</strong> Clique 1x: Cursando (cumpre requisitos automáticos) | Clique 2x: Concluída | Clique 3x: Pendente.</p>
-        <div style="margin-bottom: 25px; font-size: 12px; font-weight: 600; display: flex; gap: 10px; flex-wrap: wrap;">
-            <span class="status-concluida" style="padding: 5px 10px; border-radius: 4px; border-width: 1px; border-style: solid;">🟩 Concluída</span>
-            <span class="status-cursando" style="padding: 5px 10px; border-radius: 4px; border-width: 1px; border-style: solid;">🟦 Cursando</span>
-            <span class="status-liberada" style="padding: 5px 10px; border-radius: 4px; border-width: 1px; border-style: solid;">🟧 Liberada</span>
-            <span class="status-bloqueada" style="padding: 5px 10px; border-radius: 4px; border-width: 1px; border-style: solid; opacity: 1;">⬜ Bloqueada</span>
-            <span class="status-reprovada" style="padding: 5px 10px; border-radius: 4px; border-width: 1px; border-style: solid;">🟥 Reprovada</span>
-        </div>
-        
-        <div id="orga-wrapper">
-            <svg id="lines-svg"></svg>
-            <div id="org-board" class="org-board"></div>
-            <div class="eletivas-container">
-                <h4 style="color: var(--sub); font-size: 14px; text-transform: uppercase; text-align: center; margin-bottom: 20px;">Eletivas Disponíveis</h4>
-                <div id="org-eletivas" class="eletivas-row"></div>
-            </div>
-        </div>
-    </div>
+<div id="simulador" class="container"><p style="color:var(--sub);font-size:14px">Simulação com deslocamento automático de semestres em caso de atrasos e sazonalidade (par/ímpar).</p><div id="semestres-container"></div></div>
 
-    <!-- TELA 2: SIMULADOR -->
-    <div id="simulador" class="container">
-        <p style="color: var(--sub); font-size: 14px;">Simulação com deslocamento automático de semestres em caso de atrasos e sazonalidade (par/ímpar).</p>
-        <div id="semestres-container"></div>
-    </div>
-
-    <script>
-        // Tema Claro/Escuro
-        function toggleTema() {
-            document.body.classList.toggle('dark-mode');
-            localStorage.setItem('tema_eca_simulador', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
-            if(window.ultimoHover) mostrarLinhas(window.ultimoHover); // Redesenha setas se houver hover ativo
-        }
-        if(localStorage.getItem('tema_eca_simulador') === 'dark') {
-            document.body.classList.add('dark-mode');
-        }
-
+<script>
         const disciplinas = [
             {"id": "INF01202", "nome": "Algoritmos e Programação", "creditos": 6, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
             {"id": "MAT01353", "nome": "Cálculo e Geometria Analítica I", "creditos": 6, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
@@ -288,256 +216,180 @@
             {"id": "ENG03047", "nome": "Projetos de Sistemas Mecânicos", "creditos": 4, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG03044", "ENG03045"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "obrigatoria"}}
         ];
 
-        const metasCreditos = { cadcam: { obr: 222, ele: 18 }, mecanica: { obr: 222, ele: 18 }, potencia: { obr: 222, ele: 18 } };
-        let estadoUsuario = JSON.parse(localStorage.getItem('eca_simulador_status_v4')) || {};
-        window.ultimoHover = null;
+const METAS = {obr:222, ele:8, compl:6, extPadrao:420, tiposCompl:2};
+const STORAGE_KEY = 'eca_simulador_status_v5';
+const DEFAULT_STATE = {status:{}, compl:0, ext:0, extNecessaria:420, complTipos:0, tema:'dark', fdc:'cadcam', aba:'organograma'};
+let estadoUsuario = carregarEstado();
+window.ultimoHover = null;
 
-        // Inicializa inputs manuais salvos
-        document.getElementById('inp-ext').value = estadoUsuario.ext || 0;
-        document.getElementById('inp-compl').value = estadoUsuario.compl || 0;
+function carregarEstado() {
+    try {
+        const salvo = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (!salvo) return structuredClone(DEFAULT_STATE);
+        return {
+            ...structuredClone(DEFAULT_STATE), ...salvo,
+            status: {...DEFAULT_STATE.status, ...(salvo.status || {})}
+        };
+    } catch(e) {
+        console.warn('Estado local inválido; restaurando padrão.', e);
+        return structuredClone(DEFAULT_STATE);
+    }
+}
+function salvarEstado() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(estadoUsuario));
+}
+function sincronizarInputs() {
+    document.getElementById('inp-compl').value = estadoUsuario.compl ?? 0;
+    document.getElementById('inp-ext-necessaria').value = estadoUsuario.extNecessaria ?? 420;
+    document.getElementById('inp-compl-tipos').value = estadoUsuario.complTipos ?? 0;
+    document.getElementById('seletor-fdc').value = estadoUsuario.fdc || 'cadcam';
+    document.body.classList.toggle('light-mode', estadoUsuario.tema === 'light');
+}
+function toggleTema() {
+    estadoUsuario.tema = document.body.classList.contains('light-mode') ? 'dark' : 'light';
+    document.body.classList.toggle('light-mode');
+    salvarEstado();
+    if(window.ultimoHover) mostrarLinhas(window.ultimoHover);
+}
+function mudarAba(aba) {
+    estadoUsuario.aba=aba; salvarEstado();
+    document.getElementById('simulador').style.display=aba==='simulador'?'block':'none';
+    document.getElementById('organograma').style.display=aba==='organograma'?'block':'none';
+    document.getElementById('btn-simulador').className=aba==='simulador'?'active':'';
+    document.getElementById('btn-organograma').className=aba==='organograma'?'active':'';
+    if(aba==='organograma') setTimeout(()=>{if(window.ultimoHover) mostrarLinhas(window.ultimoHover)},50);
+}
+function cliqueCadeira(id) {
+    let status=estadoUsuario.status[id]||'pendente';
+    if(status==='cursando') estadoUsuario.status[id]='concluida';
+    else if(status==='concluida') estadoUsuario.status[id]='pendente';
+    else {
+        estadoUsuario.status[id]='cursando';
+        marcarRequisitosRecursivo(id);
+    }
+    salvarEstado(); atualizarTudo();
+    esconderLinhas(); setTimeout(()=>mostrarLinhas(id),50);
+}
+function marcarRequisitosRecursivo(id) {
+    const d=disciplinas.find(x=>x.id===id); if(!d) return;
+    d.prereqs.forEach(req=>{estadoUsuario.status[req]='concluida';marcarRequisitosRecursivo(req)});
+}
+function mostrarLinhas(id) {
+    window.ultimoHover=id; const svg=document.getElementById('lines-svg'); svg.innerHTML='';
+    document.querySelectorAll('.org-card').forEach(el=>el.classList.remove('hover-focus','hover-req','hover-succ'));
+    const card=document.getElementById('org-card-'+id); if(card) card.classList.add('hover-focus');
+    const d=disciplinas.find(x=>x.id===id); if(!d)return;
+    d.prereqs.forEach(req=>{desenharSeta(req,id,'var(--linha-verm)');const el=document.getElementById('org-card-'+req);if(el)el.classList.add('hover-req')});
+    disciplinas.forEach(succ=>{if(succ.prereqs.includes(id)){desenharSeta(id,succ.id,'var(--linha-verde)');const el=document.getElementById('org-card-'+succ.id);if(el)el.classList.add('hover-succ')}});
+}
+function esconderLinhas() {
+    window.ultimoHover=null; document.getElementById('lines-svg').innerHTML='';
+    document.querySelectorAll('.org-card').forEach(el=>el.classList.remove('hover-focus','hover-req','hover-succ'));
+}
+function desenharSeta(fromId,toId,colorVar) {
+    const el1=document.getElementById('org-card-'+fromId),el2=document.getElementById('org-card-'+toId);if(!el1||!el2)return;
+    const wrap=document.getElementById('orga-wrapper'),wr=wrap.getBoundingClientRect(),r1=el1.getBoundingClientRect(),r2=el2.getBoundingClientRect();
+    const x1=r1.right-wr.left+wrap.scrollLeft,y1=r1.top+r1.height/2-wr.top+wrap.scrollTop;
+    const x2=r2.left-wr.left+wrap.scrollLeft,y2=r2.top+r2.height/2-wr.top+wrap.scrollTop,midX=(x1+x2)/2;
+    const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    path.setAttribute('d',`M${x1},${y1} C${midX},${y1} ${midX},${y2} ${x2},${y2}`);
+    path.setAttribute('fill','none');path.setAttribute('stroke',colorVar);path.setAttribute('stroke-width','2.5');path.setAttribute('opacity','.7');document.getElementById('lines-svg').appendChild(path);
+}
+function atualizarTudo() {
+    const fdcAtual=document.getElementById('seletor-fdc').value;
+    estadoUsuario.fdc=fdcAtual;
+    const statusOf=(id)=>estadoUsuario.status[id]||'pendente';
+    let obr=0,ele=0, timeline={};
+    disciplinas.forEach(d=>{if(statusOf(d.id)==='concluida'){if(d.fdc[fdcAtual]==='obrigatoria')obr+=d.creditos;if(d.fdc[fdcAtual]==='eletiva')ele+=d.creditos}});
+    const metaExt=Math.max(0,Number(estadoUsuario.extNecessaria)||0),compl=Math.max(0,Number(estadoUsuario.compl)||0),tipos=Math.max(0,Number(estadoUsuario.complTipos)||0);
+    const extProjetos=disciplinas.filter(d=>d.nome.toLowerCase().includes('projeto integrado')&&statusOf(d.id)==='concluida').length*100;
+    const extManual=Math.max(0,Number(estadoUsuario.ext)||0);
+    const extObtida=extManual+extProjetos;
+    const pct=(v,m)=>m>0?Math.min(100,Math.round(v/m*100)):100;
+    document.getElementById('cred-obr').textContent=Math.min(obr,METAS.obr);
+    document.getElementById('cred-ele').textContent=Math.min(ele,METAS.ele);
+    document.getElementById('pct-obr').textContent=pct(obr,METAS.obr)+'%';
+    document.getElementById('pct-ele').textContent=pct(ele,METAS.ele)+'%';
+    document.getElementById('inp-compl').value=compl;
+    document.getElementById('pct-compl').textContent=pct(compl,METAS.compl)+'%';
+    document.getElementById('inp-ext-necessaria').value=metaExt;
+    document.getElementById('cred-ext').textContent=extObtida;
+    document.getElementById('pct-ext').textContent=pct(extObtida,metaExt)+'%';
+    const typeEl=document.getElementById('compl-type'); typeEl.className='compl-type '+(tipos>=METAS.tiposCompl?'good':'bad');
+    document.getElementById('inp-compl-tipos').value=tipos;
+    const totalObt=Math.min(obr,METAS.obr)+Math.min(ele,METAS.ele)+Math.min(compl,METAS.compl)+Math.min(extObtida,metaExt);
+    const totalNec=METAS.obr+METAS.ele+METAS.compl+metaExt;
+    const totalPct=pct(totalObt,totalNec);
+    document.getElementById('pct-total').textContent=totalPct+'%';
+    document.getElementById('total-detalhe').textContent=`${totalObt} / ${totalNec}`;
+    document.getElementById('total-conclusao').className='total-conclusao '+(totalPct>=100?'good':'partial');
 
-        function salvarEstado() {
-            localStorage.setItem('eca_simulador_status_v4', JSON.stringify(estadoUsuario));
-            atualizarTudo();
-        }
-
-        function mudarAba(aba) {
-            document.getElementById('simulador').style.display = aba === 'simulador' ? 'block' : 'none';
-            document.getElementById('organograma').style.display = aba === 'organograma' ? 'block' : 'none';
-            document.getElementById('btn-simulador').className = aba === 'simulador' ? 'active' : '';
-            document.getElementById('btn-organograma').className = aba === 'organograma' ? 'active' : '';
-            if (aba === 'organograma') {
-                esconderLinhas(); 
-                // Pequeno delay para garantir que o DOM renderizou antes de redesenhar setas
-                setTimeout(() => { if(window.ultimoHover) mostrarLinhas(window.ultimoHover); }, 50);
-            }
-        }
-
-        window.cliqueCadeira = function(id) {
-            let status = estadoUsuario[id] || "pendente";
-            if (status === "cursando") {
-                estadoUsuario[id] = "concluida";
-            } else if (status === "concluida") {
-                estadoUsuario[id] = "pendente"; 
-            } else {
-                estadoUsuario[id] = "cursando";
-                marcarRequisitosRecursivo(id); 
-            }
-            salvarEstado();
-            esconderLinhas();
-            setTimeout(() => mostrarLinhas(id), 50); // Redesenha a seta no novo local/cor
-        }
-
-        function marcarRequisitosRecursivo(id) {
-            let disc = disciplinas.find(d => d.id === id);
-            if(!disc) return;
-            disc.prereqs.forEach(reqId => {
-                estadoUsuario[reqId] = "concluida";
-                marcarRequisitosRecursivo(reqId);
-            });
-        }
-
-        window.mostrarLinhas = function(id) {
-            window.ultimoHover = id;
-            const svg = document.getElementById('lines-svg');
-            svg.innerHTML = '';
-            
-            const cardHover = document.getElementById('org-card-' + id);
-            if(cardHover) cardHover.classList.add('hover-focus');
-
-            const d = disciplinas.find(x => x.id === id);
-            if(!d) return;
-
-            d.prereqs.forEach(req => {
-                desenharSeta(req, id, 'var(--linha-verm)');
-                const el = document.getElementById('org-card-' + req);
-                if(el) el.classList.add('hover-req');
-            });
-
-            disciplinas.forEach(succ => {
-                if(succ.prereqs.includes(id)) {
-                    desenharSeta(id, succ.id, 'var(--linha-verde)');
-                    const el = document.getElementById('org-card-' + succ.id);
-                    if(el) el.classList.add('hover-succ');
-                }
-            });
-        }
-
-        window.esconderLinhas = function() {
-            window.ultimoHover = null;
-            document.getElementById('lines-svg').innerHTML = '';
-            document.querySelectorAll('.org-card').forEach(el => {
-                el.classList.remove('hover-focus', 'hover-req', 'hover-succ');
-            });
-        }
-
-        function desenharSeta(fromId, toId, colorVar) {
-            const el1 = document.getElementById('org-card-' + fromId);
-            const el2 = document.getElementById('org-card-' + toId);
-            if (!el1 || !el2) return;
-            
-            const wrap = document.getElementById('orga-wrapper');
-            const wrapRect = wrap.getBoundingClientRect();
-            const r1 = el1.getBoundingClientRect();
-            const r2 = el2.getBoundingClientRect();
-            
-            const x1 = r1.right - wrapRect.left + wrap.scrollLeft;
-            const y1 = r1.top + r1.height/2 - wrapRect.top + wrap.scrollTop;
-            const x2 = r2.left - wrapRect.left + wrap.scrollLeft;
-            const y2 = r2.top + r2.height/2 - wrapRect.top + wrap.scrollTop;
-            
-            const midX = (x1 + x2) / 2;
-            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.setAttribute('d', `M${x1},${y1} C${midX},${y1} ${midX},${y2} ${x2},${y2}`);
-            path.setAttribute('fill', 'none');
-            path.setAttribute('stroke', colorVar); // Usa a variável CSS diretamente
-            path.setAttribute('stroke-width', '2.5');
-            path.setAttribute('opacity', '0.7');
-            document.getElementById('lines-svg').appendChild(path);
-        }
-
-        function atualizarTudo() {
-            const fdcAtual = document.getElementById('seletor-fdc').value;
-            let creditosFeitosObr = 0; let creditosFeitosEle = 0;
-            let timelineSemestres = {}; let mapaParaOrganograma = {};
-
-            disciplinas.forEach(d => {
-                let statusReal = estadoUsuario[d.id] || "pendente";
-                let tipoNesteFDC = d.fdc[fdcAtual];
-                if (statusReal === "concluida") {
-                    if(tipoNesteFDC === "obrigatoria") creditosFeitosObr += d.creditos;
-                    if(tipoNesteFDC === "eletiva") creditosFeitosEle += d.creditos;
-                }
-            });
-
-            // Atualiza Painel
-            const metaObr = metasCreditos[fdcAtual].obr;
-            const metaEle = metasCreditos[fdcAtual].ele;
-            document.getElementById('cred-obr').innerText = creditosFeitosObr;
-            document.getElementById('cred-ele').innerText = creditosFeitosEle;
-            
-            document.getElementById('pct-obr').innerText = Math.min(100, Math.round((creditosFeitosObr / metaObr) * 100)) + '%';
-            document.getElementById('pct-ele').innerText = Math.min(100, Math.round((creditosFeitosEle / metaEle) * 100)) + '%';
-
-            let posicoesFinais = {};
-            disciplinas.forEach(d => posicoesFinais[d.id] = d.semIdeal);
-
-            // Reagendamento Simulador
-            for(let loop = 0; loop < 4; loop++) {
-                disciplinas.forEach(d => {
-                    let statusReal = estadoUsuario[d.id] || "pendente";
-                    if(statusReal === "concluida") return;
-                    let semMaisTardioPrereq = 0;
-                    d.prereqs.forEach(req => {
-                        if ((estadoUsuario[req] || "pendente") !== "concluida") {
-                            semMaisTardioPrereq = Math.max(semMaisTardioPrereq, posicoesFinais[req]);
-                        }
-                    });
-                    let novoSem = Math.max(d.semIdeal, semMaisTardioPrereq + 1);
-                    if (statusReal === "reprovada") novoSem = Math.max(novoSem, posicoesFinais[d.id] + 1);
-                    while (!ofertaValida(novoSem, d.oferta)) { novoSem++; }
-                    posicoesFinais[d.id] = novoSem;
-                });
-            }
-
-            disciplinas.forEach(d => {
-                let statusReal = estadoUsuario[d.id] || "pendente";
-                let tipoNesteFDC = d.fdc[fdcAtual];
-                
-                let cor = "status-bloqueada";
-                if(statusReal === "concluida") cor = "status-concluida";
-                else if(statusReal === "cursando") cor = "status-cursando";
-                else if(statusReal === "reprovada") cor = "status-reprovada";
-                else {
-                    let cumprePrereq = d.prereqs.every(req => estadoUsuario[req] === "concluida");
-                    let cumpreCreditos = (creditosFeitosObr + creditosFeitosEle) >= d.reqCreditos;
-                    if(cumprePrereq && cumpreCreditos) cor = "status-liberada";
-                }
-
-                let dRender = {...d, corAtual: cor, statusReal, tipoNesteFDC};
-                mapaParaOrganograma[d.id] = dRender;
-                
-                let semSimulado = posicoesFinais[d.id];
-                if (!timelineSemestres[semSimulado]) timelineSemestres[semSimulado] = [];
-                timelineSemestres[semSimulado].push(dRender);
-            });
-
-            RenderizarSimulador(timelineSemestres);
-            RenderizarOrganograma(mapaParaOrganograma);
-        }
-
-        function ofertaValida(semestre, regra) {
-            if (regra === "ambos" || !regra) return true;
-            if (regra === "impar" && semestre % 2 !== 0) return true;
-            if (regra === "par" && semestre % 2 === 0) return true;
-            return false;
-        }
-
-        function RenderizarSimulador(timeline) {
-            const containerSim = document.getElementById('semestres-container');
-            containerSim.innerHTML = "";
-            let sems = Object.keys(timeline).map(Number).sort((a,b)=>a-b);
-
-            sems.forEach(sem => {
-                let divSem = document.createElement('div');
-                divSem.className = "semestre";
-                divSem.innerHTML = `<h3>Semestre ${sem}</h3> <div class="disciplinas-grid"></div>`;
-                let grid = divSem.querySelector('.disciplinas-grid');
-
-                timeline[sem].forEach(d => {
-                    if (d.tipoNesteFDC === 'eletiva' && (d.statusReal === 'pendente' || d.statusReal === 'bloqueada') && sem > 10) return;
-                    let card = document.createElement('div');
-                    card.className = `disciplina ${d.corAtual}`;
-                    card.innerHTML = `
-                        <div style="display:flex; justify-content:space-between;"><span class="tag-info">${d.id}</span></div>
-                        <div style="font-size: 14px; margin: 4px 0;">${d.nome}</div>
-                        <select class="status-selector" onchange="estadoUsuario['${d.id}'] = this.value; salvarEstado();">
-                            <option value="pendente" ${d.statusReal === 'pendente' ? 'selected' : ''}>Pendente / Bloqueada</option>
-                            <option value="concluida" ${d.statusReal === 'concluida' ? 'selected' : ''}>Concluída</option>
-                            <option value="cursando" ${d.statusReal === 'cursando' ? 'selected' : ''}>Cursando</option>
-                            <option value="reprovada" ${d.statusReal === 'reprovada' ? 'selected' : ''}>Reprovada</option>
-                        </select>
-                    `;
-                    grid.appendChild(card);
-                });
-                if (grid.children.length > 0) containerSim.appendChild(divSem);
-            });
-        }
-
-        function RenderizarOrganograma(mapa) {
-            const orgBoard = document.getElementById('org-board');
-            const orgEletivas = document.getElementById('org-eletivas');
-            orgBoard.innerHTML = ''; orgEletivas.innerHTML = '';
-
-            for(let s=1; s<=10; s++) {
-                let col = document.createElement('div');
-                col.className = 'coluna-semestre';
-                col.innerHTML = `<h4>Etapa ${s}</h4>`;
-                orgBoard.appendChild(col);
-            }
-
-            disciplinas.forEach(d => {
-                const info = mapa[d.id];
-                let htmlCard = `
-                    <div id="org-card-${info.id}" class="org-card ${info.corAtual}" 
-                         onclick="cliqueCadeira('${info.id}')" 
-                         onmouseenter="mostrarLinhas('${info.id}')" 
-                         onmouseleave="esconderLinhas()">
-                        <span class="tag-info">${info.id}</span>
-                        <div style="font-size: 11px; margin-top: 3px;">${info.nome}</div>
-                    </div>
-                `;
-
-                if (info.tipoNesteFDC === 'eletiva') {
-                    orgEletivas.insertAdjacentHTML('beforeend', htmlCard);
-                } else {
-                    let targetSem = Math.min(info.semIdeal, 10);
-                    orgBoard.children[targetSem-1].insertAdjacentHTML('beforeend', htmlCard);
-                }
-            });
-        }
-
-        atualizarTudo();
-    </script>
+    let pos={};disciplinas.forEach(d=>pos[d.id]=d.semIdeal);
+    for(let loop=0;loop<4;loop++) disciplinas.forEach(d=>{
+        const st=statusOf(d.id);if(st==='concluida')return;
+        let late=0;d.prereqs.forEach(req=>{if(statusOf(req)!=='concluida')late=Math.max(late,pos[req])});
+        let ns=Math.max(d.semIdeal,late+1);if(st==='reprovada')ns=Math.max(ns,pos[d.id]+1);
+        while(!ofertaValida(ns,d.oferta))ns++;pos[d.id]=ns;
+    });
+    disciplinas.forEach(d=>{
+        const st=statusOf(d.id),tipo=d.fdc[fdcAtual];let cor='status-bloqueada';
+        if(st==='concluida')cor='status-concluida';else if(st==='cursando')cor='status-cursando';else if(st==='reprovada')cor='status-reprovada';
+        else if(d.prereqs.every(req=>statusOf(req)==='concluida')&&(obr+ele)>=d.reqCreditos)cor='status-liberada';
+        const render={...d,corAtual:cor,statusReal:st,tipoNesteFDC:tipo};
+        if(!timeline[pos[d.id]])timeline[pos[d.id]]=[];timeline[pos[d.id]].push(render);
+    });
+    RenderizarSimulador(timeline);RenderizarOrganograma(Object.fromEntries(disciplinas.map(d=>[d.id,{...d,corAtual:(statusOf(d.id)==='concluida'?'status-concluida':statusOf(d.id)==='cursando'?'status-cursando':statusOf(d.id)==='reprovada'?'status-reprovada':'status-bloqueada'),statusReal:statusOf(d.id),tipoNesteFDC:d.fdc[fdcAtual]}])));
+    salvarEstado();
+}
+function ofertaValida(semestre,regra){if(regra==='ambos'||!regra)return true;if(regra==='impar')return semestre%2!==0;if(regra==='par')return semestre%2===0;return false}
+function RenderizarSimulador(timeline) {
+    const c=document.getElementById('semestres-container');c.innerHTML='';
+    const sems=Object.keys(timeline).map(Number).sort((a,b)=>a-b);
+    sems.forEach(sem=>{
+        const normal=timeline[sem].filter(d=>d.tipoNesteFDC!=='eletiva');
+        const el=timeline[sem].filter(d=>d.tipoNesteFDC==='eletiva');
+        if(normal.length) c.appendChild(criarBlocoSemestre('Semestre '+sem,normal,false));
+        if(el.length) c.appendChild(criarBlocoSemestre('Eletivas disponíveis — referência do semestre '+sem,el,true));
+    });
+    const eletivasFinais=disciplinas.filter(d=>d.fdc[document.getElementById('seletor-fdc').value]==='eletiva');
+    const ids=new Set(eletivasFinais.map(d=>d.id));
+    const conclEle=eletivasFinais.filter(d=>(estadoUsuario.status[d.id]||'pendente')==='concluida').reduce((s,d)=>s+d.creditos,0);
+    if(!eletivasFinais.length)return;
+}
+function criarBlocoSemestre(titulo,lista,isEletivas) {
+    const div=document.createElement('div');div.className='semestre'+(isEletivas?' eletivas-semestre':'');
+    const completas=lista.length>0&&lista.every(d=>d.statusReal==='concluida');
+    if(completas)div.classList.add(isEletivas?'eletivas-completo':'semestre-completo');
+    div.innerHTML=`<h3>${titulo}</h3><div class="disciplinas-grid"></div>`;
+    const grid=div.querySelector('.disciplinas-grid');
+    lista.forEach(d=>{
+        const card=document.createElement('div');card.className=`disciplina ${d.corAtual}`;
+        card.innerHTML=`<div style="display:flex;justify-content:space-between"><span class="tag-info">${d.id}</span><span>${d.creditos} cr</span></div><div style="font-size:14px;margin:4px 0">${d.nome}</div>
+        <select class="status-selector"><option value="pendente">Pendente / Bloqueada</option><option value="concluida">Concluída</option><option value="cursando">Cursando</option><option value="reprovada">Reprovada</option></select>`;
+        const sel=card.querySelector('select');sel.value=d.statusReal;sel.onchange=()=>{estadoUsuario.status[d.id]=sel.value;salvarEstado();atualizarTudo()};
+        grid.appendChild(card);
+    });return div;
+}
+function RenderizarOrganograma(mapa) {
+    const board=document.getElementById('org-board'),ele=document.getElementById('org-eletivas');board.innerHTML='';ele.innerHTML='';
+    for(let s=1;s<=10;s++){const col=document.createElement('div');col.className='coluna-semestre';col.innerHTML=`<h4>Etapa ${s}</h4>`;board.appendChild(col)}
+    disciplinas.forEach(d=>{
+        const info=mapa[d.id],html=`<div id="org-card-${info.id}" class="org-card ${info.corAtual}" onclick="cliqueCadeira('${info.id}')" onmouseenter="mostrarLinhas('${info.id}')" onmouseleave="esconderLinhas"><span class="tag-info">${info.id}</span><div style="font-size:11px;margin-top:3px">${info.nome}</div></div>`;
+        if(info.tipoNesteFDC==='eletiva')ele.insertAdjacentHTML('beforeend',html);else board.children[Math.min(info.semIdeal,10)-1].insertAdjacentHTML('beforeend',html);
+    });
+}
+function inicializar() {
+    sincronizarInputs();mudarAba(estadoUsuario.aba||'organograma');
+    ['inp-compl','inp-ext-necessaria','inp-compl-tipos'].forEach(id=>document.getElementById(id).addEventListener('change',e=>{
+        if(id==='inp-compl')estadoUsuario.compl=Math.max(0,Number(e.target.value)||0);
+        if(id==='inp-ext-necessaria')estadoUsuario.extNecessaria=Math.max(0,Number(e.target.value)||0);
+        if(id==='inp-compl-tipos')estadoUsuario.complTipos=Math.max(0,Number(e.target.value)||0);
+        salvarEstado();atualizarTudo();
+    }));
+    atualizarTudo();
+}
+window.addEventListener('resize',()=>{if(window.ultimoHover)mostrarLinhas(window.ultimoHover)});
+inicializar();
+</script>
 </body>
 </html>

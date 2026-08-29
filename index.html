@@ -27,21 +27,21 @@ body.light-mode {
 }
 body {font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg-color);color:var(--ink);margin:0;padding:20px;transition:.3s}
 .header,.container {background:var(--card);padding:20px;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,.2);border:1px solid var(--cinza)}
-.header {display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px;flex-wrap:wrap;gap:15px}
-.topo-controles {display:flex;flex-direction:column;gap:15px;flex:1;min-width:300px}
+.header {display:grid;grid-template-columns:minmax(320px,1fr) minmax(520px,700px);align-items:start;margin-bottom:20px;gap:28px}
+.topo-controles {display:flex;flex-direction:column;gap:18px;min-width:0;padding-top:2px}
 .tabs {display:flex;gap:5px}
 .tabs button,.btn-theme {padding:8px 16px;cursor:pointer;border:1px solid var(--cinza);background:var(--painel-bg);color:var(--ink);font-weight:600;border-radius:6px}
 .tabs button.active {background:#185fa5;color:#fff;border-color:#185fa5}
-.painel-creditos {display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:10px;width:min(100%,700px)}
-.card-credito {background:var(--painel-bg);padding:10px 15px;border-radius:6px;text-align:center;border:1px solid var(--cinza);position:relative}
+.painel-creditos {display:grid;grid-template-columns:repeat(2,minmax(220px,1fr));gap:12px;width:100%}
+.card-credito {background:var(--painel-bg);padding:14px 16px;border-radius:8px;text-align:center;border:1px solid var(--cinza);position:relative;min-height:70px;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center}
 .credito-titulo {font-size:11px;font-weight:700;color:var(--sub);letter-spacing:.05em}
 .credito-valores {font-size:18px;font-weight:700;margin-top:4px;display:block}
 .credito-pct {font-size:12px;font-weight:600;padding:2px 6px;border-radius:12px;margin-left:5px;vertical-align:middle;background:var(--c-verde-bg);color:var(--c-verde-txt)}
-.manual-input {width:50px;font-size:16px;font-weight:700;text-align:right;border:1px solid var(--input-border);border-radius:4px;padding:2px 5px;background:var(--input-bg);color:var(--ink)}
+.manual-input {width:64px;font-size:16px;font-weight:700;text-align:center;border:1px solid var(--input-border);border-radius:5px;padding:4px 5px;background:var(--input-bg);color:var(--ink)}
 .manual-input.small {width:34px;font-size:13px}
 .compl-type {font-size:11px;font-weight:700;margin-bottom:5px}
 .compl-type.bad {color:var(--c-verm-txt)} .compl-type.good {color:var(--c-verde-txt)}
-.total-conclusao {margin-top:12px;padding:10px 14px;background:var(--painel-bg);border:1px solid var(--cinza);border-radius:7px;text-align:center;font-weight:700}
+.total-conclusao {margin-top:12px;padding:12px 14px;background:var(--painel-bg);border:1px solid var(--cinza);border-radius:8px;text-align:center;font-weight:700}
 .total-conclusao .big {font-size:25px;display:block}
 .total-conclusao.good {border-color:var(--c-verde-border);background:var(--c-verde-bg)}
 .total-conclusao.partial {border-color:#d49526}
@@ -53,13 +53,13 @@ select {background:var(--input-bg);color:var(--ink);padding:6px;border-radius:4p
 .status-concluida {background:var(--c-verde-bg);color:var(--c-verde-txt);border-color:var(--c-verde-border)}
 .status-cursando {background:var(--c-azul-bg);color:var(--c-azul-txt);border-color:var(--c-azul-border)}
 .status-liberada {background:var(--c-laranja-bg);color:var(--c-laranja-txt);border-color:var(--c-laranja-border)}
-.status-bloqueada {background:var(--c-cinza-bg);color:var(--c-cinza-txt);border-color:var(--c-cinza-border);opacity:.75}
+.status-bloqueada {background:var(--c-cinza-bg);color:var(--c-cinza-txt);border-color:var(--c-cinza-border);opacity:.9}
 .status-reprovada {background:var(--c-verm-bg);color:var(--c-verm-txt);border-color:var(--c-verm-border)}
 #orga-wrapper {position:relative;overflow-x:auto;padding-bottom:20px}
 .org-board {display:flex;gap:55px;min-width:max-content}
 .coluna-semestre {width:170px;flex-shrink:0}
 .coluna-semestre h4 {margin:0 0 15px;text-align:center;color:var(--sub);font-size:14px;text-transform:uppercase;border-bottom:1px solid var(--cinza);padding-bottom:8px}
-.org-card {padding:12px;border-radius:8px;border:2px solid transparent;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.1);width:100%;box-sizing:border-box;cursor:pointer;text-align:center;margin-bottom:12px;z-index:2;position:relative}
+.org-card {padding:12px;border-radius:8px;border:2px solid var(--cinza);display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;transition:.15s;box-shadow:0 1px 2px rgba(0,0,0,.1);width:100%;box-sizing:border-box;cursor:pointer;text-align:center;margin-bottom:12px;z-index:2;position:relative}
 .org-card:hover {transform:translateY(-3px);box-shadow:0 6px 12px rgba(0,0,0,.25)}
 .hover-focus {border-color:#185fa5;box-shadow:0 0 0 2px rgba(24,95,165,.3)}
 .hover-req {border-color:var(--c-verm-border);background:var(--c-verm-bg);color:var(--c-verm-txt)}
@@ -68,15 +68,15 @@ select {background:var(--input-bg);color:var(--ink);padding:6px;border-radius:4p
 .eletivas-row {display:flex;flex-wrap:wrap;gap:15px}
 .eletivas-row .org-card {width:170px}
 #lines-svg {position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:1}
-.semestre {margin-bottom:18px;border:1px solid var(--cinza);border-radius:8px;padding:15px;background:var(--bg-color);transition:.25s}
+.semestre {margin-bottom:22px;border:1px solid var(--cinza);border-radius:8px;padding:15px;background:var(--bg-color);transition:.25s}
 .semestre.semestre-completo {border-color:var(--c-verde-border);background:var(--c-verde-bg);box-shadow:0 0 0 1px var(--c-verde-border)}
 .semestre h3 {margin-top:0;border-bottom:2px solid #185fa5;padding-bottom:5px;color:#4da3ff;text-align:center}
 .semestre.eletivas-semestre {margin-top:28px;border-style:dashed}
 .semestre.eletivas-completo {border-color:var(--c-verde-border);background:var(--c-verde-bg)}
-.disciplinas-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
-.disciplina {padding:12px;border-radius:8px;border:2px solid transparent;display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.disciplinas-grid {display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.disciplina {padding:12px;border-radius:8px;border:2px solid var(--cinza);display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.1)}
 .tag-info {font-size:10.5px;font-family:ui-monospace,Menlo,monospace;opacity:.8}
-@media(max-width:900px) {.painel-creditos{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:1000px) {.header{grid-template-columns:1fr}.painel-creditos{grid-template-columns:repeat(2,minmax(0,1fr))}} @media(max-width:600px) {.painel-creditos{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -109,8 +109,17 @@ select {background:var(--input-bg);color:var(--ink);padding:6px;border-radius:4p
    </div>
    <div class="card-credito">
     <span class="credito-titulo">CARGA HORÁRIA DE EXTENSÃO</span>
-    <div class="credito-valores"><input type="number" id="inp-ext-necessaria" class="manual-input" min="0"> h necessárias</div>
-    <div style="margin-top:4px"><span id="cred-ext">0</span> h <span id="pct-ext" class="credito-pct">0%</span></div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:7px;margin-top:7px">
+        <span style="font-size:12px;color:var(--sub)">Atual:</span>
+        <input type="number" id="inp-ext-atual" class="manual-input" min="0" step="1">
+        <span style="font-size:12px">h</span>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:7px;margin-top:7px">
+        <span style="font-size:12px;color:var(--sub)">Necessária:</span>
+        <input type="number" id="inp-ext-necessaria" class="manual-input" min="0" step="1">
+        <span style="font-size:12px">h</span>
+    </div>
+    <div style="margin-top:7px"><span id="cred-ext">0</span> h <span id="pct-ext" class="credito-pct">0%</span></div>
    </div>
   </div>
   <div id="total-conclusao" class="total-conclusao">CONCLUSÃO TOTAL <span id="pct-total" class="big">0%</span><span id="total-detalhe" style="font-size:12px;color:var(--sub)">0 / 0</span></div>
@@ -128,7 +137,7 @@ select {background:var(--input-bg);color:var(--ink);padding:6px;border-radius:4p
  </div>
 </div>
 
-<div id="simulador" class="container"><p style="color:var(--sub);font-size:14px">Simulação com deslocamento automático de semestres em caso de atrasos e sazonalidade (par/ímpar).</p><div id="semestres-container"></div></div>
+<div id="simulador" class="container"><div id="semestres-container"></div></div>
 
 <script>
         const disciplinas = [
@@ -240,6 +249,7 @@ function salvarEstado() {
 }
 function sincronizarInputs() {
     document.getElementById('inp-compl').value = estadoUsuario.compl ?? 0;
+    document.getElementById('inp-ext-atual').value = estadoUsuario.ext ?? 0;
     document.getElementById('inp-ext-necessaria').value = estadoUsuario.extNecessaria ?? 420;
     document.getElementById('inp-compl-tipos').value = estadoUsuario.complTipos ?? 0;
     document.getElementById('seletor-fdc').value = estadoUsuario.fdc || 'cadcam';
@@ -343,23 +353,31 @@ function atualizarTudo() {
 }
 function ofertaValida(semestre,regra){if(regra==='ambos'||!regra)return true;if(regra==='impar')return semestre%2!==0;if(regra==='par')return semestre%2===0;return false}
 function RenderizarSimulador(timeline) {
-    const c=document.getElementById('semestres-container');c.innerHTML='';
+    const c=document.getElementById('semestres-container');
+    c.innerHTML='';
     const sems=Object.keys(timeline).map(Number).sort((a,b)=>a-b);
+    const fdcAtual=document.getElementById('seletor-fdc').value;
+
     sems.forEach(sem=>{
         const normal=timeline[sem].filter(d=>d.tipoNesteFDC!=='eletiva');
-        const el=timeline[sem].filter(d=>d.tipoNesteFDC==='eletiva');
         if(normal.length) c.appendChild(criarBlocoSemestre('Semestre '+sem,normal,false));
-        if(el.length) c.appendChild(criarBlocoSemestre('Eletivas disponíveis — referência do semestre '+sem,el,true));
     });
-    const eletivasFinais=disciplinas.filter(d=>d.fdc[document.getElementById('seletor-fdc').value]==='eletiva');
-    const ids=new Set(eletivasFinais.map(d=>d.id));
-    const conclEle=eletivasFinais.filter(d=>(estadoUsuario.status[d.id]||'pendente')==='concluida').reduce((s,d)=>s+d.creditos,0);
-    if(!eletivasFinais.length)return;
+
+    const eletivas=disciplinas.filter(d=>d.fdc[fdcAtual]==='eletiva');
+    if(eletivas.length){
+        const bloco=criarBlocoSemestre('Eletivas',eletivas,true);
+        const obtidas=eletivas
+            .filter(d=>(estadoUsuario.status[d.id]||'pendente')==='concluida')
+            .reduce((s,d)=>s+d.creditos,0);
+        bloco.querySelector('h3').innerHTML=`Eletivas <span style="font-size:13px;color:var(--sub);font-weight:600">(${Math.min(obtidas,METAS.ele)} / ${METAS.ele} créditos)</span>`;
+        c.appendChild(bloco);
+    }
 }
 function criarBlocoSemestre(titulo,lista,isEletivas) {
     const div=document.createElement('div');div.className='semestre'+(isEletivas?' eletivas-semestre':'');
     const completas=lista.length>0&&lista.every(d=>d.statusReal==='concluida');
-    if(completas)div.classList.add(isEletivas?'eletivas-completo':'semestre-completo');
+    const eleConcluidos=isEletivas&&lista.filter(d=>d.statusReal==='concluida').reduce((s,d)=>s+d.creditos,0)>=METAS.ele;
+    if(completas||eleConcluidos)div.classList.add(isEletivas?'eletivas-completo':'semestre-completo');
     div.innerHTML=`<h3>${titulo}</h3><div class="disciplinas-grid"></div>`;
     const grid=div.querySelector('.disciplinas-grid');
     lista.forEach(d=>{
@@ -380,8 +398,9 @@ function RenderizarOrganograma(mapa) {
 }
 function inicializar() {
     sincronizarInputs();mudarAba(estadoUsuario.aba||'organograma');
-    ['inp-compl','inp-ext-necessaria','inp-compl-tipos'].forEach(id=>document.getElementById(id).addEventListener('change',e=>{
+    ['inp-compl','inp-ext-atual','inp-ext-necessaria','inp-compl-tipos'].forEach(id=>document.getElementById(id).addEventListener('change',e=>{
         if(id==='inp-compl')estadoUsuario.compl=Math.max(0,Number(e.target.value)||0);
+        if(id==='inp-ext-atual')estadoUsuario.ext=Math.max(0,Number(e.target.value)||0);
         if(id==='inp-ext-necessaria')estadoUsuario.extNecessaria=Math.max(0,Number(e.target.value)||0);
         if(id==='inp-compl-tipos')estadoUsuario.complTipos=Math.max(0,Number(e.target.value)||0);
         salvarEstado();atualizarTudo();

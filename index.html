@@ -282,7 +282,8 @@ body.light-mode .toast button {color:#8fb8ff}
 .plano-resumo .sub {color:var(--sub);font-size:13px;font-weight:600}
 .semestre .vazio {font-size:13px;color:var(--sub);margin:0}
 .aviso {border:1px solid var(--c-laranja-border);background:var(--c-laranja-bg);color:var(--c-laranja-txt);border-radius:10px;padding:10px 14px;font-size:13px;margin:12px 0}
-.frase {margin:24px 0 4px;padding:18px 22px 18px 54px;border-radius:12px;position:relative;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--border));border-left:4px solid var(--accent);background:linear-gradient(135deg,var(--accent-soft),transparent 70%);animation:fraseIn .6s ease both}
+.frase {margin:8px 0 0;padding:18px 22px 18px 54px;border-radius:12px;position:relative;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--border));border-left:4px solid var(--accent);background:linear-gradient(135deg,var(--accent-soft),transparent 70%)}
+.frase.nova {animation:fraseIn .6s ease both}
 .frase::before {content:"“";position:absolute;left:16px;top:6px;font-size:52px;line-height:1;font-family:Georgia,serif;color:var(--accent);opacity:.7}
 .frase blockquote {margin:0;font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:16.5px;line-height:1.5;color:var(--ink)}
 .frase figcaption {margin-top:10px;font-size:12.5px;color:var(--sub)}
@@ -749,7 +750,6 @@ function mudarAba(aba) {
         b.setAttribute('aria-selected', a===aba);
     });
     if(aba!=='organograma') fecharDetalhe();
-    if(aba!=='plano' && estadoUsuario.fraseIdx!=null && !estadoUsuario.fraseNova) { estadoUsuario.fraseIdx=null; salvarEstado(); }
     if(aba==='plano') RenderizarPlano();
     if(aba==='organograma') setTimeout(()=>{atualizarSombras(); if(window.ultimoHover) mostrarLinhas(window.ultimoHover)},50);
 }
@@ -1049,6 +1049,9 @@ function RenderizarSimulador(timeline) {
         c.appendChild(bloco);
     });
 
+    const frase = fraseParaExibir(), nova = frase !== ultimaFraseMostrada; ultimaFraseMostrada = frase;
+    c.insertAdjacentHTML('beforeend', `<figure class="frase${nova ? ' nova' : ''}"><blockquote>${frase.t}</blockquote><figcaption>— <b>${frase.a}</b>, ${frase.f}</figcaption></figure>`);
+
     const eletivas=disciplinas.filter(d=>d.fdc[fdcAtual]==='eletiva').map(d=>ultimoMapa[d.id]);
     if(eletivas.length && !window.eletivasOcultas){
         const bloco=criarBlocoSemestre('Eletivas',eletivas,true,false,ocultarCad);
@@ -1190,9 +1193,11 @@ const FRASES = [
     {t:'O que importa não é o que acontece com você, mas como você reage ao que acontece.', a:'Epicteto', f:'adaptação de Encheirídion, capítulo 5'},
     {t:'O impedimento à ação impulsiona a ação. Aquilo que está no caminho torna-se o caminho.', a:'Marco Aurélio', f:'Meditações, Livro V, seção 20 (tradução adaptada)'},
 ];
+let fraseSorteadaNestaVisita = false, ultimaFraseMostrada = null;
 function fraseParaExibir() {
-    // sorteia uma frase nova (diferente da última) quando a previsão é aberta depois de novas reprovações
-    if (estadoUsuario.fraseNova && estadoUsuario.aba==='plano') {
+    // sempre há uma frase: sorteia uma nova (diferente da última) a cada visita e logo após uma nova reprovação
+    if (estadoUsuario.fraseNova || estadoUsuario.fraseIdx == null || !FRASES[estadoUsuario.fraseIdx] || !fraseSorteadaNestaVisita) {
+        fraseSorteadaNestaVisita = true;
         let i; do { i = Math.floor(Math.random()*FRASES.length); } while (FRASES.length>1 && i===estadoUsuario.fraseUltima);
         estadoUsuario.fraseIdx = i; estadoUsuario.fraseUltima = i; estadoUsuario.fraseNova = false; salvarEstado();
     }
@@ -1239,8 +1244,7 @@ function RenderizarPlano() {
         container.appendChild(bloco);
     });
 
-    const frase = fraseParaExibir();
-    if (frase) container.insertAdjacentHTML('beforeend', `<figure class="frase"><blockquote>${frase.t}</blockquote><figcaption>— <b>${frase.a}</b>, ${frase.f}</figcaption></figure>`);
+
 }
 
 /* ---------- utilidades ---------- */

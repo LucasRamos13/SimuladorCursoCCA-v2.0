@@ -54,7 +54,7 @@ button {cursor:pointer}
 .appbar-inner {display:flex;align-items:center;gap:16px;min-height:64px;padding-top:10px;padding-bottom:10px}
 .brand {display:flex;align-items:center;gap:12px;min-width:0;margin-right:auto}
 .brand-mark {width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#7c5cff);display:grid;place-items:center;color:#fff;font-weight:800;font-size:14px;flex-shrink:0;letter-spacing:-.02em}
-.brand h1 {font-size:17px;margin:0;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.brand .brand-title {display:block;font-size:17px;margin:0;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
 .brand small {display:block;color:var(--sub);font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .field-fdc {display:flex;align-items:center;gap:8px;min-width:0}
 .field-fdc label {color:var(--sub);font-size:12px;font-weight:600;white-space:nowrap}
@@ -70,6 +70,30 @@ select:hover {border-color:var(--sub)}
 .icon-btn:hover {color:var(--ink);border-color:var(--border-strong)}
 .icon-btn svg {width:18px;height:18px}
 .icon-sun {display:none} body.light-mode .icon-sun {display:block} body.light-mode .icon-moon {display:none}
+
+/* ============ CURSOS ============ */
+.brand-btn {display:flex;align-items:center;gap:12px;min-width:0;border:0;background:none;padding:4px 8px 4px 4px;margin:-4px 0 -4px -4px;border-radius:12px;color:inherit;text-align:left}
+.brand-btn:hover {background:var(--surface-2)}
+.brand-btn .chev {width:12px;height:12px;vertical-align:-1px;margin-left:2px}
+.brand-mark.mini {width:30px;height:30px;font-size:10.5px;border-radius:8px}
+.badge-proto {border:1px solid var(--c-laranja-border);background:var(--c-laranja-bg);color:var(--c-laranja-txt);font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:3px 9px;flex-shrink:0}
+.badge-proto.mini {font-size:9px;padding:1px 6px;margin-left:6px;vertical-align:1px}
+.curso-pop {min-width:300px;max-width:calc(100vw - 16px)}
+.curso-pop .pop-titulo {font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sub);padding:8px 12px 4px}
+.curso-pop button[aria-checked="true"] {background:var(--accent-soft)}
+.curso-pop .pc-nome {flex:1;line-height:1.3}
+.curso-pop .pc-ok {width:16px;height:16px;color:var(--accent)}
+.modal-backdrop {position:fixed;inset:0;z-index:130;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:16px}
+.modal-backdrop[hidden] {display:none}
+.modal {background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.4);max-width:480px;width:100%;padding:24px;animation:modalIn .25s ease}
+.modal h2 {margin:8px 0 10px;font-size:19px}
+.modal p {margin:0 0 12px;font-size:14px;line-height:1.5;color:var(--ink)}
+.modal p.hint {font-size:12px;color:var(--sub)}
+.modal a {color:var(--accent);font-weight:600}
+.modal-ico {width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:26px;background:var(--c-laranja-bg);border:1px solid var(--c-laranja-border)}
+.modal-acoes {display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+@keyframes modalIn {from{opacity:0;transform:translateY(12px) scale(.98)}}
+[hidden] {display:none!important}
 
 /* ============ RESUMO ============ */
 .resumo {display:grid;grid-template-columns:280px 1fr;gap:16px;margin:20px 0}
@@ -378,7 +402,9 @@ body:not(.light-mode) .field {color-scheme:dark}
     .appbar {position:static;backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--bg)}
     .appbar-inner {gap:10px 12px;min-height:0}
     .brand-mark {width:32px;height:32px;font-size:13px}
-    .brand h1 {font-size:16px}
+    .brand {flex:1 1 0;min-width:0;gap:8px} .brand-btn {min-width:0;gap:10px} .brand-btn > span:last-child {min-width:0;overflow:hidden}
+    .brand .brand-title {overflow:hidden;text-overflow:ellipsis} .badge-proto {font-size:9.5px;padding:2px 7px}
+    .brand .brand-title {font-size:16px}
     .field-fdc label {display:none}
     select,.num-input,.num-input.sm {font-size:16px} /* evita zoom no iOS */
     .tabs {position:fixed;left:0;right:0;bottom:0;z-index:70;border-radius:0;border:0;border-top:1px solid var(--border);background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:6px 8px calc(6px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr)}
@@ -456,16 +482,15 @@ body:not(.light-mode) .field {color-scheme:dark}
 <header class="appbar">
  <div class="page appbar-inner">
   <div class="brand">
-   <div class="brand-mark" aria-hidden="true">ECA</div>
-   <div style="min-width:0"><h1>Simulador do Curso</h1><small>Eng. de Controle e Automação · UFRGS</small></div>
+   <button type="button" class="brand-btn" id="btn-curso" onclick="abrirMenuCursos(event)" aria-haspopup="menu" title="Trocar de curso">
+    <span class="brand-mark" id="brand-sigla" aria-hidden="true">ECA</span>
+    <span style="min-width:0;text-align:left;display:block"><strong class="brand-title">Simulador do Curso</strong><small><span id="brand-nome">Eng. de Controle e Automação</span> · UFRGS <svg class="chev"><use href="#i-chev"/></svg></small></span>
+   </button>
+   <button type="button" class="badge-proto" id="badge-proto" hidden onclick="abrirAvisoPrototipo(CURSO,null)" title="Curso em fase de teste">Protótipo</button>
   </div>
-  <div class="field-fdc">
+  <div class="field-fdc" id="field-fdc">
    <label for="seletor-fdc">Ênfase (FDC)</label>
-   <select id="seletor-fdc" onchange="atualizarTudo()">
-    <option value="cadcam">Sistemas Discretos CAD/CAM</option>
-    <option value="mecanica">Controle Avançado de Sistemas Mecânicos</option>
-    <option value="potencia">Eletrônica de Potência e Acionamento</option>
-   </select>
+   <select id="seletor-fdc" onchange="atualizarTudo()"></select>
   </div>
   <nav class="tabs" role="tablist" aria-label="Seções">
    <button id="btn-organograma" role="tab" class="active" onclick="mudarAba('organograma')"><svg><use href="#i-graph"/></svg>Organograma</button>
@@ -488,29 +513,29 @@ body:not(.light-mode) .field {color-scheme:dark}
    <div class="ring-wrap"><div class="ring" id="ring-total"></div><span class="ring-label" id="pct-total">0%</span></div>
    <div class="total-text">
     <div class="eyebrow">Conclusão total</div>
-    <div class="detail"><b id="total-detalhe">0 / 0</b></div><div class="hint">extensão e estágio: 15 h = 1 cr</div>
+    <div class="detail"><b id="total-detalhe">0 / 0</b></div><div class="hint" id="total-hint">extensão e estágio: 15 h = 1 cr</div>
    </div>
    <button class="resumo-toggle" id="resumo-toggle" aria-expanded="false" aria-controls="tiles">Detalhes <svg><use href="#i-chev"/></svg></button>
   </div>
   <div class="tiles" id="tiles">
    <div class="card tile">
     <div class="tile-head"><span class="tile-label">Obrigatórios</span><span id="pct-obr" class="pct">0%</span></div>
-    <div class="tile-value"><b id="cred-obr">0</b><span class="of">/ 222 cr</span></div>
+    <div class="tile-value"><b id="cred-obr">0</b><span class="of">/ <span id="meta-obr">0</span> cr</span></div>
     <div class="bar" id="bar-obr"><i></i></div>
     <div class="tile-foot" id="falta-obr"></div>
    </div>
-   <div class="card tile">
+   <div class="card tile" id="tile-ele">
     <div class="tile-head"><span class="tile-label">Eletivos</span><span id="pct-ele" class="pct">0%</span></div>
-    <div class="tile-value"><b id="cred-ele">0</b><span class="of">/ 8 cr</span></div>
+    <div class="tile-value"><b id="cred-ele">0</b><span class="of">/ <span id="meta-ele">0</span> cr</span></div>
     <div class="bar" id="bar-ele"><i></i></div>
     <div class="tile-foot" id="falta-ele"></div>
     <label class="switch sm" id="ele-opt-wrap" hidden><input type="checkbox" id="opt-eletivas"><span class="sw"></span><span class="lbl">Ocultar eletivas</span></label>
    </div>
-   <div class="card tile wide">
+   <div class="card tile wide" id="tile-compl">
     <div class="tile-head"><label class="tile-label" for="inp-compl">Complementares</label><span id="pct-compl" class="pct">0%</span></div>
-    <div class="tile-value"><input type="number" inputmode="numeric" id="inp-compl" class="num-input" min="0" aria-label="Créditos complementares obtidos"><span class="of">/ 6 cr</span></div>
+    <div class="tile-value"><input type="number" inputmode="numeric" id="inp-compl" class="num-input" min="0" aria-label="Créditos complementares obtidos"><span class="of">/ <span id="meta-compl">0</span> cr</span></div>
     <div class="bar" id="bar-compl"><i></i></div>
-    <div class="tile-foot"><label for="inp-compl-tipos">Tipos diferentes:</label> <input type="number" inputmode="numeric" id="inp-compl-tipos" class="num-input sm" min="0"> / 2 <span id="compl-type" class="chip bad">pendente</span></div>
+    <div class="tile-foot"><label for="inp-compl-tipos">Tipos diferentes:</label> <input type="number" inputmode="numeric" id="inp-compl-tipos" class="num-input sm" min="0"> / <span id="meta-tipos">0</span> <span id="compl-type" class="chip bad">pendente</span></div>
    </div>
    <div class="card tile wide">
     <div class="tile-head"><span class="tile-label">Extensão</span><span id="pct-ext" class="pct">0%</span></div>
@@ -518,9 +543,9 @@ body:not(.light-mode) .field {color-scheme:dark}
     <div class="bar" id="bar-ext"><i></i></div>
     <div class="tile-foot"><label for="inp-ext-atual">Horas lançadas:</label> <input type="number" inputmode="numeric" id="inp-ext-atual" class="num-input sm" min="0" step="1"> h <span class="hint" id="ext-proj"></span></div>
    </div>
-   <div class="card tile tile-est">
+   <div class="card tile tile-est" id="tile-est">
     <div class="tile-head"><span class="tile-label">Estágio</span><span id="pct-est" class="pct">0%</span></div>
-    <div class="tile-value"><b id="cred-est">0</b><span class="of">/ 200 h</span></div>
+    <div class="tile-value"><b id="cred-est">0</b><span class="of">/ <span id="meta-est">0</span> h</span></div>
     <div class="bar" id="bar-est"><i></i></div>
     <div class="tile-foot" id="foot-est"></div>
    </div>
@@ -598,6 +623,17 @@ body:not(.light-mode) .field {color-scheme:dark}
  <button role="menuitem" data-fmt="png"><svg width="16" height="16"><use href="#i-down"/></svg>Imagem PNG <small>para compartilhar</small></button>
  <button role="menuitem" data-fmt="pdf"><svg width="16" height="16"><use href="#i-down"/></svg>Documento PDF <small>para imprimir</small></button>
 </div>
+<div class="export-pop curso-pop" id="curso-pop" role="menu" hidden></div>
+<div class="modal-backdrop" id="modal-proto" hidden>
+ <div class="modal" role="dialog" aria-modal="true" aria-labelledby="mp-titulo">
+  <div class="modal-ico" aria-hidden="true">🧪</div>
+  <h2 id="mp-titulo">Curso em fase de teste</h2>
+  <p><b id="mp-curso"></b> está marcado como <b>protótipo</b>. Os dados foram montados a partir do currículo publicado pela UFRGS e conferidos com o PPC, mas ainda podem ter erros de pré‑requisitos, ofertas ou créditos. Confira sempre com a COMGRAD do curso.</p>
+  <p class="hint" id="mp-fonte"></p>
+  <p>Encontrou um erro ou tem uma sugestão? Envie pelo <a href="https://github.com/LucasRamos13/SimuladorCursoCCA-v2.0/issues" target="_blank" rel="noopener">GitHub (issues)</a> ou para <a href="mailto:lucasgarciaramos13@gmail.com?subject=Simulador%20do%20Curso%20-%20corre%C3%A7%C3%A3o">lucasgarciaramos13@gmail.com</a>.</p>
+  <div class="modal-acoes"><button class="btn ghost" id="mp-cancelar" type="button">Cancelar</button><button class="btn primary" id="mp-ok" type="button">Entendi</button></div>
+ </div>
+</div>
 <div class="export-pop" id="save-pop" role="menu" hidden>
  <button role="menuitem" onclick="exportarSave()"><svg width="16" height="16"><use href="#i-down"/></svg>Exportar progresso <small>.json</small></button>
  <button role="menuitem" onclick="fecharMenuSave();document.getElementById('inp-import').click()"><svg width="16" height="16"><use href="#i-up"/></svg>Importar progresso… <small>.json</small></button>
@@ -607,97 +643,38 @@ body:not(.light-mode) .field {color-scheme:dark}
 <div class="toast" id="toast" role="status" aria-live="polite"><span id="toast-msg"></span><button id="toast-undo">Desfazer</button></div>
 
 <script>
-        const disciplinas = [
-            {"id": "INF01202", "nome": "Algoritmos e Programação", "creditos": 6, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "MAT01353", "nome": "Cálculo e Geometria Analítica I", "creditos": 6, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "FIS01181", "nome": "Física I-C", "creditos": 6, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ARQ03317", "nome": "Geometria Descritiva II-A", "creditos": 2, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "CCA99001", "nome": "Introdução à Eng. de Controle e Automação", "creditos": 2, "semIdeal": 1, "oferta": "impar", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "QUI01009", "nome": "Química Fundamental A", "creditos": 4, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "MAT01355", "nome": "Álgebra Linear I-A", "creditos": 4, "semIdeal": 2, "oferta": "ambos", "prereqs": ["MAT01353"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "MAT01354", "nome": "Cálculo e Geometria Analítica II-A", "creditos": 6, "semIdeal": 2, "oferta": "ambos", "prereqs": ["MAT01353"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ARQ03319", "nome": "Desenho Técnico II-A", "creditos": 4, "semIdeal": 2, "oferta": "ambos", "prereqs": ["ARQ03317"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "FIS01182", "nome": "Física Geral - Eletromagnetismo", "creditos": 6, "semIdeal": 2, "oferta": "ambos", "prereqs": ["FIS01181"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG03041", "nome": "Mecânica Aplicada I", "creditos": 4, "semIdeal": 2, "oferta": "ambos", "prereqs": ["CCA99001", "FIS01181", "MAT01353"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "INF01057", "nome": "Programação Orientada a Objeto", "creditos": 4, "semIdeal": 2, "oferta": "par", "prereqs": ["INF01202"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10001", "nome": "Circuitos Elétricos I-C", "creditos": 4, "semIdeal": 3, "oferta": "ambos", "prereqs": ["FIS01182", "MAT01354"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "MAT01167", "nome": "Equações Diferenciais II", "creditos": 6, "semIdeal": 3, "oferta": "ambos", "prereqs": ["MAT01354", "MAT01355"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "FIS01183", "nome": "Física III-C", "creditos": 6, "semIdeal": 3, "oferta": "ambos", "prereqs": ["FIS01182"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG03043", "nome": "Materiais para Engenharia A", "creditos": 4, "semIdeal": 3, "oferta": "impar", "prereqs": ["QUI01009"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG03042", "nome": "Mecânica Aplicada II", "creditos": 4, "semIdeal": 3, "oferta": "ambos", "prereqs": ["ENG03041"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "MAT02219", "nome": "Probabilidade e Estatística", "creditos": 4, "semIdeal": 3, "oferta": "ambos", "prereqs": ["MAT01353"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10042", "nome": "Sistemas Digitais-A", "creditos": 4, "semIdeal": 3, "oferta": "impar", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "MAT01169", "nome": "Cálculo Numérico", "creditos": 6, "semIdeal": 4, "oferta": "ambos", "prereqs": ["INF01202", "MAT01167"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10002", "nome": "Circuitos Elétricos II-C", "creditos": 4, "semIdeal": 4, "oferta": "ambos", "prereqs": ["ENG10001", "MAT01167"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10043", "nome": "Laboratório de Sistemas Digitais", "creditos": 2, "semIdeal": 4, "oferta": "par", "prereqs": ["ENG10042"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "MAT01168", "nome": "Matemática Aplicada II", "creditos": 6, "semIdeal": 4, "oferta": "ambos", "prereqs": ["MAT01167"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG03092", "nome": "Mecânica dos Sólidos I-A", "creditos": 4, "semIdeal": 4, "oferta": "ambos", "prereqs": ["ENG03041", "ENG03043"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG03316", "nome": "Mecanismos I", "creditos": 4, "semIdeal": 4, "oferta": "ambos", "prereqs": ["ENG03042"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG03044", "nome": "Modelagem de Sistemas Mecânicos", "creditos": 4, "semIdeal": 4, "oferta": "ambos", "prereqs": ["ENG10001", "FIS01183", "MAT01167"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10044", "nome": "Eletrônica Fundamental I-B", "creditos": 4, "semIdeal": 5, "oferta": "impar", "prereqs": ["ENG10002"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10003", "nome": "Laboratório de Circuitos Elétricos", "creditos": 2, "semIdeal": 5, "oferta": "ambos", "prereqs": ["ENG10002"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG03004", "nome": "Mecânica dos Sólidos II", "creditos": 4, "semIdeal": 5, "oferta": "ambos", "prereqs": ["ENG03092", "MAT01169"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10017", "nome": "Sistemas e Sinais", "creditos": 6, "semIdeal": 5, "oferta": "ambos", "prereqs": ["MAT01168"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG07086", "nome": "Termodinâmica e Transf. de Calor", "creditos": 5, "semIdeal": 5, "oferta": "impar", "prereqs": ["FIS01183"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10026", "nome": "Robótica / Robótica A", "creditos": 4, "semIdeal": 5, "oferta": "ambos", "prereqs": ["ENG03316"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10047", "nome": "Fundamentos de Máquinas Elétricas", "creditos": 4, "semIdeal": 6, "oferta": "par", "prereqs": ["ENG10002"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10022", "nome": "Instrum. Fundamental p/ Controle e Automação", "creditos": 4, "semIdeal": 6, "oferta": "par", "prereqs": ["ENG10044", "MAT02219"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10045", "nome": "Laboratório de Eletrônica", "creditos": 2, "semIdeal": 6, "oferta": "ambos", "prereqs": ["ENG10003", "ENG10044"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG07069", "nome": "Princípios da Mecânica de Fluidos", "creditos": 2, "semIdeal": 6, "oferta": "ambos", "prereqs": ["ENG07086"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10023", "nome": "Sistemas de Automação", "creditos": 4, "semIdeal": 6, "oferta": "par", "prereqs": ["ENG10043", "INF01057"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10004", "nome": "Sistemas de Controle I-B", "creditos": 4, "semIdeal": 6, "oferta": "par", "prereqs": ["ENG03044", "ENG10017"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10049", "nome": "Acionamento de Máq. Elétricas-A", "creditos": 4, "semIdeal": 7, "oferta": "impar", "prereqs": ["ENG10045", "ENG10047"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10005", "nome": "Laboratório de Controle", "creditos": 2, "semIdeal": 7, "oferta": "impar", "prereqs": ["ENG10004"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG04475", "nome": "Microprocessadores I", "creditos": 5, "semIdeal": 7, "oferta": "ambos", "prereqs": ["ENG10043", "ENG10044"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG03021", "nome": "Processos Discretos de Produção", "creditos": 4, "semIdeal": 7, "oferta": "ambos", "prereqs": ["ENG03043"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10048", "nome": "Protocolos de Comunicação-A", "creditos": 4, "semIdeal": 7, "oferta": "impar", "prereqs": ["ENG10023"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10018", "nome": "Sistemas de Controle II", "creditos": 4, "semIdeal": 7, "oferta": "impar", "prereqs": ["ENG10004"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG03027", "nome": "Sistemas Hidráulicos e Pneumáticos", "creditos": 4, "semIdeal": 7, "oferta": "ambos", "prereqs": ["ENG07069"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG03045", "nome": "Elementos de Máquinas", "creditos": 4, "semIdeal": 8, "oferta": "par", "prereqs": ["ENG03004", "ENG03021"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG07042", "nome": "Modelagem e Controle de Proc. Industriais", "creditos": 4, "semIdeal": 8, "oferta": "par", "prereqs": ["ENG07069", "ENG10018"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10019", "nome": "Sistemas de Controle Digitais", "creditos": 4, "semIdeal": 8, "oferta": "par", "prereqs": ["ENG04475", "ENG10004"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG03387", "nome": "Sistemas de Fabricação", "creditos": 4, "semIdeal": 8, "oferta": "par", "prereqs": ["ENG03021"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10027", "nome": "Eletrônica Fundamental II-B", "creditos": 4, "semIdeal": 8, "oferta": "par", "prereqs": ["ENG10002", "ENG10044"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "ENG07087", "nome": "Controle Avançado de Processos", "creditos": 3, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG07042"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ESTAGIO", "nome": "Estágio Supervisionado", "creditos": 0, "semIdeal": 9, "oferta": "ambos", "prereqs": ["ENG03027", "ENG10018"], "reqCreditos": 165, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "TCC1", "nome": "Trab. de Conclusão CCA - I", "creditos": 0, "semIdeal": 9, "oferta": "ambos", "prereqs": ["ENG03027", "ENG10005", "ENG10048", "ENG10049"], "reqCreditos": 165, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG10050", "nome": "Laboratório de Máquinas e Acionamentos Elétricos", "creditos": 2, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG10049"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "ENG10046", "nome": "Princípios de Eletrônica de Potência", "creditos": 2, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG10044"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "ENG03010", "nome": "Ciência, Tecnologia e Ambiente", "creditos": 3, "semIdeal": 10, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "ENG03048", "nome": "Gerência e Adm. de Projetos", "creditos": 4, "semIdeal": 10, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "TCC2", "nome": "Trab. de Conclusão CCA - II", "creditos": 0, "semIdeal": 10, "oferta": "ambos", "prereqs": ["ENG03045", "ENG07042", "ENG10019", "TCC1"], "reqCreditos": 0, "fdc": {"potencia": "obrigatoria", "cadcam": "obrigatoria", "mecanica": "obrigatoria"}},
-            {"id": "EDU03071", "nome": "Libras", "creditos": 2, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "CCA99005", "nome": "Tópicos Especiais em ECA I", "creditos": 2, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "CCA99006", "nome": "Tópicos Especiais em ECA II", "creditos": 4, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "CCA99007", "nome": "Tópicos Especiais em ECA III", "creditos": 6, "semIdeal": 1, "oferta": "ambos", "prereqs": [], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "INF01126", "nome": "Estruturas de Dados I", "creditos": 4, "semIdeal": 2, "oferta": "ambos", "prereqs": ["INF01202"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "INF01017", "nome": "Aprendizado de Máquina", "creditos": 4, "semIdeal": 3, "oferta": "ambos", "prereqs": ["INF01057"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "INF01037", "nome": "Computação Evolutiva", "creditos": 4, "semIdeal": 3, "oferta": "ambos", "prereqs": ["INF01057"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "ADM01135", "nome": "Engenharia Econômica e Avaliações", "creditos": 2, "semIdeal": 4, "oferta": "ambos", "prereqs": ["MAT02219"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "CCA99008", "nome": "Projeto Integrado I", "creditos": 9, "semIdeal": 6, "oferta": "ambos", "prereqs": ["ENG03044", "ENG03316", "ENG07086", "ENG10003", "ENG10042"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "ENG10052", "nome": "Laboratório de Robótica", "creditos": 2, "semIdeal": 6, "oferta": "par", "prereqs": ["ENG10026"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "ENG10054", "nome": "Robótica Móvel", "creditos": 4, "semIdeal": 6, "oferta": "ambos", "prereqs": ["ENG10017", "INF01057", "MAT02219"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "CCA99011", "nome": "Tópicos em Proc. Digital de Sinais I", "creditos": 4, "semIdeal": 6, "oferta": "ambos", "prereqs": ["ENG10017"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "ENG10021", "nome": "Sistemas a Eventos Discretos", "creditos": 4, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG10023"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "obrigatoria", "mecanica": "eletiva"}},
-            {"id": "ENG10051", "nome": "Dinâmica e Controle de Robôs", "creditos": 4, "semIdeal": 7, "oferta": "impar", "prereqs": ["ENG10004", "ENG10026"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "CCA99009", "nome": "Projeto Integrado II", "creditos": 9, "semIdeal": 8, "oferta": "ambos", "prereqs": ["CCA99008", "ENG03021", "ENG04475", "ENG07069", "ENG10004", "ENG10022", "ENG10023"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "ENG07043", "nome": "Instrumentação de Processos Industriais", "creditos": 2, "semIdeal": 8, "oferta": "ambos", "prereqs": ["ENG07069", "ENG10018"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "ENG09023", "nome": "Planejamento Estratégico da Produção", "creditos": 2, "semIdeal": 8, "oferta": "ambos", "prereqs": ["ENG03021"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "ENG03046", "nome": "Controle de Sistemas Fluído-Mecânicos", "creditos": 4, "semIdeal": 8, "oferta": "par", "prereqs": ["ENG03027", "ENG10018"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "obrigatoria"}},
-            {"id": "ENG03386", "nome": "Fabricação Auxiliada por Computador", "creditos": 4, "semIdeal": 8, "oferta": "ambos", "prereqs": ["ENG03021"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "obrigatoria", "mecanica": "eletiva"}},
-            {"id": "ENG10055", "nome": "Sistemas de Tempo Real - I", "creditos": 4, "semIdeal": 8, "oferta": "ambos", "prereqs": ["ENG04475"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "CCA99010", "nome": "Projeto Integrado III", "creditos": 9, "semIdeal": 9, "oferta": "ambos", "prereqs": ["CCA99009"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "ENG07012", "nome": "Laboratório de Controle e Operação de Processos", "creditos": 3, "semIdeal": 9, "oferta": "ambos", "prereqs": ["ENG07042"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "ENG07062", "nome": "Otimização Aplicada", "creditos": 3, "semIdeal": 9, "oferta": "ambos", "prereqs": ["ENG07042"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "eletiva"}},
-            {"id": "ENG03047", "nome": "Projetos de Sistemas Mecânicos", "creditos": 4, "semIdeal": 9, "oferta": "impar", "prereqs": ["ENG03044", "ENG03045"], "reqCreditos": 0, "fdc": {"potencia": "eletiva", "cadcam": "eletiva", "mecanica": "obrigatoria"}}
-        ];
+// cada arquivo em cursos/ chama registrarCurso({...})
+const CURSOS = {};
+function registrarCurso(c) { CURSOS[c.id] = c; }
+</script>
+<script src="cursos/eca.js"></script>
+<script src="cursos/mec.js"></script>
+<script src="cursos/ele.js"></script>
+<script src="cursos/ene.js"></script>
+<script src="cursos/pro.js"></script>
+<script>
+/* ---------- curso selecionado ---------- */
+const CURSO_PADRAO = 'eca', CHAVE_GLOBAL = 'simulador_global_v1';
+const REPO_ISSUES = 'https://github.com/LucasRamos13/SimuladorCursoCCA-v2.0/issues', EMAIL_CONTATO = 'lucasgarciaramos13@gmail.com';
+function lerGlobal() { try { return JSON.parse(localStorage.getItem(CHAVE_GLOBAL)) || {}; } catch(e) { return {}; } }
+function salvarGlobal(g) { try { localStorage.setItem(CHAVE_GLOBAL, JSON.stringify({...lerGlobal(), ...g})); } catch(e) {} }
+const CURSO_ID = (() => {
+    const q = new URLSearchParams(location.search).get('curso');
+    if (q && CURSOS[q]) return q;
+    const g = lerGlobal().curso;
+    return g && CURSOS[g] ? g : CURSO_PADRAO;
+})();
+salvarGlobal({curso: CURSO_ID});
+const CURSO = CURSOS[CURSO_ID];
+const disciplinas = CURSO.disciplinas;
+const ESTAGIO = CURSO.estagio || null;          // null: curso sem estágio obrigatório
+const SIGLA = CURSO.sigla;
 
-const METAS = {obr:222, ele:8, compl:6, extPadrao:420, tiposCompl:2};
-const STORAGE_KEY = 'eca_simulador_status_v6';
+const METAS = {obr:CURSO.metas.obr, ele:CURSO.metas.ele||0, compl:CURSO.metas.compl||0, extPadrao:CURSO.metas.extensaoHoras||0, tiposCompl:CURSO.metas.tiposCompl||0};
+const STORAGE_KEY = CURSO.storageKey || `simulador_${CURSO.id}_v1`;
 const HORAS_POR_CREDITO = 15; // UFRGS: 1 crédito = 15 horas
-const ESTAGIO_HORAS = 200;     // carga horária mínima do estágio
-const ESTAGIO_ETAPA = 5;       // estágio libera com as etapas 1..5 concluídas
-const DEFAULT_STATE = {status:{}, compl:0, ext:0, extNecessaria:420, complTipos:0, tema:null, fdc:'cadcam', aba:'organograma',
+const ESTAGIO_HORAS = ESTAGIO ? ESTAGIO.horas : 0;  // carga horária mínima do estágio
+const DEFAULT_STATE = {status:{}, compl:0, ext:0, extNecessaria:METAS.extPadrao, complTipos:0, tema:null, fdc:CURSO.fdcs[0].id, aba:'organograma',
     conquistas:{}, reprovadas:[], som:true, planoMaxCr:30, planoImpar:1, fraseNova:false, fraseIdx:null,
     ocultarEtapas:true, ocultarCadeiras:false, matOcultarEtapas:true, matOcultarCadeiras:false, ocultarEletivas:false,
     estagio:{inicio:null, registros:[], autoConcluido:false}};
@@ -729,6 +706,8 @@ function normalizarEstado(salvo) {
         };
         // histórico de reprovações (para "Superação") inclui as que já estavam salvas como reprovadas
         Object.entries(est.status).forEach(([id,st])=>{ if(st==='reprovada' && !est.reprovadas.includes(id)) est.reprovadas.push(id); });
+        if (!CURSO.fdcs.some(f=>f.id===est.fdc)) est.fdc = CURSO.fdcs[0].id;
+        if (est.aba==='estagio' && !ESTAGIO) est.aba = 'organograma';
         return est;
 }
 function salvarEstado() {
@@ -736,15 +715,16 @@ function salvarEstado() {
 }
 function temaAtual() {
     // sem preferência salva: segue o tema do sistema operacional
+    const g = lerGlobal().tema; if (g) return g;
     if (estadoUsuario.tema) return estadoUsuario.tema;
     return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 }
 function sincronizarInputs() {
     document.getElementById('inp-compl').value = estadoUsuario.compl ?? 0;
     document.getElementById('inp-ext-atual').value = estadoUsuario.ext ?? 0;
-    document.getElementById('inp-ext-necessaria').value = estadoUsuario.extNecessaria ?? 420;
+    document.getElementById('inp-ext-necessaria').value = estadoUsuario.extNecessaria ?? METAS.extPadrao;
     document.getElementById('inp-compl-tipos').value = estadoUsuario.complTipos ?? 0;
-    document.getElementById('seletor-fdc').value = estadoUsuario.fdc || 'cadcam';
+    document.getElementById('seletor-fdc').value = estadoUsuario.fdc || CURSO.fdcs[0].id;
     document.getElementById('cfg-max').value = estadoUsuario.planoMaxCr ?? 30;
     document.getElementById('cfg-impar').value = String(estadoUsuario.planoImpar ?? 1);
     document.getElementById('opt-etapas').checked = estadoUsuario.ocultarEtapas !== false;
@@ -756,6 +736,7 @@ function sincronizarInputs() {
 function toggleTema() {
     estadoUsuario.tema = document.body.classList.contains('light-mode') ? 'dark' : 'light';
     document.body.classList.toggle('light-mode', estadoUsuario.tema === 'light');
+    salvarGlobal({tema: estadoUsuario.tema});
     salvarEstado();
     if(window.ultimoHover) mostrarLinhas(window.ultimoHover);
 }
@@ -929,8 +910,9 @@ function atualizarTudo() {
     });
 
     const metaExt=Math.max(0,Number(estadoUsuario.extNecessaria)||0), compl=Math.max(0,Number(estadoUsuario.compl)||0), tipos=Math.max(0,Number(estadoUsuario.complTipos)||0);
-    const nProjetos=disciplinas.filter(d=>d.nome.toLowerCase().includes('projeto integrado')&&statusOf(d.id)==='concluida').length;
-    const extProjetos=nProjetos*100;
+    const extAtiv=CURSO.extensaoAtividades;
+    const nProjetos=extAtiv?extAtiv.ids.filter(id=>statusOf(id)==='concluida').length:0;
+    const extProjetos=nProjetos*(extAtiv?extAtiv.horas:0);
     const extManual=Math.max(0,Number(estadoUsuario.ext)||0);
     const extObtida=extManual+extProjetos;
     const pct=(v,m)=>m>0?Math.min(100,Math.round(v/m*100)):100;
@@ -953,7 +935,7 @@ function atualizarTudo() {
     document.getElementById('inp-ext-necessaria').value=metaExt;
     document.getElementById('cred-ext').textContent=extObtida;
     setProgresso('ext',extObtida,pct(extObtida,metaExt));
-    document.getElementById('ext-proj').textContent = nProjetos ? `+ ${extProjetos} h de ${nProjetos} Projeto${nProjetos>1?'s':''} Integrado${nProjetos>1?'s':''}` : '+100 h por Projeto Integrado concluído';
+    document.getElementById('ext-proj').textContent = !extAtiv ? '' : nProjetos ? `+ ${extProjetos} h de ${nProjetos}× ${extAtiv.rotulo}` : `+${extAtiv.horas} h por ${extAtiv.rotulo} concluído`;
 
     const typeEl=document.getElementById('compl-type');
     const tiposOk=tipos>=METAS.tiposCompl;
@@ -962,17 +944,17 @@ function atualizarTudo() {
     document.getElementById('inp-compl-tipos').value=tipos;
 
     // estágio
-    const est = infoEstagio(fdcAtual, statusOf);
+    const est = infoEstagio(fdcAtual, statusOf, obr);
     setProgresso('est', est.horas, pct(est.horas, ESTAGIO_HORAS));
     document.getElementById('cred-est').textContent = fmtNum(est.horas);
     document.getElementById('foot-est').innerHTML = !est.liberado
-        ? `🔒 Libera ao concluir a etapa ${ESTAGIO_ETAPA} · ${est.reqOk}/${est.reqTot} cadeiras`
+        ? `🔒 Libera ao ${regraEstagio()} · ${est.reqOk}/${est.reqTot}`
         : est.horas>=ESTAGIO_HORAS ? '✓ Carga horária cumprida'
         : `Faltam ${fmtNum(ESTAGIO_HORAS-est.horas)} h · <button class="tile-link" onclick="mudarAba('estagio')">registrar horas →</button>`;
 
     // extensão e estágio convertidos em créditos para não misturar unidades (420 h = 28 cr; 200 h ≈ 13,3 cr)
     const extCr=Math.min(extObtida,metaExt)/HORAS_POR_CREDITO, metaExtCr=metaExt/HORAS_POR_CREDITO;
-    const estCr=Math.min(est.horas,ESTAGIO_HORAS)/HORAS_POR_CREDITO, metaEstCr=ESTAGIO_HORAS/HORAS_POR_CREDITO;
+    const estCr=ESTAGIO?Math.min(est.horas,ESTAGIO_HORAS)/HORAS_POR_CREDITO:0, metaEstCr=ESTAGIO_HORAS/HORAS_POR_CREDITO;
     const totalObt=Math.min(obr,METAS.obr)+Math.min(ele,METAS.ele)+Math.min(compl,METAS.compl)+extCr+estCr;
     const totalNec=METAS.obr+METAS.ele+METAS.compl+metaExtCr+metaEstCr;
     const totalRaw=totalNec>0?totalObt/totalNec*100:100;
@@ -1101,7 +1083,7 @@ function RenderizarOrganograma(mapa) {
     const foco = document.activeElement && document.activeElement.classList.contains('org-card') ? document.activeElement.id : null;
     board.innerHTML=''; ele.innerHTML='';
     const cols=[];
-    for(let s=1;s<=10;s++){const col=document.createElement('div');col.className='coluna-semestre';col.id='col-etapa-'+s;col.innerHTML=`<h4>Etapa ${s}<small></small></h4>`;board.appendChild(col);cols.push({col,s,tot:0,ok:0,n:0,nOk:0})}
+    for(let s=1;s<=CURSO.etapas;s++){const col=document.createElement('div');col.className='coluna-semestre';col.id='col-etapa-'+s;col.innerHTML=`<h4>Etapa ${s}<small></small></h4>`;board.appendChild(col);cols.push({col,s,tot:0,ok:0,n:0,nOk:0})}
     let eletivasVisiveis=0;
     disciplinas.forEach(d=>{
         const info=mapa[d.id], concluida=info.statusReal==='concluida';
@@ -1110,7 +1092,7 @@ function RenderizarOrganograma(mapa) {
         const visivel = !(ocultarCad && concluida);
         if(info.tipoNesteFDC==='eletiva') { if(visivel){ele.insertAdjacentHTML('beforeend',html);eletivasVisiveis++;} }
         else {
-            const c=cols[Math.min(info.semIdeal,10)-1];
+            const c=cols[Math.min(Math.max(info.semIdeal,1),CURSO.etapas)-1];
             if(visivel) c.col.insertAdjacentHTML('beforeend',html);
             c.n++; c.tot+=info.creditos; if(concluida){c.nOk++; c.ok+=info.creditos;}
         }
@@ -1268,22 +1250,39 @@ const hojeISO = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTim
 const fmtDataISO = iso => iso ? iso.split('-').reverse().join('/') : '';
 
 /* ---------- estágio ---------- */
-function infoEstagio(fdc, statusOf) {
-    const reqs = disciplinas.filter(d => d.fdc[fdc]==='obrigatoria' && d.semIdeal<=ESTAGIO_ETAPA);
-    const faltam = reqs.filter(d => statusOf(d.id)!=='concluida');
+// regra de liberação vem do curso: {etapa:N} | {prereqs:[...], creditosObrigatorios:N} | 'inicio'
+function infoEstagio(fdc, statusOf, credObr=0) {
     const e = estadoUsuario.estagio;
     const horas = e.registros.reduce((s,r)=>s+(Number(r.horas)||0),0);
     const iniciado = !!e.inicio || e.registros.length>0;
-    return {horas, iniciado, reqOk:reqs.length-faltam.length, reqTot:reqs.length, faltam,
-            liberado: faltam.length===0, acessivel: faltam.length===0 || iniciado};
+    if (!ESTAGIO) return {existe:false, horas:0, iniciado:false, reqOk:0, reqTot:0, faltam:[], credReq:0, credOk:true, liberado:true, acessivel:false};
+    const lib = ESTAGIO.liberacao;
+    let reqs = [], credReq = 0;
+    if (lib && lib.etapa) reqs = disciplinas.filter(d => d.fdc[fdc]==='obrigatoria' && d.semIdeal<=lib.etapa && d.id!==ESTAGIO.id);
+    else if (lib && lib !== 'inicio') { reqs = (lib.prereqs||[]).map(id=>byId[id]).filter(Boolean); credReq = lib.creditosObrigatorios||0; }
+    const faltam = reqs.filter(d => statusOf(d.id)!=='concluida');
+    const credOk = credObr >= credReq, liberado = !faltam.length && credOk;
+    return {existe:true, horas, iniciado, faltam, credReq, credOk, credObr,
+            reqOk: reqs.length-faltam.length + (credReq && credOk ? 1 : 0), reqTot: reqs.length + (credReq ? 1 : 0),
+            liberado, acessivel: liberado || iniciado};
+}
+function regraEstagio() {
+    const lib = ESTAGIO && ESTAGIO.liberacao;
+    if (!lib || lib === 'inicio') return 'iniciar o curso';
+    if (lib.etapa) return `concluir as etapas 1 a ${lib.etapa}`;
+    const n = (lib.prereqs||[]).length, partes = [];
+    if (n) partes.push(`${n} cadeira${n>1?'s':''} pré-requisito`);
+    if (lib.creditosObrigatorios) partes.push(`${lib.creditosObrigatorios} créditos obrigatórios`);
+    return 'concluir ' + partes.join(' e ');
 }
 // mantém a atividade "Estágio Supervisionado" do organograma coerente com as horas registradas
 function sincronizarCardEstagio() {
+    if (!ESTAGIO || !byId[ESTAGIO.id]) return;
     const e = estadoUsuario.estagio, horas = e.registros.reduce((s,r)=>s+(Number(r.horas)||0),0);
-    const st = estadoUsuario.status.ESTAGIO || 'pendente';
-    if (horas >= ESTAGIO_HORAS) { if (st!=='concluida') { estadoUsuario.status.ESTAGIO='concluida'; e.autoConcluido=true; } }
-    else if (st==='concluida' && e.autoConcluido) { estadoUsuario.status.ESTAGIO='cursando'; e.autoConcluido=false; }
-    else if ((horas>0 || e.inicio) && st==='pendente') estadoUsuario.status.ESTAGIO='cursando';
+    const st = estadoUsuario.status[ESTAGIO.id] || 'pendente';
+    if (horas >= ESTAGIO_HORAS) { if (st!=='concluida') { estadoUsuario.status[ESTAGIO.id]='concluida'; e.autoConcluido=true; } }
+    else if (st==='concluida' && e.autoConcluido) { estadoUsuario.status[ESTAGIO.id]='cursando'; e.autoConcluido=false; }
+    else if ((horas>0 || e.inicio) && st==='pendente') estadoUsuario.status[ESTAGIO.id]='cursando';
 }
 function alterarEstagio(fn, msg) {
     const antes = tirarSnapshot();
@@ -1310,16 +1309,16 @@ function definirInicioEstagio(v) {
     alterarEstagio(e => { e.inicio = v || null; }, v ? `Início do estágio: ${fmtDataISO(v)}` : null);
 }
 function RenderizarEstagio(c) {
-    const el = document.getElementById('estagio'); if (!el) return;
+    const el = document.getElementById('estagio'); if (!el || !ESTAGIO) return;
     const est = c.est, e = estadoUsuario.estagio;
     if (!est.acessivel) {
         const p = est.reqTot ? Math.round(est.reqOk/est.reqTot*100) : 100;
         el.innerHTML = `<div class="est-lock">
             <div class="est-lock-ico" aria-hidden="true">🔒</div>
             <h3>Estágio bloqueado</h3>
-            <p>Conclua todas as cadeiras obrigatórias das etapas 1 a ${ESTAGIO_ETAPA} para liberar o acompanhamento do estágio.</p>
+            <p>Para liberar o acompanhamento do estágio é preciso ${regraEstagio()}.</p>
             <div class="bar"><i style="width:${p}%"></i></div>
-            <div class="hint">${est.reqOk} de ${est.reqTot} cadeiras concluídas · faltam:</div>
+            <div class="hint">${est.reqOk} de ${est.reqTot} requisitos cumpridos${est.credReq ? ` · créditos obrigatórios: ${est.credObr}/${est.credReq}` : ''}${est.faltam.length ? ' · faltam:' : ''}</div>
             <div class="est-faltam">${est.faltam.map(d=>`<span class="${(ultimoMapa[d.id]||{}).corAtual||'status-bloqueada'}"><span class="mono">${d.id}</span>${d.nome}</span>`).join('')}</div>
         </div>`;
         return;
@@ -1367,7 +1366,7 @@ function RenderizarEstagio(c) {
 }
 
 /* ---------- salvar / carregar progresso em arquivo ---------- */
-const SAVE_APP = 'simulador-curso-ufrgs', SAVE_VERSAO = 1, SAVE_CURSO = 'ECA-UFRGS';
+const SAVE_APP = 'simulador-curso-ufrgs', SAVE_VERSAO = 1, SAVE_CURSO = CURSO.saveId || `${SIGLA}-UFRGS`;
 const STATUS_VALIDOS = ['pendente','cursando','concluida','reprovada'];
 function abrirMenuSave(ev) {
     ev.stopPropagation(); fecharMenuExport();
@@ -1383,7 +1382,7 @@ function exportarSave() {
     fecharMenuSave();
     const dados = {app:SAVE_APP, versao:SAVE_VERSAO, curso:SAVE_CURSO, exportadoEm:new Date().toISOString(), estado:estadoUsuario};
     const url = URL.createObjectURL(new Blob([JSON.stringify(dados, null, 2)], {type:'application/json'}));
-    baixar(url, `simulador-eca-progresso-${hojeISO()}.json`);
+    baixar(url, `simulador-${SIGLA.toLowerCase()}-progresso-${hojeISO()}.json`);
     setTimeout(()=>URL.revokeObjectURL(url), 2000);
     mostrarToast('✓ Progresso exportado', null);
 }
@@ -1396,7 +1395,7 @@ function importarSave(arquivo) {
             // aceita o arquivo exportado e também o JSON cru do localStorage
             const bruto = d && d.app === SAVE_APP ? d.estado : (d && d.status ? d : null);
             if (!bruto || typeof bruto.status !== 'object' || Array.isArray(bruto.status)) throw new Error('o arquivo não é um progresso do simulador');
-            if (d.curso && d.curso !== SAVE_CURSO) throw new Error(`o arquivo é de outro curso (${d.curso})`);
+            if (d.curso && d.curso !== SAVE_CURSO) { const outro = Object.values(CURSOS).find(c => (c.saveId || `${c.sigla}-UFRGS`) === d.curso); throw new Error(`o arquivo é de outro curso (${outro ? outro.nome : d.curso}). Troque para esse curso antes de importar`); }
             // só aceita cadeiras e status conhecidos
             const status = {};
             Object.entries(bruto.status).forEach(([id,st]) => { if (byId[id] && STATUS_VALIDOS.includes(st) && st!=='pendente') status[id] = st; });
@@ -1455,8 +1454,8 @@ function montarFolhaExport(alvo) {
     const titulos = {organograma:'Organograma do curso', plano:'Previsão de formatura', conquistas:'Conquistas'};
     const folha = document.createElement('div');
     folha.className = 'export-sheet';
-    folha.innerHTML = `<div class="ex-head"><div class="brand-mark">ECA</div><div><h1>${titulos[alvo]}</h1>
-        <small>Eng. de Controle e Automação · UFRGS · ${fdcSel.options[fdcSel.selectedIndex].text} · ${document.getElementById('pct-total').textContent} do curso concluído · ${new Date().toLocaleDateString('pt-BR')}</small></div></div>`;
+    folha.innerHTML = `<div class="ex-head"><div class="brand-mark">${SIGLA}</div><div><h1>${titulos[alvo]}</h1>
+        <small>${CURSO.nome} · UFRGS${CURSO.fdcs.length>1 ? ' · '+fdcSel.options[fdcSel.selectedIndex].text : ''}${CURSO.prototipo ? ' · protótipo' : ''} · ${document.getElementById('pct-total').textContent} do curso concluído · ${new Date().toLocaleDateString('pt-BR')}</small></div></div>`;
     let corpo, origem;
     if (alvo === 'organograma') {
         folha.insertAdjacentHTML('beforeend', `<div class="legend ex-legend">${document.querySelector('#organograma .legend').innerHTML}</div>`);
@@ -1485,7 +1484,7 @@ function montarFolhaExport(alvo) {
         ['viewBox','fill','stroke','stroke-width','stroke-linecap','stroke-linejoin'].forEach(a => { if (sym.hasAttribute(a)) svg.setAttribute(a, sym.getAttribute(a)); });
         svg.innerHTML = sym.innerHTML;
     });
-    folha.insertAdjacentHTML('beforeend', `<div class="ex-foot">Gerado pelo Simulador do Curso ECA</div>`);
+    folha.insertAdjacentHTML('beforeend', `<div class="ex-foot">Gerado pelo Simulador do Curso · ${SIGLA} · UFRGS</div>`);
     document.body.appendChild(folha);
     if (alvo === 'organograma') { // eletivas quebram linha na largura do quadro
         const board = corpo.querySelector('.org-board'), row = corpo.querySelector('.eletivas-row');
@@ -1506,7 +1505,7 @@ async function exportar(alvo, fmt) {
         const opts = {width:w, height:hgt, pixelRatio:2, cacheBust:true,
             backgroundColor: getComputedStyle(document.body).backgroundColor,
             style:{position:'static', left:'0', top:'0'}};
-        const nome = `${alvo}-eca-${hojeISO()}`;
+        const nome = `${alvo}-${SIGLA.toLowerCase()}-${hojeISO()}`;
         if (fmt === 'png') {
             baixar(await window.htmlToImage.toPng(folha, opts), nome + '.png');
         } else {
@@ -1528,21 +1527,21 @@ function baixar(url, nome) { const a=document.createElement('a'); a.href=url; a.
 
 /* ---------- conquistas ---------- */
 // Preencher com os códigos das disciplinas (ex.: 'MAT01353')
-const LISTA_CAMPUS_VALE = ['MAT01355','INF01202','MAT01353','MAT01354','MAT01169','MAT01167','FIS01182','FIS01181','FIS01183','MAT01168','MAT02219','INF01057','QUI01009'];
-const LISTA_SOBREVIVENTE = ['ENG10044','ENG10023','ENG10048'];
+const LISTA_CAMPUS_VALE = (CURSO.conquistas && CURSO.conquistas.campusVale) || [];
+const LISTA_SOBREVIVENTE = (CURSO.conquistas && CURSO.conquistas.sobrevivente) || []; // vazia = conquista oculta
 
 const ok = (c,id) => c.statusOf(id)==='concluida';
 const listaProg = (c,l) => [l.filter(id=>ok(c,id)).length, l.length];
 const CONQUISTAS = [
     {id:'fundacao', icone:'🏛️', nome:'Fundação completa', desc:'Complete todos os créditos obrigatórios.', prog:c=>[Math.min(c.obr,METAS.obr),METAS.obr]},
-    {id:'facil', icone:'😎', nome:'Mais fácil do que parece', desc:'Complete todos os créditos eletivos.', prog:c=>[Math.min(c.ele,METAS.ele),METAS.ele]},
-    {id:'complementado', icone:'🧩', nome:'Complementado', desc:`Complete os ${METAS.compl} créditos complementares em ${METAS.tiposCompl} tipos diferentes.`,
+    {id:'facil', ativa:()=>METAS.ele>0, icone:'😎', nome:'Mais fácil do que parece', desc:'Complete todos os créditos eletivos.', prog:c=>[Math.min(c.ele,METAS.ele),METAS.ele]},
+    {id:'complementado', ativa:()=>METAS.compl>0, icone:'🧩', nome:'Complementado', desc:`Complete os ${METAS.compl} créditos complementares em ${METAS.tiposCompl} tipos diferentes.`,
         prog:c=>[Math.min(c.compl,METAS.compl)+Math.min(c.tipos,METAS.tiposCompl), METAS.compl+METAS.tiposCompl],
         cond:c=>c.compl>=METAS.compl && c.tipos>=METAS.tiposCompl},
-    {id:'extensao', icone:'🤝', nome:'Extensão', desc:'Complete a carga horária de extensão necessária.', unid:' h', prog:c=>[Math.min(c.extObtida,c.metaExt),c.metaExt]},
-    {id:'estagio_liberado', icone:'🎫', nome:'Portas abertas', desc:`Libere o estágio concluindo as etapas 1 a ${ESTAGIO_ETAPA}.`, prog:c=>[c.est.reqOk,c.est.reqTot]},
-    {id:'estagio_inicio', icone:'🪪', nome:'Crachá novo', desc:'Comece o estágio (registre a data de início ou as primeiras horas).', prog:c=>[c.est.iniciado?1:0,1]},
-    {id:'estagio_fim', icone:'💼', nome:'Profissional', desc:`Conclua as ${ESTAGIO_HORAS} horas de estágio.`, unid:' h', prog:c=>[Math.min(Math.floor(c.est.horas),ESTAGIO_HORAS),ESTAGIO_HORAS]},
+    {id:'extensao', ativa:()=>METAS.extPadrao>0, icone:'🤝', nome:'Extensão', desc:'Complete a carga horária de extensão necessária.', unid:' h', prog:c=>[Math.min(c.extObtida,c.metaExt),c.metaExt]},
+    {id:'estagio_liberado', ativa:()=>!!ESTAGIO && ESTAGIO.liberacao!=='inicio', icone:'🎫', nome:'Portas abertas', desc:`Libere o estágio: ${regraEstagio()}.`, prog:c=>[c.est.reqOk,c.est.reqTot]},
+    {id:'estagio_inicio', ativa:()=>!!ESTAGIO, icone:'🪪', nome:'Crachá novo', desc:'Comece o estágio (registre a data de início ou as primeiras horas).', prog:c=>[c.est.iniciado?1:0,1]},
+    {id:'estagio_fim', ativa:()=>!!ESTAGIO, icone:'💼', nome:'Profissional', desc:`Conclua as ${ESTAGIO_HORAS} horas de estágio.`, unid:' h', prog:c=>[Math.min(Math.floor(c.est.horas),ESTAGIO_HORAS),ESTAGIO_HORAS]},
     {id:'overkill', icone:'💥', nome:'Overkill', desc:'Ultrapasse em 25% o necessário em extensão, eletivos ou complementares.', unid:'%',
         prog:c=>{const r=Math.max(c.ele/METAS.ele, c.compl/METAS.compl, c.metaExt?c.extObtida/c.metaExt:0); return [Math.min(125,Math.floor(r*100)),125]},
         cond:c=>c.ele>=METAS.ele*1.25 || c.compl>=METAS.compl*1.25 || (c.metaExt>0 && c.extObtida>=c.metaExt*1.25)},
@@ -1551,19 +1550,20 @@ const CONQUISTAS = [
     {id:'longe', icone:'🚀', nome:'Você vai longe', desc:'Complete 25% dos créditos obrigatórios.', prog:c=>{const m=Math.ceil(METAS.obr*.25); return [Math.min(c.obr,m),m]}},
     {id:'naodesista', icone:'🌧️', nome:'Não desista', desc:'Reprove em uma cadeira. Acontece com todo mundo.', prog:c=>[estadoUsuario.reprovadas.length?1:0,1]},
     {id:'superacao', icone:'🔥', nome:'Superação', desc:'Seja aprovado numa cadeira em que já reprovou.', prog:c=>[estadoUsuario.reprovadas.some(id=>ok(c,id))?1:0,1]},
-    {id:'liberdade', icone:'🌳', nome:'Liberdade Completa', desc:'Complete todas as cadeiras do Campus do Vale.', lista:LISTA_CAMPUS_VALE, prog:c=>listaProg(c,LISTA_CAMPUS_VALE)},
-    {id:'sobrevivente', icone:'💀', nome:'Sobrevivente', desc:'Complete todas as cadeiras daquele que não deve ser nomeado.', lista:LISTA_SOBREVIVENTE, prog:c=>listaProg(c,LISTA_SOBREVIVENTE)},
+    {id:'liberdade', ativa:()=>LISTA_CAMPUS_VALE.length>0, icone:'🌳', nome:'Liberdade Completa', desc:'Complete todas as cadeiras do Campus do Vale.', lista:LISTA_CAMPUS_VALE, prog:c=>listaProg(c,LISTA_CAMPUS_VALE)},
+    {id:'sobrevivente', ativa:()=>LISTA_SOBREVIVENTE.length>0, icone:'💀', nome:'Sobrevivente', desc:'Complete todas as cadeiras daquele que não deve ser nomeado.', lista:LISTA_SOBREVIVENTE, prog:c=>listaProg(c,LISTA_SOBREVIVENTE)},
     {id:'filtro', icone:'🧪', nome:'Passou do filtro', desc:'Complete 25% do curso.', unid:'%', prog:c=>[Math.min(25,Math.floor(c.totalRaw)),25]},
     {id:'meio', icone:'🛤️', nome:'Meio do caminho', desc:'Complete 50% do curso.', unid:'%', prog:c=>[Math.min(50,Math.floor(c.totalRaw)),50]},
     {id:'guerreiro', icone:'⚔️', nome:'Guerreiro', desc:'Conclua 100% do curso.', unid:'%', epico:true, prog:c=>[Math.min(100,Math.floor(c.totalRaw)),100]},
-    {id:'extra', icone:'📚', nome:'Extra Dedicado', desc:'Faça 6 ou mais cadeiras não obrigatórias (eletivas ou de outra ênfase).',
+    {id:'extra', ativa:()=>disciplinas.some(d=>Object.values(d.fdc).includes('eletiva')), icone:'📚', nome:'Extra Dedicado', desc:'Faça 6 ou mais cadeiras não obrigatórias (eletivas ou de outra ênfase).',
         prog:c=>[Math.min(6,disciplinas.filter(d=>d.fdc[c.fdc]!=='obrigatoria' && ok(c,d.id)).length),6]},
 ];
+const CONQ_ATIVAS = () => CONQUISTAS.filter(a => !a.ativa || a.ativa());
 const atingiu = (a,c) => a.cond ? a.cond(c) : (()=>{const [v,m]=a.prog(c); return m>0 && v>=m})();
 
 let inicializando = true, importando = false, conquistasFrescas = new Set();
 function verificarConquistas(c) {
-    const novas = CONQUISTAS.filter(a => !estadoUsuario.conquistas[a.id] && atingiu(a,c));
+    const novas = CONQ_ATIVAS().filter(a => !estadoUsuario.conquistas[a.id] && atingiu(a,c));
     if (!novas.length) return;
     const agora = new Date().toISOString();
     novas.forEach(a => { estadoUsuario.conquistas[a.id] = agora; conquistasFrescas.add(a.id); });
@@ -1579,7 +1579,8 @@ function verificarConquistas(c) {
 
 function RenderizarConquistas(c) {
     const el = document.getElementById('conquistas'); if (!el) return;
-    const total = CONQUISTAS.length, feitas = CONQUISTAS.filter(a=>estadoUsuario.conquistas[a.id]).length;
+    const lista = CONQ_ATIVAS();
+    const total = lista.length, feitas = lista.filter(a=>estadoUsuario.conquistas[a.id]).length;
     document.getElementById('ach-count').textContent = feitas;
     const fmtData = iso => new Date(iso).toLocaleDateString('pt-BR');
     el.innerHTML = `<div class="ach-head">
@@ -1588,7 +1589,7 @@ function RenderizarConquistas(c) {
         <button class="btn" onclick="toggleSom()" aria-pressed="${!!estadoUsuario.som}">${estadoUsuario.som?'🔊 Som ligado':'🔇 Som desligado'}</button>
         <button class="btn ghost" onclick="zerarConquistas()">Zerar</button>
         <button class="btn" onclick="abrirMenuExport(event,'conquistas')"><svg><use href="#i-down"/></svg>Exportar</button>
-      </div><div class="ach-grid">${CONQUISTAS.map(a => {
+      </div><div class="ach-grid">${lista.map(a => {
         const quando = estadoUsuario.conquistas[a.id];
         const [v,m] = a.prog(c);
         let rodape;
@@ -1744,7 +1745,75 @@ function atualizarSombras() {
     f.classList.toggle('can-right', w.scrollLeft<max-2);
 }
 
+function prepararInterfaceDoCurso() {
+    document.title = `Simulador ${SIGLA} - UFRGS`;
+    document.getElementById('brand-sigla').textContent = SIGLA;
+    document.getElementById('brand-sigla').style.fontSize = SIGLA.length > 3 ? '11px' : '';
+    document.getElementById('brand-nome').textContent = CURSO.nomeCurto || CURSO.nome;
+    document.getElementById('badge-proto').hidden = !CURSO.prototipo;
+    const sel = document.getElementById('seletor-fdc');
+    sel.innerHTML = CURSO.fdcs.map(f => `<option value="${f.id}">${escHtml(f.nome)}</option>`).join('');
+    document.getElementById('field-fdc').hidden = CURSO.fdcs.length < 2;  // sem ênfases: percurso único
+    document.getElementById('meta-obr').textContent = METAS.obr;
+    document.getElementById('meta-ele').textContent = METAS.ele;
+    document.getElementById('meta-compl').textContent = METAS.compl;
+    document.getElementById('meta-tipos').textContent = METAS.tiposCompl;
+    document.getElementById('meta-est').textContent = ESTAGIO_HORAS;
+    document.getElementById('tile-ele').hidden = !METAS.ele;
+    document.getElementById('tile-compl').hidden = !METAS.compl;
+    document.getElementById('tile-est').hidden = !ESTAGIO;
+    document.getElementById('btn-estagio').hidden = !ESTAGIO;
+    document.getElementById('total-hint').textContent = ESTAGIO ? 'extensão e estágio: 15 h = 1 cr' : 'extensão: 15 h = 1 cr';
+}
+
+/* ---------- troca de curso ---------- */
+function abrirMenuCursos(ev) {
+    ev.stopPropagation(); fecharMenuExport(); fecharMenuSave();
+    const pop = document.getElementById('curso-pop');
+    if (!pop.hidden) { fecharMenuCursos(); return; }
+    pop.innerHTML = '<div class="pop-titulo">Escolha o curso</div>' + Object.values(CURSOS).map(c => `
+        <button role="menuitemradio" aria-checked="${c.id===CURSO_ID}" onclick="escolherCurso('${c.id}')">
+            <span class="brand-mark mini" aria-hidden="true">${c.sigla}</span>
+            <span class="pc-nome">${escHtml(c.nome)}${c.prototipo ? ' <span class="badge-proto mini">Protótipo</span>' : ''}</span>
+            ${c.id===CURSO_ID ? '<svg class="pc-ok"><use href="#i-check"/></svg>' : ''}
+        </button>`).join('');
+    pop.hidden = false;
+    const r = ev.currentTarget.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(innerWidth - pop.offsetWidth - 8, r.left)) + 'px';
+    pop.style.top = (r.bottom + 6) + 'px';
+    pop.querySelector('[aria-checked="true"]')?.focus();
+}
+function fecharMenuCursos() { document.getElementById('curso-pop').hidden = true; }
+function escolherCurso(id) {
+    fecharMenuCursos();
+    if (id === CURSO_ID || !CURSOS[id]) return;
+    if (CURSOS[id].prototipo) abrirAvisoPrototipo(CURSOS[id], () => irParaCurso(id));
+    else irParaCurso(id);
+}
+function irParaCurso(id) {
+    salvarEstado(); salvarGlobal({curso: id});
+    try { sessionStorage.setItem('aviso_proto_' + id, '1'); } catch(e) {}
+    const u = new URL(location.href); u.searchParams.set('curso', id); u.hash = '';
+    location.href = u.toString(); // recarrega: todo o estado interno recomeça limpo para o novo curso
+}
+function abrirAvisoPrototipo(c, aoContinuar) {
+    const m = document.getElementById('modal-proto');
+    document.getElementById('mp-curso').textContent = c.nome;
+    document.getElementById('mp-fonte').textContent = c.fonte || '';
+    const ok = document.getElementById('mp-ok'), cancelar = document.getElementById('mp-cancelar');
+    ok.textContent = aoContinuar ? 'Entendi, abrir o curso' : 'Entendi';
+    cancelar.hidden = !aoContinuar;
+    const fechar = () => { m.hidden = true; document.removeEventListener('keydown', esc); };
+    const esc = e => { if (e.key === 'Escape') fechar(); };
+    ok.onclick = () => { fechar(); try { sessionStorage.setItem('aviso_proto_' + c.id, '1'); } catch(e) {} if (aoContinuar) aoContinuar(); };
+    cancelar.onclick = fechar;
+    m.onclick = e => { if (e.target === m) fechar(); };
+    document.addEventListener('keydown', esc);
+    m.hidden = false; ok.focus();
+}
+
 function inicializar() {
+    prepararInterfaceDoCurso();
     sincronizarInputs();
     ['inp-compl','inp-ext-atual','inp-ext-necessaria','inp-compl-tipos'].forEach(id=>document.getElementById(id).addEventListener('change',e=>{
         if(id==='inp-compl')estadoUsuario.compl=Math.max(0,Number(e.target.value)||0);
@@ -1770,12 +1839,12 @@ function inicializar() {
         const atual=estadoUsuario.status[detalheId]||'pendente';
         if(b.dataset.st!==atual) aplicarStatus(detalheId,b.dataset.st);
     }));
-    document.addEventListener('keydown',e=>{if(e.key==='Escape'){fecharDetalhe();fecharMenuExport();fecharMenuSave();}});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){fecharDetalhe();fecharMenuExport();fecharMenuSave();fecharMenuCursos();}});
     document.getElementById('toast-undo').addEventListener('click',desfazer);
     document.querySelectorAll('#export-pop button').forEach(b=>b.addEventListener('click',()=>exportar(exportAlvo,b.dataset.fmt)));
     document.getElementById('inp-import').addEventListener('change',e=>{ importarSave(e.target.files[0]); e.target.value=''; });
-    document.addEventListener('click',e=>{ if(!e.target.closest('#export-pop')) fecharMenuExport(); if(!e.target.closest('#save-pop')) fecharMenuSave(); });
-    window.addEventListener('scroll',()=>{fecharMenuExport();fecharMenuSave();},{passive:true});
+    document.addEventListener('click',e=>{ if(!e.target.closest('#export-pop')) fecharMenuExport(); if(!e.target.closest('#save-pop')) fecharMenuSave(); if(!e.target.closest('#curso-pop')) fecharMenuCursos(); });
+    window.addEventListener('scroll',()=>{fecharMenuExport();fecharMenuSave();fecharMenuCursos();},{passive:true});
     document.getElementById('cfg-max').addEventListener('change',e=>{estadoUsuario.planoMaxCr=Math.min(60,Math.max(4,Number(e.target.value)||30));e.target.value=estadoUsuario.planoMaxCr;salvarEstado();atualizarTudo()});
     document.getElementById('opt-etapas').addEventListener('change',e=>{estadoUsuario.ocultarEtapas=e.target.checked;salvarEstado();atualizarTudo();atualizarSombras()});
     document.getElementById('opt-cadeiras').addEventListener('change',e=>{estadoUsuario.ocultarCadeiras=e.target.checked;salvarEstado();atualizarTudo();atualizarSombras()});
@@ -1800,6 +1869,8 @@ function inicializar() {
         if(window.ultimoHover) mostrarLinhas(window.ultimoHover);
     }, {passive:true});
     atualizarSombras();
+    let avisado = false; try { avisado = !!sessionStorage.getItem('aviso_proto_' + CURSO_ID); } catch(e) {}
+    if (CURSO.prototipo && !avisado) abrirAvisoPrototipo(CURSO, null);
 
     window.matchMedia('(prefers-color-scheme: light)').addEventListener?.('change',()=>{ if(!estadoUsuario.tema) sincronizarInputs(); });
 }

@@ -883,7 +883,7 @@ function preencherDetalhe(id) {
     document.getElementById('sheet-reqs').innerHTML = reqs.length ? reqs.map(item).join('') : '<li class="none">Nenhum</li>';
     document.getElementById('sheet-succ').innerHTML = succ.length ? succ.map(item).join('') : '<li class="none">Nenhuma</li>';
     const notas=[`Oferta: ${OFERTA_LABEL[d.oferta]||d.oferta}`];
-    if(d.reqCreditos) notas.push(`exige ${d.reqCreditos} créditos obtidos`);
+    if(d.reqCreditos) notas.push(d.reqCreditosOu && d.prereqs.length ? `ou ${d.reqCreditos} créditos obtidos (no lugar dos pré‑requisitos)` : `exige ${d.reqCreditos} créditos obtidos`);
     if(info.corAtual==='status-bloqueada' && st==='pendente') {
         const falta=reqs.filter(r=>(estadoUsuario.status[r.id]||'pendente')!=='concluida').length;
         if(falta) notas.push(`falta${falta>1?'m':''} ${falta} pré‑requisito${falta>1?'s':''}`);
@@ -984,7 +984,7 @@ function atualizarTudo() {
         if(st==='concluida') cor='status-concluida';
         else if(st==='cursando') cor='status-cursando';
         else if(st==='reprovada') cor='status-reprovada';
-        else if(d.prereqs.every(req=>statusOf(req)==='concluida') && (obr+ele)>=d.reqCreditos) cor='status-liberada';
+        else if(requisitosOk(d,req=>statusOf(req)==='concluida',obr+ele)) cor='status-liberada';
 
         const renderInfo = {...d, corAtual:cor, statusReal:st, tipoNesteFDC:tipo};
         mapa[d.id] = renderInfo;
@@ -1003,6 +1003,8 @@ function atualizarTudo() {
     if (detalheId) preencherDetalhe(detalheId);
     salvarEstado();
 }
+// pré-requisitos e créditos mínimos; com reqCreditosOu basta um dos dois ("X ou Créditos Obrigatórios: N")
+function requisitosOk(d,ok,creditos){const pre=d.prereqs.every(ok), cr=creditos>=(d.reqCreditos||0); return d.reqCreditosOu ? (pre||cr) : (pre&&cr)}
 function ofertaValida(semestre,regra){if(regra==='ambos'||!regra)return true;if(regra==='impar')return semestre%2!==0;if(regra==='par')return semestre%2===0;return false}
 
 let semCompletosAnt = null;
@@ -1166,7 +1168,7 @@ function simularPlano(fdc) {
         periodo=proximoPeriodo(periodo);
         const paridade=(periodo.sem===1)===imparNo1?'impar':'par';
         const cands=[...falta].map(id=>byId[id]).filter(d=>
-            d.prereqs.every(r=>feito.has(r)) && acumulado>=d.reqCreditos && (d.oferta==='ambos'||!d.oferta||d.oferta===paridade));
+            requisitosOk(d,r=>feito.has(r),acumulado) && (d.oferta==='ambos'||!d.oferta||d.oferta===paridade));
         cands.sort((a,b)=>cadeia(b.id)-cadeia(a.id) || a.semIdeal-b.semIdeal);
         const escolhidas=[]; let cr=0;
         cands.forEach(d=>{ if(d.creditos===0 || cr+d.creditos<=maxCr || !escolhidas.length){ escolhidas.push(d); cr+=d.creditos; } });

@@ -1,7 +1,8 @@
 // Engenharia Mecânica — PROTÓTIPO gerado por dev/montar-curso.mjs em 2026-11-18
-// Fontes: currículo vigente 2026/2 do portal da UFRGS | PPC de Eng. Mecânica disponível (2012) — o PPC vigente não está publicado
-// O único PPC público (2012, ref. 2010/2: 235/20/6 cr) é anterior ao currículo vigente (208/24/6); grade e créditos seguem o portal.
-// Requisito do estágio: PPC 2012 cita 190 cr obrigatórios, o currículo vigente exige 180 cr.
+// Fontes: PPC de Eng. Mecânica (ago/2025, SEI 23078.573342/2022-60, link "Projeto Pedagógico" do site da UFRGS) | currículo vigente 2026/2 do portal da UFRGS
+// PPC 2025: 208 cr obrigatórios, 24 eletivos, 6 complementares, estágio 165 h após 180 cr, TCC 2×30 h, extensão 419 h — confere com os dados.
+// A Tabela 1 do PPC 2025 é o currículo do portal de 2024/1–2025/2; em 2026/1 o portal mudou ENG03374 (pré: ENG03004), ENG03324 (+ENG03343) e ENG03131 (194 cr) → grade segue o portal 2026/2.
+// ENG03126 e ENG03130: pré-requisito OU créditos obrigatórios (170/200), como no PPC e no portal.
 registrarCurso({
  "id": "mec",
  "sigla": "MEC",
@@ -9,13 +10,13 @@ registrarCurso({
  "nomeCurto": "Eng. Mecânica",
  "prototipo": true,
  "codCurso": 324,
- "fonte": "Montado a partir de: currículo vigente 2026/2 do portal da UFRGS; PPC de Eng. Mecânica disponível (2012) — o PPC vigente não está publicado.",
+ "fonte": "Montado a partir de: PPC de Eng. Mecânica (ago/2025, SEI 23078.573342/2022-60, link \"Projeto Pedagógico\" do site da UFRGS); currículo vigente 2026/2 do portal da UFRGS.",
  "metas": {
   "obr": 208,
   "ele": 24,
   "compl": 6,
   "tiposCompl": 2,
-  "extensaoHoras": 420
+  "extensaoHoras": 419
  },
  "etapas": 10,
  "fdcs": [
@@ -26,7 +27,7 @@ registrarCurso({
  ],
  "estagio": {
   "id": "ESTAGIO",
-  "horas": 200,
+  "horas": 165,
   "liberacao": {
    "prereqs": [],
    "creditosObrigatorios": 180
@@ -129,7 +130,7 @@ registrarCurso({
   {"id":"ENG03087","nome":"Projeto Estrutural Aeronáutico","creditos":3,"semIdeal":7,"oferta":"ambos","prereqs":["ENG03374"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG03086","nome":"Projeto Estrutural Automotivo","creditos":3,"semIdeal":7,"oferta":"ambos","prereqs":["ENG03374"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG03088","nome":"Projeto Estrutural Naval","creditos":3,"semIdeal":7,"oferta":"ambos","prereqs":["ENG03374"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
-  {"id":"ENG03126","nome":"Projeto Integrado II-MEC","creditos":2,"semIdeal":7,"oferta":"ambos","prereqs":["ENG03124"],"reqCreditos":170,"fdc":{"geral":"obrigatoria"}},
+  {"id":"ENG03126","nome":"Projeto Integrado II-MEC","creditos":2,"semIdeal":7,"oferta":"ambos","prereqs":["ENG03124"],"reqCreditos":170,"reqCreditosOu":true,"fdc":{"geral":"obrigatoria"}},
   {"id":"ENG03090","nome":"Ruídos em Ambientes de Trabalho","creditos":2,"semIdeal":7,"oferta":"ambos","prereqs":["ENG03125"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG03073","nome":"Sistemas Térmicos","creditos":4,"semIdeal":7,"oferta":"ambos","prereqs":["ENG03006"],"reqCreditos":0,"fdc":{"geral":"obrigatoria"}},
   {"id":"ENG03122","nome":"Tribologia","creditos":3,"semIdeal":7,"oferta":"ambos","prereqs":["ENG03352","ENG02003"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
@@ -164,7 +165,7 @@ registrarCurso({
   {"id":"ENG03001","nome":"Metodologia de Projeto - A","creditos":4,"semIdeal":9,"oferta":"ambos","prereqs":["ENG03324"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG06013","nome":"Projeto de Juntas Soldadas","creditos":2,"semIdeal":9,"oferta":"ambos","prereqs":["ENG03384"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG03131","nome":"Projeto de Trabalho de Conclusão de Curso em Engenharia Mecânica","creditos":2,"semIdeal":9,"oferta":"ambos","prereqs":[],"reqCreditos":194,"fdc":{"geral":"obrigatoria"}},
-  {"id":"ENG03130","nome":"Projeto Integrado III-MEC","creditos":2,"semIdeal":9,"oferta":"ambos","prereqs":["ENG03126"],"reqCreditos":200,"fdc":{"geral":"obrigatoria"}},
+  {"id":"ENG03130","nome":"Projeto Integrado III-MEC","creditos":2,"semIdeal":9,"oferta":"ambos","prereqs":["ENG03126"],"reqCreditos":200,"reqCreditosOu":true,"fdc":{"geral":"obrigatoria"}},
   {"id":"ENG03114","nome":"Refrigeração","creditos":4,"semIdeal":9,"oferta":"ambos","prereqs":["ENG03112"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG03387","nome":"Sistemas de Fabricação","creditos":4,"semIdeal":9,"oferta":"par","prereqs":["ENG03343"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG03030","nome":"Sistemas de Veículos Automotores","creditos":4,"semIdeal":9,"oferta":"ambos","prereqs":["ENG03324"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},

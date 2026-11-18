@@ -1,7 +1,7 @@
 // Engenharia Mecânica — PROTÓTIPO gerado por dev/montar-curso.mjs em 2026-11-18
-// Fontes: currículo 2026/2 do portal da UFRGS | PPC de Eng. Mecânica (versão publicada pela Escola de Engenharia, ~2010)
-// PPC publicado é antigo (235/20/6 cr); metas e grade seguem o currículo vigente do portal.
-// Requisito do estágio: PPC cita 190 cr obrigatórios, o portal exige 180 cr — usado o portal (vigente).
+// Fontes: currículo vigente 2026/2 do portal da UFRGS | PPC de Eng. Mecânica disponível (2012) — o PPC vigente não está publicado
+// O único PPC público (2012, ref. 2010/2: 235/20/6 cr) é anterior ao currículo vigente (208/24/6); grade e créditos seguem o portal.
+// Requisito do estágio: PPC 2012 cita 190 cr obrigatórios, o currículo vigente exige 180 cr.
 registrarCurso({
  "id": "mec",
  "sigla": "MEC",
@@ -9,7 +9,7 @@ registrarCurso({
  "nomeCurto": "Eng. Mecânica",
  "prototipo": true,
  "codCurso": 324,
- "fonte": "Montado a partir de: currículo 2026/2 do portal da UFRGS; PPC de Eng. Mecânica (versão publicada pela Escola de Engenharia, ~2010).",
+ "fonte": "Montado a partir de: currículo vigente 2026/2 do portal da UFRGS; PPC de Eng. Mecânica disponível (2012) — o PPC vigente não está publicado.",
  "metas": {
   "obr": 208,
   "ele": 24,
@@ -151,7 +151,7 @@ registrarCurso({
   {"id":"ENG03074","nome":"Energia Solar Fotovoltaica","creditos":4,"semIdeal":8,"oferta":"impar","prereqs":["ENG03072"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ADM01135","nome":"Engenharia Econômica e Avaliações","creditos":2,"semIdeal":8,"oferta":"ambos","prereqs":[],"reqCreditos":150,"fdc":{"geral":"obrigatoria"}},
   {"id":"ENG03377","nome":"Ensaios Não Destrutivos - A","creditos":2,"semIdeal":8,"oferta":"ambos","prereqs":["ENG02003"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
-  {"id":"ENG03055","nome":"Fundamentos de Engenharia de Segurança do Trabalho - Ele","creditos":2,"semIdeal":8,"oferta":"ambos","prereqs":[],"reqCreditos":150,"fdc":{"geral":"obrigatoria"}},
+  {"id":"ENG03055","nome":"Fundamentos de Engenharia de Segurança do Trabalho - ELE","creditos":2,"semIdeal":8,"oferta":"ambos","prereqs":[],"reqCreditos":150,"fdc":{"geral":"obrigatoria"}},
   {"id":"ENG03113","nome":"Máquinas Volumétricas","creditos":4,"semIdeal":8,"oferta":"ambos","prereqs":["ENG03352"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG03082","nome":"Monitoramento de Processos de Usinagem","creditos":4,"semIdeal":8,"oferta":"ambos","prereqs":["ENG03343"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG03342","nome":"Motores Alternativos","creditos":4,"semIdeal":8,"oferta":"ambos","prereqs":["ENG03006"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},

@@ -1,4 +1,6 @@
 // Engenharia de Controle e Automação — dados revisados manualmente
+// PPC 2022 (COMGRAD/CCA, seção 6.6.3): estágio obrigatório habilita após 200 créditos do currículo; TCC sem mínimo de créditos.
+// A 5ª etapa citada no PPC é requisito do estágio NÃO obrigatório.
 registrarCurso({
  "id": "eca",
  "sigla": "ECA",
@@ -8,7 +10,7 @@ registrarCurso({
  "codCurso": 714,
  "saveId": "ECA-UFRGS",
  "storageKey": "eca_simulador_status_v6",
- "fonte": "Dados revisados manualmente pelo autor.",
+ "fonte": "Dados revisados manualmente pelo autor; créditos mínimos do estágio e TCC conforme o PPC 2022 da COMGRAD/CCA.",
  "metas": {
   "obr": 222,
   "ele": 8,
@@ -35,7 +37,7 @@ registrarCurso({
   "id": "ESTAGIO",
   "horas": 200,
   "liberacao": {
-   "etapa": 5
+   "creditos": 200
   }
  },
  "extensaoAtividades": {
@@ -121,8 +123,8 @@ registrarCurso({
   {"id":"ENG03387","nome":"Sistemas de Fabricação","creditos":4,"semIdeal":8,"oferta":"par","prereqs":["ENG03021"],"reqCreditos":0,"fdc":{"potencia":"obrigatoria","cadcam":"obrigatoria","mecanica":"obrigatoria"}},
   {"id":"ENG10027","nome":"Eletrônica Fundamental II-B","creditos":4,"semIdeal":8,"oferta":"par","prereqs":["ENG10002","ENG10044"],"reqCreditos":0,"fdc":{"potencia":"obrigatoria","cadcam":"eletiva","mecanica":"eletiva"}},
   {"id":"ENG07087","nome":"Controle Avançado de Processos","creditos":3,"semIdeal":9,"oferta":"impar","prereqs":["ENG07042"],"reqCreditos":0,"fdc":{"potencia":"obrigatoria","cadcam":"obrigatoria","mecanica":"obrigatoria"}},
-  {"id":"ESTAGIO","nome":"Estágio Supervisionado","creditos":0,"semIdeal":9,"oferta":"ambos","prereqs":["ENG03027","ENG10018"],"reqCreditos":165,"fdc":{"potencia":"obrigatoria","cadcam":"obrigatoria","mecanica":"obrigatoria"}},
-  {"id":"TCC1","nome":"Trab. de Conclusão CCA - I","creditos":0,"semIdeal":9,"oferta":"ambos","prereqs":["ENG03027","ENG10005","ENG10048","ENG10049"],"reqCreditos":165,"fdc":{"potencia":"obrigatoria","cadcam":"obrigatoria","mecanica":"obrigatoria"}},
+  {"id":"ESTAGIO","nome":"Estágio Supervisionado","creditos":0,"semIdeal":9,"oferta":"ambos","prereqs":["ENG03027","ENG10018"],"reqCreditos":200,"fdc":{"potencia":"obrigatoria","cadcam":"obrigatoria","mecanica":"obrigatoria"}},
+  {"id":"TCC1","nome":"Trab. de Conclusão CCA - I","creditos":0,"semIdeal":9,"oferta":"ambos","prereqs":["ENG03027","ENG10005","ENG10048","ENG10049"],"reqCreditos":0,"fdc":{"potencia":"obrigatoria","cadcam":"obrigatoria","mecanica":"obrigatoria"}},
   {"id":"ENG10050","nome":"Laboratório de Máquinas e Acionamentos Elétricos","creditos":2,"semIdeal":9,"oferta":"impar","prereqs":["ENG10049"],"reqCreditos":0,"fdc":{"potencia":"obrigatoria","cadcam":"eletiva","mecanica":"eletiva"}},
   {"id":"ENG10046","nome":"Princípios de Eletrônica de Potência","creditos":2,"semIdeal":9,"oferta":"impar","prereqs":["ENG10044"],"reqCreditos":0,"fdc":{"potencia":"obrigatoria","cadcam":"eletiva","mecanica":"eletiva"}},
   {"id":"ENG03010","nome":"Ciência, Tecnologia e Ambiente","creditos":3,"semIdeal":10,"oferta":"ambos","prereqs":[],"reqCreditos":0,"fdc":{"potencia":"obrigatoria","cadcam":"obrigatoria","mecanica":"obrigatoria"}},

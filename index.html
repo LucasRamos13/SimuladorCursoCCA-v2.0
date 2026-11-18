@@ -944,7 +944,7 @@ function atualizarTudo() {
     document.getElementById('inp-compl-tipos').value=tipos;
 
     // estágio
-    const est = infoEstagio(fdcAtual, statusOf, obr);
+    const est = infoEstagio(fdcAtual, statusOf, obr, obr+ele);
     setProgresso('est', est.horas, pct(est.horas, ESTAGIO_HORAS));
     document.getElementById('cred-est').textContent = fmtNum(est.horas);
     document.getElementById('foot-est').innerHTML = !est.liberado
@@ -1251,7 +1251,7 @@ const fmtDataISO = iso => iso ? iso.split('-').reverse().join('/') : '';
 
 /* ---------- estágio ---------- */
 // regra de liberação vem do curso: {etapa:N} | {prereqs:[...], creditosObrigatorios:N} | 'inicio'
-function infoEstagio(fdc, statusOf, credObr=0) {
+function infoEstagio(fdc, statusOf, credObr=0, credTot=credObr) {
     const e = estadoUsuario.estagio;
     const horas = e.registros.reduce((s,r)=>s+(Number(r.horas)||0),0);
     const iniciado = !!e.inicio || e.registros.length>0;
@@ -1259,10 +1259,12 @@ function infoEstagio(fdc, statusOf, credObr=0) {
     const lib = ESTAGIO.liberacao;
     let reqs = [], credReq = 0;
     if (lib && lib.etapa) reqs = disciplinas.filter(d => d.fdc[fdc]==='obrigatoria' && d.semIdeal<=lib.etapa && d.id!==ESTAGIO.id);
-    else if (lib && lib !== 'inicio') { reqs = (lib.prereqs||[]).map(id=>byId[id]).filter(Boolean); credReq = lib.creditosObrigatorios||0; }
+    else if (lib && lib !== 'inicio') { reqs = (lib.prereqs||[]).map(id=>byId[id]).filter(Boolean); credReq = lib.creditosObrigatorios || lib.creditos || 0; }
+    // creditosObrigatorios conta só obrigatórios; creditos conta obrigatórios + eletivos ("créditos do currículo")
+    const credAtual = lib && lib.creditos ? credTot : credObr;
     const faltam = reqs.filter(d => statusOf(d.id)!=='concluida');
-    const credOk = credObr >= credReq, liberado = !faltam.length && credOk;
-    return {existe:true, horas, iniciado, faltam, credReq, credOk, credObr,
+    const credOk = credAtual >= credReq, liberado = !faltam.length && credOk;
+    return {existe:true, horas, iniciado, faltam, credReq, credOk, credObr: credAtual, credTipo: lib && lib.creditos ? 'créditos' : 'créditos obrigatórios',
             reqOk: reqs.length-faltam.length + (credReq && credOk ? 1 : 0), reqTot: reqs.length + (credReq ? 1 : 0),
             liberado, acessivel: liberado || iniciado};
 }
@@ -1273,6 +1275,7 @@ function regraEstagio() {
     const n = (lib.prereqs||[]).length, partes = [];
     if (n) partes.push(`${n} cadeira${n>1?'s':''} pré-requisito`);
     if (lib.creditosObrigatorios) partes.push(`${lib.creditosObrigatorios} créditos obrigatórios`);
+    if (lib.creditos) partes.push(`${lib.creditos} créditos do currículo`);
     return 'concluir ' + partes.join(' e ');
 }
 // mantém a atividade "Estágio Supervisionado" do organograma coerente com as horas registradas
@@ -1318,7 +1321,7 @@ function RenderizarEstagio(c) {
             <h3>Estágio bloqueado</h3>
             <p>Para liberar o acompanhamento do estágio é preciso ${regraEstagio()}.</p>
             <div class="bar"><i style="width:${p}%"></i></div>
-            <div class="hint">${est.reqOk} de ${est.reqTot} requisitos cumpridos${est.credReq ? ` · créditos obrigatórios: ${est.credObr}/${est.credReq}` : ''}${est.faltam.length ? ' · faltam:' : ''}</div>
+            <div class="hint">${est.reqOk} de ${est.reqTot} requisitos cumpridos${est.credReq ? ` · ${est.credTipo}: ${est.credObr}/${est.credReq}` : ''}${est.faltam.length ? ' · faltam:' : ''}</div>
             <div class="est-faltam">${est.faltam.map(d=>`<span class="${(ultimoMapa[d.id]||{}).corAtual||'status-bloqueada'}"><span class="mono">${d.id}</span>${d.nome}</span>`).join('')}</div>
         </div>`;
         return;

@@ -1,5 +1,6 @@
 // Engenharia de Energia — PROTÓTIPO gerado por dev/montar-curso.mjs em 2026-11-18
-// Fontes: currículo 2026/2 do portal da UFRGS | PPC 2022 de Eng. de Energia (fonte principal)
+// Fontes: PPC 2022 de Eng. de Energia | grade oficial 2025 (site da COMGRAD/ENE) | currículo 2026/2 do portal da UFRGS
+// Grade conferida etapa a etapa com a grade oficial 2025 (posterior ao PPC 2022, que ainda listava ENG03077/ENG03074).
 registrarCurso({
  "id": "ene",
  "sigla": "ENE",
@@ -7,7 +8,7 @@ registrarCurso({
  "nomeCurto": "Eng. de Energia",
  "prototipo": true,
  "codCurso": 909,
- "fonte": "Montado a partir de: currículo 2026/2 do portal da UFRGS; PPC 2022 de Eng. de Energia (fonte principal).",
+ "fonte": "Montado a partir de: PPC 2022 de Eng. de Energia; grade oficial 2025 (site da COMGRAD/ENE); currículo 2026/2 do portal da UFRGS.",
  "metas": {
   "obr": 227,
   "ele": 12,
@@ -110,8 +111,8 @@ registrarCurso({
   {"id":"EEN99014","nome":"Pré-TCC em Engenharia de Energia","creditos":2,"semIdeal":9,"oferta":"ambos","prereqs":[],"reqCreditos":180,"fdc":{"geral":"obrigatoria"}},
   {"id":"ESTAGIO","nome":"Estágio Supervisionado - Engenharia de Energia","creditos":0,"semIdeal":10,"oferta":"ambos","prereqs":[],"reqCreditos":160,"fdc":{"geral":"obrigatoria"}},
   {"id":"TCC","nome":"Trabalho de Conclusão de Curso - Engenharia de Energia","creditos":0,"semIdeal":10,"oferta":"ambos","prereqs":["EEN99014"],"reqCreditos":0,"fdc":{"geral":"obrigatoria"}},
-  {"id":"ENG03055","nome":"Fundamentos de Engenharia de Segurança do Trabalho - Ele","creditos":2,"semIdeal":10,"oferta":"ambos","prereqs":[],"reqCreditos":120,"fdc":{"geral":"obrigatoria"}},
-  {"id":"MED05011","nome":"Higiene e Segurança do Trabalho - A (alternativa)","creditos":2,"semIdeal":10,"oferta":"ambos","prereqs":[],"reqCreditos":120,"fdc":{"geral":"eletiva"}},
+  {"id":"ENG03055","nome":"Fundamentos de Engenharia de Segurança do Trabalho - ELE (alternativa)","creditos":2,"semIdeal":10,"oferta":"ambos","prereqs":[],"reqCreditos":120,"fdc":{"geral":"eletiva"}},
+  {"id":"MED05011","nome":"Higiene e Segurança do Trabalho - A","creditos":2,"semIdeal":10,"oferta":"ambos","prereqs":[],"reqCreditos":120,"fdc":{"geral":"obrigatoria"}},
   {"id":"LET02208","nome":"Alemão Instrumental I","creditos":4,"semIdeal":1,"oferta":"impar","prereqs":[],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"LET02209","nome":"Alemão Instrumental II","creditos":4,"semIdeal":1,"oferta":"ambos","prereqs":[],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG03075","nome":"Análise de Energia em Edificações","creditos":4,"semIdeal":10,"oferta":"impar","prereqs":["ENG03112"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
@@ -157,7 +158,7 @@ registrarCurso({
   {"id":"ENG03064","nome":"Teoria dos Reatores Nucleares","creditos":4,"semIdeal":8,"oferta":"ambos","prereqs":["ENG03062"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG03011","nome":"Tópicos Especiais em Ciências Térmicas","creditos":3,"semIdeal":7,"oferta":"ambos","prereqs":["ENG03006"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG03083","nome":"Tópicos Especiais em Energia e Fenômenos de Transporte - A","creditos":4,"semIdeal":7,"oferta":"impar","prereqs":["ENG03006"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
-  {"id":"EEN99010","nome":"Tópicos Especiais em Engenharia de Energia","creditos":3,"semIdeal":1,"oferta":"ambos","prereqs":[],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
+  {"id":"EEN99010","nome":"Tópicos Especiais em Engenharia de Energia","creditos":3,"semIdeal":1,"oferta":"ambos","prereqs":[],"reqCreditos":160,"fdc":{"geral":"eletiva"}},
   {"id":"EEN99019","nome":"Tópicos Especiais em Engenharia de Energia - II","creditos":4,"semIdeal":1,"oferta":"ambos","prereqs":[],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG04016","nome":"Tópicos Especiais em Máquinas Elétricas I","creditos":4,"semIdeal":8,"oferta":"ambos","prereqs":["ENG04408"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG04023","nome":"Tópicos Especiais em Máquinas Elétricas II","creditos":2,"semIdeal":8,"oferta":"ambos","prereqs":["ENG04408"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},

@@ -1,6 +1,6 @@
 // Engenharia Elétrica — PROTÓTIPO gerado por dev/montar-curso.mjs em 2026-11-18
-// Fontes: currículo 2026/2 do portal da UFRGS | PPC de Eng. Elétrica (2009)
-// PPC de 2009 (220/20/6 cr) é anterior à curricularização da extensão; grade e metas seguem o currículo vigente do portal.
+// Fontes: PPC em vigor (site da COMGRAD/ELE) | Res. COMGRAD/ELE 04/2022 (alteração curricular a partir de 2023/1) | currículo 2026/2 do portal da UFRGS
+// Res. 04/2022 confere com os dados: seminários extensionistas de 10 cr, estágio 160 h após 110 cr, PD1 após 188 cr.
 registrarCurso({
  "id": "ele",
  "sigla": "ELE",
@@ -8,7 +8,7 @@ registrarCurso({
  "nomeCurto": "Eng. Elétrica",
  "prototipo": true,
  "codCurso": 323,
- "fonte": "Montado a partir de: currículo 2026/2 do portal da UFRGS; PPC de Eng. Elétrica (2009).",
+ "fonte": "Montado a partir de: PPC em vigor (site da COMGRAD/ELE); Res. COMGRAD/ELE 04/2022 (alteração curricular a partir de 2023/1); currículo 2026/2 do portal da UFRGS.",
  "metas": {
   "obr": 246,
   "ele": 20,
@@ -67,7 +67,7 @@ registrarCurso({
   {"id":"FIS01080","nome":"Física I - E (alternativa)","creditos":6,"semIdeal":1,"oferta":"ambos","prereqs":[],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"FIS01181","nome":"Física I-C","creditos":6,"semIdeal":1,"oferta":"ambos","prereqs":[],"reqCreditos":0,"fdc":{"geral":"obrigatoria"}},
   {"id":"MAT01355","nome":"Álgebra Linear I - A","creditos":4,"semIdeal":2,"oferta":"ambos","prereqs":["MAT01353","ENG04079"],"reqCreditos":0,"fdc":{"geral":"obrigatoria"}},
-  {"id":"INF01202","nome":"Algorítmos e Programação - Cic","creditos":6,"semIdeal":2,"oferta":"ambos","prereqs":[],"reqCreditos":12,"fdc":{"geral":"obrigatoria"}},
+  {"id":"INF01202","nome":"Algorítmos e Programação - CIC","creditos":6,"semIdeal":2,"oferta":"ambos","prereqs":[],"reqCreditos":12,"fdc":{"geral":"obrigatoria"}},
   {"id":"MAT01354","nome":"Cálculo e Geometria Analítica II - A","creditos":6,"semIdeal":2,"oferta":"ambos","prereqs":["MAT01353","ENG04079"],"reqCreditos":0,"fdc":{"geral":"obrigatoria"}},
   {"id":"ARQ03319","nome":"Desenho Técnico II-A","creditos":4,"semIdeal":2,"oferta":"ambos","prereqs":["ARQ03317","ARQ03318"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"FIS01183","nome":"Física III-C","creditos":6,"semIdeal":2,"oferta":"ambos","prereqs":["ENG04079","FIS01181","MAT01353"],"reqCreditos":0,"fdc":{"geral":"obrigatoria"}},
@@ -99,7 +99,7 @@ registrarCurso({
   {"id":"MAT02219","nome":"Probabilidade e Estatística","creditos":4,"semIdeal":6,"oferta":"ambos","prereqs":["MAT01353"],"reqCreditos":0,"fdc":{"geral":"obrigatoria"}},
   {"id":"ENG04073","nome":"Sistemas de Controle Eletroeletrônicos","creditos":6,"semIdeal":6,"oferta":"ambos","prereqs":["ENG10017"],"reqCreditos":0,"fdc":{"geral":"obrigatoria"}},
   {"id":"ENG04461","nome":"Sistemas Digitais","creditos":5,"semIdeal":6,"oferta":"impar","prereqs":["ENG04075"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
-  {"id":"ENG03055","nome":"Fundamentos de Engenharia de Segurança do Trabalho - Ele","creditos":2,"semIdeal":6,"oferta":"ambos","prereqs":[],"reqCreditos":120,"fdc":{"geral":"obrigatoria"}},
+  {"id":"ENG03055","nome":"Fundamentos de Engenharia de Segurança do Trabalho - ELE","creditos":2,"semIdeal":6,"oferta":"ambos","prereqs":[],"reqCreditos":120,"fdc":{"geral":"obrigatoria"}},
   {"id":"ENG09044","nome":"Gestão da Segurança e Saúde no Trabalho (alternativa)","creditos":2,"semIdeal":6,"oferta":"ambos","prereqs":[],"reqCreditos":120,"fdc":{"geral":"eletiva"}},
   {"id":"MED05011","nome":"Higiene e Segurança do Trabalho - A (alternativa)","creditos":2,"semIdeal":6,"oferta":"ambos","prereqs":[],"reqCreditos":120,"fdc":{"geral":"eletiva"}},
   {"id":"ENG04436","nome":"Antenas e Propagação","creditos":4,"semIdeal":7,"oferta":"impar","prereqs":["ENG04404"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
@@ -135,9 +135,9 @@ registrarCurso({
   {"id":"ADM01134","nome":"Administração e Finanças","creditos":4,"semIdeal":9,"oferta":"ambos","prereqs":["MAT02219"],"reqCreditos":0,"fdc":{"geral":"obrigatoria"}},
   {"id":"ENG04421","nome":"Centrais Hidroelétricas","creditos":4,"semIdeal":9,"oferta":"ambos","prereqs":["ENG04408"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG04001","nome":"Comunicações Óticas","creditos":4,"semIdeal":9,"oferta":"ambos","prereqs":["ENG04404","ENG04434"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
-  {"id":"ESTAGIO","nome":"Estágio Supervisionado - Ele","creditos":0,"semIdeal":9,"oferta":"ambos","prereqs":[],"reqCreditos":110,"fdc":{"geral":"obrigatoria"}},
+  {"id":"ESTAGIO","nome":"Estágio Supervisionado - ELE","creditos":0,"semIdeal":9,"oferta":"ambos","prereqs":[],"reqCreditos":110,"fdc":{"geral":"obrigatoria"}},
   {"id":"ENG04438","nome":"Microondas I","creditos":4,"semIdeal":9,"oferta":"ambos","prereqs":["ENG04404"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
-  {"id":"TCC1","nome":"Projeto de Diplomação I - Ele (Pd1)","creditos":0,"semIdeal":9,"oferta":"ambos","prereqs":[],"reqCreditos":188,"fdc":{"geral":"obrigatoria"}},
+  {"id":"TCC1","nome":"Projeto de Diplomação I - ELE (PD1)","creditos":0,"semIdeal":9,"oferta":"ambos","prereqs":[],"reqCreditos":188,"fdc":{"geral":"obrigatoria"}},
   {"id":"ENG04039","nome":"Projeto de Dispositivos Eletromagnéticos","creditos":4,"semIdeal":9,"oferta":"impar","prereqs":["ENG04408"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG10026","nome":"Robótica A","creditos":4,"semIdeal":9,"oferta":"impar","prereqs":["ENG10017","ENG04475"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ELE99003","nome":"Seminário de Acompanhamento e Prática Extensionista de Estágio Supervisionado","creditos":10,"semIdeal":9,"oferta":"ambos","prereqs":[],"reqCreditos":110,"fdc":{"geral":"obrigatoria"}},
@@ -151,7 +151,7 @@ registrarCurso({
   {"id":"ENG10016","nome":"Transitórios em Sistemas de Potência","creditos":4,"semIdeal":9,"oferta":"ambos","prereqs":["ENG04444"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG04462","nome":"Acionamento de Máquinas Elétricas","creditos":4,"semIdeal":10,"oferta":"ambos","prereqs":["ENG04408","ENG04460"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG04439","nome":"Microondas II","creditos":4,"semIdeal":10,"oferta":"ambos","prereqs":["ENG04438"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
-  {"id":"TCC2","nome":"Projeto de Diplomação II - Ele (Pd2)","creditos":0,"semIdeal":10,"oferta":"ambos","prereqs":["TCC1"],"reqCreditos":0,"fdc":{"geral":"obrigatoria"}},
+  {"id":"TCC2","nome":"Projeto de Diplomação II - ELE (PD2)","creditos":0,"semIdeal":10,"oferta":"ambos","prereqs":["TCC1"],"reqCreditos":0,"fdc":{"geral":"obrigatoria"}},
   {"id":"ENG04065","nome":"Projeto de Sistemas Analógicos e Mistos Integrados","creditos":4,"semIdeal":10,"oferta":"ambos","prereqs":["ENG04055"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG04064","nome":"Projeto de Sistemas de Rf Integrados","creditos":4,"semIdeal":10,"oferta":"ambos","prereqs":["ENG10017","ENG04078","ENG04454"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG10041","nome":"Proteção e Estabilidade dos Sistemas Elétricos de Potência","creditos":4,"semIdeal":10,"oferta":"impar","prereqs":["ENG04444"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},

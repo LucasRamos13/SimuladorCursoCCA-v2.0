@@ -1,6 +1,6 @@
 // Engenharia de Produção — PROTÓTIPO gerado por dev/montar-curso.mjs em 2026-11-18
-// Fontes: currículo 2026/2 do portal da UFRGS | PPC de Eng. de Produção (2009) | Resolução COMGRAD-EP 06/2020 (alterações curriculares)
-// Resolução 06/2020 substitui o PPC de 2009 em créditos (obrigatórios/eletivos) e na carga do estágio.
+// Fontes: Res. COMGRAD/EPR 06/2020 (alterações curriculares do PPC) | Manual do Aluno 2026 | currículo 2026/2 do portal da UFRGS
+// Res. 06/2020 atualiza o PPC de 2009: 208 cr obrigatórios (+20 convertidos = 228), 24 eletivos, estágio 180 h; requisitos de 130/165 cr conferidos.
 registrarCurso({
  "id": "pro",
  "sigla": "PRO",
@@ -8,7 +8,7 @@ registrarCurso({
  "nomeCurto": "Eng. de Produção",
  "prototipo": true,
  "codCurso": 322,
- "fonte": "Montado a partir de: currículo 2026/2 do portal da UFRGS; PPC de Eng. de Produção (2009); Resolução COMGRAD-EP 06/2020 (alterações curriculares).",
+ "fonte": "Montado a partir de: Res. COMGRAD/EPR 06/2020 (alterações curriculares do PPC); Manual do Aluno 2026; currículo 2026/2 do portal da UFRGS.",
  "metas": {
   "obr": 208,
   "ele": 24,
@@ -121,7 +121,7 @@ registrarCurso({
   {"id":"ENG09058","nome":"Análise e Gerenciamento de Riscos","creditos":4,"semIdeal":9,"oferta":"par","prereqs":["ENG09047"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
   {"id":"ENG09069","nome":"Ciência de Dados em Engenharia de Produção","creditos":2,"semIdeal":9,"oferta":"ambos","prereqs":[],"reqCreditos":165,"fdc":{"geral":"eletiva"}},
   {"id":"ADM01183","nome":"Ciência, Tecnologia e Produção","creditos":4,"semIdeal":9,"oferta":"ambos","prereqs":["ENG09025","ENG09016"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
-  {"id":"ENG09070","nome":"Engenharia Humana e Sociotécnica","creditos":4,"semIdeal":9,"oferta":"ambos","prereqs":["ENG09015","ENG09044"],"reqCreditos":0,"fdc":{"geral":"eletiva"}},
+  {"id":"ENG09070","nome":"Engenharia Humana e Sociotécnica","creditos":4,"semIdeal":9,"oferta":"ambos","prereqs":["ENG09015","ENG09044"],"reqCreditos":165,"fdc":{"geral":"eletiva"}},
   {"id":"ENG09028","nome":"Gestão Ambiental","creditos":2,"semIdeal":9,"oferta":"ambos","prereqs":[],"reqCreditos":165,"fdc":{"geral":"obrigatoria"}},
   {"id":"ENG09071","nome":"Prática de Engenharia de Produção 3","creditos":6,"semIdeal":9,"oferta":"ambos","prereqs":["ESTAGIO","ENG09067","ENG09047"],"reqCreditos":0,"fdc":{"geral":"obrigatoria"}},
   {"id":"ENG09072","nome":"Projeto Seis Sigma","creditos":4,"semIdeal":9,"oferta":"impar","prereqs":["ENG09008"],"reqCreditos":165,"fdc":{"geral":"eletiva"}},

@@ -83,7 +83,12 @@ select:hover {border-color:var(--sub)}
 .total-text .detail {font-size:15px;color:var(--sub);margin-top:2px;font-variant-numeric:tabular-nums}
 .total-text .detail b {color:var(--ink)}
 .resumo-toggle {display:none}
-.tiles {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.tiles {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px}
+.tiles > .tile {grid-column:span 2}
+.tiles > .tile.wide {grid-column:span 3}
+.tiles > .tile-est {order:1}
+.tiles > .tile.wide:not(.tile-est) {order:2}
+@media (min-width:1501px) {.tiles {grid-template-columns:repeat(5,minmax(0,1fr))} .tiles > .tile,.tiles > .tile.wide {grid-column:auto;order:0}}
 .tile {padding:16px;display:flex;flex-direction:column;gap:8px;min-width:0}
 .tile-head {display:flex;align-items:center;justify-content:space-between;gap:8px}
 .tile-label {font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -109,7 +114,7 @@ select:hover {border-color:var(--sub)}
 
 /* ============ PAINÉIS ============ */
 .panel {padding:20px;margin-bottom:24px}
-#organograma, #simulador, #plano, #conquistas {display:none}
+#organograma, #simulador, #plano, #estagio, #conquistas {display:none}
 .panel-toolbar {display:flex;align-items:center;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;margin-bottom:18px}
 .instrucoes {color:var(--sub);font-size:13.5px;margin:0}
 .instrucoes kbd {font-family:inherit;font-size:12px;font-weight:600;background:var(--surface-2);border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:0 5px;color:var(--ink)}
@@ -298,12 +303,70 @@ body.light-mode .toast button {color:#8fb8ff}
 @keyframes badgePop {0%{transform:scale(0) rotate(-35deg)}}
 .confetti {position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;z-index:105}
 
+/* ============ EXPORTAÇÃO ============ */
+.btn svg {width:15px;height:15px}
+.btn.primary {background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover {background:var(--accent-strong)}
+.btn[disabled] {opacity:.6;cursor:progress}
+.toolbar-end {margin-left:auto}
+.export-pop {position:fixed;z-index:120;background:var(--surface);border:1px solid var(--border-strong);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.3);padding:5px;display:flex;flex-direction:column;min-width:190px}
+.export-pop[hidden] {display:none}
+.export-pop button {border:0;background:transparent;text-align:left;padding:9px 12px;border-radius:7px;font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:10px}
+.export-pop button:hover,.export-pop button:focus-visible {background:var(--surface-2)}
+.export-pop button small {color:var(--sub);font-weight:500;margin-left:auto;font-size:11.5px}
+.export-sheet {position:fixed;left:-100000px;top:0;background:var(--bg);color:var(--ink);padding:32px;display:flex;flex-direction:column;gap:20px}
+.export-sheet .ex-head {display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--border);padding-bottom:16px}
+.export-sheet .ex-head h1 {font-size:22px;margin:0}
+.export-sheet .ex-head small {color:var(--sub);font-size:13px}
+.export-sheet .ex-legend {display:flex;gap:16px;font-size:12px;font-weight:600;color:var(--sub)}
+.export-sheet .eletivas-row {position:static}
+.export-sheet .eletivas-container h4 {position:static}
+.export-sheet .org-card {opacity:1!important;filter:none!important;box-shadow:none!important;transform:none!important}
+.export-sheet .ex-status {font-size:12px;font-weight:700;padding:6px 10px;border-radius:8px;background:var(--surface);border:1px solid var(--border);color:var(--ink)}
+.export-sheet .ex-foot {font-size:11px;color:var(--muted);text-align:right}
+
+/* ============ ESTÁGIO ============ */
+.est-top {display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+.est-card {padding:20px;display:flex;flex-direction:column;gap:12px}
+.est-big {display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.est-big b {font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.est-big span {color:var(--sub);font-weight:600;font-size:16px}
+.est-big .pct {margin-left:auto;font-size:13px}
+.est-card > .bar {height:10px}
+.est-meta {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:4px}
+.est-meta div {background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
+.est-meta span {font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sub)}
+.est-meta b {font-size:16px;font-variant-numeric:tabular-nums}
+.est-form h3 {margin:0;font-size:15px}
+.est-form .row {display:grid;grid-template-columns:1fr 110px;gap:10px}
+.est-form label {display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:600;color:var(--sub)}
+.field {background:var(--surface-2);border:1px solid var(--border-strong);border-radius:8px;padding:8px 10px;font-size:14px;color:var(--ink);width:100%;min-width:0;color-scheme:inherit}
+.field:focus {outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+body:not(.light-mode) .field {color-scheme:dark}
+.est-inicio {display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--sub);border-top:1px solid var(--border);padding-top:12px;margin-top:auto}
+.est-inicio .field {width:auto}
+.est-log {display:flex;flex-direction:column;gap:6px}
+.est-row {display:grid;grid-template-columns:110px 70px 1fr auto;align-items:center;gap:12px;padding:8px 8px 8px 14px;border:1px solid var(--border);border-radius:10px;background:var(--bg);font-size:13.5px}
+.est-row .mono {font-size:12px;color:var(--sub)}
+.est-row b {font-variant-numeric:tabular-nums}
+.est-row .desc {color:var(--sub);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.est-row .icon-btn {width:30px;height:30px}
+.est-row .icon-btn svg {width:14px;height:14px}
+.est-lock {text-align:center;padding:36px 16px;max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:12px}
+.est-lock-ico {width:72px;height:72px;border-radius:20px;display:grid;place-items:center;font-size:34px;background:var(--surface-2);border:1px solid var(--border)}
+.est-lock h3 {margin:0;font-size:19px}
+.est-lock p {margin:0;color:var(--sub);font-size:14px}
+.est-lock .bar {width:100%;max-width:360px;height:8px}
+.est-faltam {display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}
+.est-faltam span {font-size:12px;font-weight:600;border:1px solid;border-radius:8px;padding:4px 8px}
+.est-faltam .mono {border:0;padding:0;font-size:10.5px;opacity:.8;margin-right:4px}
+.tile-link {border:0;background:none;padding:0;color:var(--accent);font-weight:700;font-size:12px}
+
 /* ============ RESPONSIVO ============ */
 @media (max-width:1240px) {
-    .tiles {grid-template-columns:repeat(2,minmax(0,1fr))}
     .resumo {grid-template-columns:240px 1fr}
 }
-@media (max-width:1320px) {
+@media (max-width:1500px) {
     .appbar-inner {flex-wrap:wrap}
     .field-fdc {order:3;flex:1 1 100%}
     #seletor-fdc {flex:1;min-width:0}
@@ -316,7 +379,7 @@ body.light-mode .toast button {color:#8fb8ff}
     .brand h1 {font-size:16px}
     .field-fdc label {display:none}
     select,.num-input,.num-input.sm {font-size:16px} /* evita zoom no iOS */
-    .tabs {position:fixed;left:0;right:0;bottom:0;z-index:70;border-radius:0;border:0;border-top:1px solid var(--border);background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:6px 8px calc(6px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr)}
+    .tabs {position:fixed;left:0;right:0;bottom:0;z-index:70;border-radius:0;border:0;border-top:1px solid var(--border);background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:6px 8px calc(6px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr)}
     .tabs button {position:relative;flex-direction:column;gap:3px;font-size:11px;padding:6px 4px;min-height:52px;justify-content:center}
     .tabs button.active {background:var(--accent-soft);color:var(--accent);box-shadow:none}
     .tabs svg {width:20px;height:20px}
@@ -329,7 +392,8 @@ body.light-mode .toast button {color:#8fb8ff}
     .resumo-toggle svg {width:14px;height:14px;transition:transform .2s}
     .resumo.expanded .resumo-toggle svg {transform:rotate(180deg)}
     .resumo:not(.expanded) .tiles {display:none}
-    .tiles {gap:10px}
+    .tiles {gap:10px;grid-template-columns:repeat(2,minmax(0,1fr))}
+    .tiles > .tile {grid-column:auto} .tiles > .tile.wide,.tiles > .tile-est {grid-column:1/-1}
     .tile {padding:12px}
     .tile-value b {font-size:22px}
     .tile.wide {grid-column:1/-1}
@@ -348,9 +412,16 @@ body.light-mode .toast button {color:#8fb8ff}
     @keyframes achIn {from{opacity:0;transform:translateY(-40px) scale(.95)}}
     @keyframes achOut {to{opacity:0;transform:translateY(-40px)}}
     .ach-grid {grid-template-columns:1fr}
+    .est-top {grid-template-columns:1fr}
+    .est-big b {font-size:32px}
+    .est-row {grid-template-columns:auto 1fr auto;gap:4px 10px}
+    .est-row .desc {grid-column:1/3;grid-row:2}
+    .tabs button {font-size:10px;padding:6px 2px}
+    .toolbar-end {margin-left:0}
 }
 @media (max-width:380px) {
     .tiles {grid-template-columns:1fr}
+    .tiles > .tile {grid-column:1/-1}
 }
 @media (min-width:761px) {
     /* no desktop o detalhe vira um painel flutuante lateral */
@@ -373,6 +444,8 @@ body.light-mode .toast button {color:#8fb8ff}
  <symbol id="i-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.5-2"/></symbol>
  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
  <symbol id="i-trophy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 14v4M8 21h8M9 18h6"/></symbol>
+ <symbol id="i-brief" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></symbol>
+ <symbol id="i-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m-5-5 5 5 5-5M5 20h14"/></symbol>
  <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
 </svg>
 
@@ -394,6 +467,7 @@ body.light-mode .toast button {color:#8fb8ff}
    <button id="btn-organograma" role="tab" class="active" onclick="mudarAba('organograma')"><svg><use href="#i-graph"/></svg>Organograma</button>
    <button id="btn-simulador" role="tab" onclick="mudarAba('simulador')"><svg><use href="#i-list"/></svg>Matrícula</button>
    <button id="btn-plano" role="tab" onclick="mudarAba('plano')"><svg><use href="#i-cal"/></svg>Plano</button>
+   <button id="btn-estagio" role="tab" onclick="mudarAba('estagio')"><svg><use href="#i-brief"/></svg>Estágio</button>
    <button id="btn-conquistas" role="tab" onclick="mudarAba('conquistas')"><svg><use href="#i-trophy"/></svg>Conquistas <span class="tab-badge" id="ach-count">0</span></button>
   </nav>
   <button class="icon-btn" onclick="toggleTema()" aria-label="Alternar tema claro/escuro" title="Alternar tema">
@@ -409,7 +483,7 @@ body.light-mode .toast button {color:#8fb8ff}
    <div class="ring-wrap"><div class="ring" id="ring-total"></div><span class="ring-label" id="pct-total">0%</span></div>
    <div class="total-text">
     <div class="eyebrow">Conclusão total</div>
-    <div class="detail"><b id="total-detalhe">0 / 0</b></div><div class="hint">créditos · extensão convertida (15 h = 1 cr)</div>
+    <div class="detail"><b id="total-detalhe">0 / 0</b></div><div class="hint">extensão e estágio: 15 h = 1 cr</div>
    </div>
    <button class="resumo-toggle" id="resumo-toggle" aria-expanded="false" aria-controls="tiles">Detalhes <svg><use href="#i-chev"/></svg></button>
   </div>
@@ -438,6 +512,12 @@ body.light-mode .toast button {color:#8fb8ff}
     <div class="bar" id="bar-ext"><i></i></div>
     <div class="tile-foot"><label for="inp-ext-atual">Horas lançadas:</label> <input type="number" inputmode="numeric" id="inp-ext-atual" class="num-input sm" min="0" step="1"> h <span class="hint" id="ext-proj"></span></div>
    </div>
+   <div class="card tile tile-est">
+    <div class="tile-head"><span class="tile-label">Estágio</span><span id="pct-est" class="pct">0%</span></div>
+    <div class="tile-value"><b id="cred-est">0</b><span class="of">/ 200 h</span></div>
+    <div class="bar" id="bar-est"><i></i></div>
+    <div class="tile-foot" id="foot-est"></div>
+   </div>
   </div>
  </section>
 
@@ -455,6 +535,7 @@ body.light-mode .toast button {color:#8fb8ff}
   <div class="org-opts">
    <label class="switch"><input type="checkbox" id="opt-etapas"><span class="sw"></span><span class="lbl">Ocultar etapas concluídas</span></label>
    <label class="switch"><input type="checkbox" id="opt-cadeiras"><span class="sw"></span><span class="lbl">Ocultar cadeiras concluídas</span></label>
+   <button class="btn toolbar-end" onclick="abrirMenuExport(event,'organograma')"><svg><use href="#i-down"/></svg>Exportar</button>
   </div>
   <div class="orga-frame" id="orga-frame">
    <div id="orga-wrapper"><svg id="lines-svg" aria-hidden="true"><defs>
@@ -479,10 +560,12 @@ body.light-mode .toast button {color:#8fb8ff}
    <label for="cfg-max">Máx. de créditos por semestre <input type="number" inputmode="numeric" id="cfg-max" class="num-input sm" min="4" max="60"></label>
    <label for="cfg-impar">Cadeiras de etapa ímpar são ofertadas no
     <select id="cfg-impar"><option value="1">1º semestre do ano</option><option value="2">2º semestre do ano</option></select></label>
+   <button class="btn toolbar-end" onclick="abrirMenuExport(event,'plano')"><svg><use href="#i-down"/></svg>Exportar</button>
   </div>
   <p class="hint" style="margin:0 0 4px">A previsão supõe que as cadeiras em curso serão aprovadas e prioriza as que destravam a maior cadeia de pré‑requisitos.</p>
   <div id="plano-conteudo"></div>
  </section>
+ <section id="estagio" class="card panel" role="tabpanel" aria-labelledby="btn-estagio"></section>
  <section id="conquistas" class="card panel" role="tabpanel" aria-labelledby="btn-conquistas"></section>
 </main>
 
@@ -505,6 +588,10 @@ body.light-mode .toast button {color:#8fb8ff}
  <div class="rel-note" id="sheet-note"></div>
 </section>
 
+<div class="export-pop" id="export-pop" role="menu" hidden>
+ <button role="menuitem" data-fmt="png"><svg width="16" height="16"><use href="#i-down"/></svg>Imagem PNG <small>para compartilhar</small></button>
+ <button role="menuitem" data-fmt="pdf"><svg width="16" height="16"><use href="#i-down"/></svg>Documento PDF <small>para imprimir</small></button>
+</div>
 <div class="ach-stack" id="ach-stack" aria-live="polite"></div>
 <div class="toast" id="toast" role="status" aria-live="polite"><span id="toast-msg"></span><button id="toast-undo">Desfazer</button></div>
 
@@ -597,9 +684,12 @@ body.light-mode .toast button {color:#8fb8ff}
 const METAS = {obr:222, ele:8, compl:6, extPadrao:420, tiposCompl:2};
 const STORAGE_KEY = 'eca_simulador_status_v6';
 const HORAS_POR_CREDITO = 15; // UFRGS: 1 crédito = 15 horas
+const ESTAGIO_HORAS = 200;     // carga horária mínima do estágio
+const ESTAGIO_ETAPA = 5;       // estágio libera com as etapas 1..5 concluídas
 const DEFAULT_STATE = {status:{}, compl:0, ext:0, extNecessaria:420, complTipos:0, tema:null, fdc:'cadcam', aba:'organograma',
     conquistas:{}, reprovadas:[], som:true, planoMaxCr:30, planoImpar:1, fraseNova:false, fraseIdx:null,
-    ocultarEtapas:true, ocultarCadeiras:false, matOcultarEtapas:true, matOcultarCadeiras:false};
+    ocultarEtapas:true, ocultarCadeiras:false, matOcultarEtapas:true, matOcultarCadeiras:false,
+    estagio:{inicio:null, registros:[], autoConcluido:false}};
 const STATUS_LABEL = {pendente:'Pendente', cursando:'Cursando', concluida:'Concluída', reprovada:'Reprovada'};
 const OFERTA_LABEL = {ambos:'todo semestre', impar:'semestres ímpares', par:'semestres pares'};
 const isTouch = () => window.matchMedia('(hover: none)').matches;
@@ -617,7 +707,8 @@ function carregarEstado() {
             ...structuredClone(DEFAULT_STATE), ...salvo,
             status: {...DEFAULT_STATE.status, ...(salvo.status || {})},
             conquistas: {...(salvo.conquistas || {})},
-            reprovadas: [...(salvo.reprovadas || [])]
+            reprovadas: [...(salvo.reprovadas || [])],
+            estagio: {...structuredClone(DEFAULT_STATE.estagio), ...(salvo.estagio || {})}
         };
         // histórico de reprovações (para "Superação") inclui as que já estavam salvas como reprovadas
         Object.entries(est.status).forEach(([id,st])=>{ if(st==='reprovada' && !est.reprovadas.includes(id)) est.reprovadas.push(id); });
@@ -656,7 +747,7 @@ function toggleTema() {
 }
 function mudarAba(aba) {
     estadoUsuario.aba=aba; salvarEstado();
-    ['simulador','organograma','plano','conquistas'].forEach(a=>{
+    ['simulador','organograma','plano','estagio','conquistas'].forEach(a=>{
         document.getElementById(a).style.display = a===aba ? 'block' : 'none';
         const b=document.getElementById('btn-'+a);
         b.classList.toggle('active', a===aba);
@@ -669,9 +760,13 @@ function mudarAba(aba) {
 }
 
 /* ---------- mudança de status com "Desfazer" ---------- */
+function tirarSnapshot() {
+    const e=estadoUsuario;
+    return {status:structuredClone(e.status), conquistas:{...e.conquistas}, reprovadas:[...e.reprovadas], fraseNova:e.fraseNova, fraseIdx:e.fraseIdx, estagio:structuredClone(e.estagio)};
+}
 let toastTimer=null, snapshotDesfazer=null;
 function aplicarStatus(id, novo, {cascata=true}={}) {
-    const antes = {status:structuredClone(estadoUsuario.status), conquistas:{...estadoUsuario.conquistas}, reprovadas:[...estadoUsuario.reprovadas], fraseNova:estadoUsuario.fraseNova, fraseIdx:estadoUsuario.fraseIdx};
+    const antes = tirarSnapshot();
     const anterior = estadoUsuario.status[id]||'pendente';
     if (novo==='pendente') delete estadoUsuario.status[id]; else estadoUsuario.status[id]=novo;
     if (novo==='reprovada' && !estadoUsuario.reprovadas.includes(id)) estadoUsuario.reprovadas.push(id);
@@ -845,13 +940,23 @@ function atualizarTudo() {
     typeEl.textContent=tiposOk?'✓ ok':'pendente';
     document.getElementById('inp-compl-tipos').value=tipos;
 
-    // extensão convertida em créditos para não misturar unidades (420 h = 28 cr)
+    // estágio
+    const est = infoEstagio(fdcAtual, statusOf);
+    setProgresso('est', est.horas, pct(est.horas, ESTAGIO_HORAS));
+    document.getElementById('cred-est').textContent = fmtNum(est.horas);
+    document.getElementById('foot-est').innerHTML = !est.liberado
+        ? `🔒 Libera ao concluir a etapa ${ESTAGIO_ETAPA} · ${est.reqOk}/${est.reqTot} cadeiras`
+        : est.horas>=ESTAGIO_HORAS ? '✓ Carga horária cumprida'
+        : `Faltam ${fmtNum(ESTAGIO_HORAS-est.horas)} h · <button class="tile-link" onclick="mudarAba('estagio')">registrar horas →</button>`;
+
+    // extensão e estágio convertidos em créditos para não misturar unidades (420 h = 28 cr; 200 h ≈ 13,3 cr)
     const extCr=Math.min(extObtida,metaExt)/HORAS_POR_CREDITO, metaExtCr=metaExt/HORAS_POR_CREDITO;
-    const totalObt=Math.min(obr,METAS.obr)+Math.min(ele,METAS.ele)+Math.min(compl,METAS.compl)+extCr;
-    const totalNec=METAS.obr+METAS.ele+METAS.compl+metaExtCr;
+    const estCr=Math.min(est.horas,ESTAGIO_HORAS)/HORAS_POR_CREDITO, metaEstCr=ESTAGIO_HORAS/HORAS_POR_CREDITO;
+    const totalObt=Math.min(obr,METAS.obr)+Math.min(ele,METAS.ele)+Math.min(compl,METAS.compl)+extCr+estCr;
+    const totalNec=METAS.obr+METAS.ele+METAS.compl+metaExtCr+metaEstCr;
     const totalRaw=totalNec>0?totalObt/totalNec*100:100;
     const totalPct=Math.min(100,Math.floor(totalRaw)); // floor: só mostra 100% quando estiver realmente completo
-    const fmtCr=v=>Number.isInteger(v)?v:v.toFixed(1).replace('.',',');
+    const fmtCr=v=>fmtNum(v);
     document.getElementById('pct-total').textContent=totalPct+'%';
     document.getElementById('ring-total').style.setProperty('--p',totalPct);
     document.getElementById('total-detalhe').textContent=`${fmtCr(totalObt)} / ${fmtCr(totalNec)} cr`;
@@ -888,8 +993,10 @@ function atualizarTudo() {
     RenderizarSimulador(timeline);
     RenderizarOrganograma(mapa);
     RenderizarPlano();
-    verificarConquistas({obr,ele,compl,tipos,extObtida,metaExt,totalRaw,fdc:fdcAtual,statusOf});
-    RenderizarConquistas({obr,ele,compl,tipos,extObtida,metaExt,totalRaw,fdc:fdcAtual,statusOf});
+    const ctx={obr,ele,compl,tipos,extObtida,metaExt,totalRaw,totalNec,est,fdc:fdcAtual,statusOf};
+    RenderizarEstagio(ctx);
+    verificarConquistas(ctx);
+    RenderizarConquistas(ctx);
     if (detalheId) preencherDetalhe(detalheId);
     salvarEstado();
 }
@@ -1133,6 +1240,214 @@ function RenderizarPlano() {
     if (frase) container.insertAdjacentHTML('beforeend', `<figure class="frase"><blockquote>${frase.t}</blockquote><figcaption>— <b>${frase.a}</b>, ${frase.f}</figcaption></figure>`);
 }
 
+/* ---------- utilidades ---------- */
+const fmtNum = (v,dec=1) => Number.isInteger(v) ? String(v) : v.toFixed(dec).replace('.',',');
+const escHtml = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hojeISO = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); };
+const fmtDataISO = iso => iso ? iso.split('-').reverse().join('/') : '';
+
+/* ---------- estágio ---------- */
+function infoEstagio(fdc, statusOf) {
+    const reqs = disciplinas.filter(d => d.fdc[fdc]==='obrigatoria' && d.semIdeal<=ESTAGIO_ETAPA);
+    const faltam = reqs.filter(d => statusOf(d.id)!=='concluida');
+    const e = estadoUsuario.estagio;
+    const horas = e.registros.reduce((s,r)=>s+(Number(r.horas)||0),0);
+    const iniciado = !!e.inicio || e.registros.length>0;
+    return {horas, iniciado, reqOk:reqs.length-faltam.length, reqTot:reqs.length, faltam,
+            liberado: faltam.length===0, acessivel: faltam.length===0 || iniciado};
+}
+// mantém a atividade "Estágio Supervisionado" do organograma coerente com as horas registradas
+function sincronizarCardEstagio() {
+    const e = estadoUsuario.estagio, horas = e.registros.reduce((s,r)=>s+(Number(r.horas)||0),0);
+    const st = estadoUsuario.status.ESTAGIO || 'pendente';
+    if (horas >= ESTAGIO_HORAS) { if (st!=='concluida') { estadoUsuario.status.ESTAGIO='concluida'; e.autoConcluido=true; } }
+    else if (st==='concluida' && e.autoConcluido) { estadoUsuario.status.ESTAGIO='cursando'; e.autoConcluido=false; }
+    else if ((horas>0 || e.inicio) && st==='pendente') estadoUsuario.status.ESTAGIO='cursando';
+}
+function alterarEstagio(fn, msg) {
+    const antes = tirarSnapshot();
+    fn(estadoUsuario.estagio);
+    sincronizarCardEstagio();
+    salvarEstado(); atualizarTudo();
+    if (msg) mostrarToast(msg, antes);
+}
+function adicionarRegistroEstagio() {
+    const data = document.getElementById('est-data').value || hojeISO();
+    const horas = Math.round((Number(document.getElementById('est-horas').value)||0)*2)/2;
+    const desc = document.getElementById('est-desc').value.trim().slice(0,80);
+    if (horas <= 0 || horas > 300) { const i=document.getElementById('est-horas'); i.focus(); i.setCustomValidity('Informe entre 0,5 e 300 horas'); i.reportValidity(); setTimeout(()=>i.setCustomValidity(''),2000); return; }
+    alterarEstagio(e => {
+        e.registros.push({id: Date.now().toString(36)+Math.random().toString(36).slice(2,6), data, horas, desc});
+        if (!e.inicio || data < e.inicio) e.inicio = data;
+    }, `+${fmtNum(horas)} h de estágio registradas`);
+    setTimeout(()=>document.getElementById('est-horas')?.focus(), 0);
+}
+function removerRegistroEstagio(id) {
+    alterarEstagio(e => { e.registros = e.registros.filter(r=>r.id!==id); }, 'Registro removido');
+}
+function definirInicioEstagio(v) {
+    alterarEstagio(e => { e.inicio = v || null; }, v ? `Início do estágio: ${fmtDataISO(v)}` : null);
+}
+function RenderizarEstagio(c) {
+    const el = document.getElementById('estagio'); if (!el) return;
+    const est = c.est, e = estadoUsuario.estagio;
+    if (!est.acessivel) {
+        const p = est.reqTot ? Math.round(est.reqOk/est.reqTot*100) : 100;
+        el.innerHTML = `<div class="est-lock">
+            <div class="est-lock-ico" aria-hidden="true">🔒</div>
+            <h3>Estágio bloqueado</h3>
+            <p>Conclua todas as cadeiras obrigatórias das etapas 1 a ${ESTAGIO_ETAPA} para liberar o acompanhamento do estágio.</p>
+            <div class="bar"><i style="width:${p}%"></i></div>
+            <div class="hint">${est.reqOk} de ${est.reqTot} cadeiras concluídas · faltam:</div>
+            <div class="est-faltam">${est.faltam.map(d=>`<span class="${(ultimoMapa[d.id]||{}).corAtual||'status-bloqueada'}"><span class="mono">${d.id}</span>${d.nome}</span>`).join('')}</div>
+        </div>`;
+        return;
+    }
+    const h = est.horas, p = Math.min(100, Math.round(h/ESTAGIO_HORAS*100)), falta = Math.max(0, ESTAGIO_HORAS-h);
+    // ritmo e previsão de término a partir da data de início
+    let ritmo='—', previsao = h>=ESTAGIO_HORAS ? 'Concluído' : '—';
+    if (e.inicio && h>0) {
+        const dias = Math.max(7, (Date.now() - new Date(e.inicio+'T00:00:00')) / 864e5);
+        const porSemana = h / (dias/7);
+        ritmo = `${fmtNum(porSemana)} h/sem`;
+        if (falta > 0 && porSemana > 0) previsao = new Date(Date.now() + falta/porSemana*7*864e5).toLocaleDateString('pt-BR');
+    }
+    const peso = (ESTAGIO_HORAS/HORAS_POR_CREDITO) / c.totalNec * 100;
+    const regs = [...e.registros].sort((a,b)=>b.data.localeCompare(a.data) || b.id.localeCompare(a.id));
+    el.innerHTML = `<div class="est-top">
+        <div class="card est-card">
+            <div class="eyebrow tile-label">Horas de estágio</div>
+            <div class="est-big"><b>${fmtNum(h)}</b><span>/ ${ESTAGIO_HORAS} h</span><span class="pct ${p>=100?'done':''}">${p}%</span></div>
+            <div class="bar ${p>=100?'done':''}"><i style="width:${p}%"></i></div>
+            <div class="tile-foot">${falta>0 ? `Faltam <b>${fmtNum(falta)} h</b> para a carga horária mínima` : '✓ Carga horária mínima cumprida'}</div>
+            <div class="est-meta">
+                <div><span>Em créditos</span><b>${fmtNum(Math.min(h,ESTAGIO_HORAS)/HORAS_POR_CREDITO)} / ${fmtNum(ESTAGIO_HORAS/HORAS_POR_CREDITO)} cr</b></div>
+                <div><span>Peso no curso</span><b>${fmtNum(peso)}%</b></div>
+                <div><span>Ritmo médio</span><b>${ritmo}</b></div>
+                <div><span>Previsão de término</span><b>${previsao}</b></div>
+            </div>
+            <p class="hint" style="margin:0">Conversão: ${HORAS_POR_CREDITO} h = 1 crédito. Horas acima de ${ESTAGIO_HORAS} não aumentam a conclusão do curso.</p>
+        </div>
+        <form class="card est-card est-form" onsubmit="event.preventDefault();adicionarRegistroEstagio()">
+            <h3>Registrar horas</h3>
+            <div class="row">
+                <label>Data<input type="date" id="est-data" class="field" value="${hojeISO()}" max="${hojeISO()}"></label>
+                <label>Horas<input type="number" id="est-horas" class="field" inputmode="decimal" min="0.5" max="300" step="0.5" placeholder="6"></label>
+            </div>
+            <label>Atividade (opcional)<input type="text" id="est-desc" class="field" maxlength="80" placeholder="Ex.: comissionamento de CLP"></label>
+            <button class="btn primary" type="submit" style="justify-content:center">Adicionar registro</button>
+            <div class="est-inicio"><label for="est-inicio" style="flex-direction:row;align-items:center;gap:8px">Início do estágio</label>
+                <input type="date" id="est-inicio" class="field" value="${e.inicio||''}" onchange="definirInicioEstagio(this.value)"></div>
+        </form>
+    </div>
+    <h3 class="section-title">Registros · ${regs.length}</h3>
+    <div class="est-log">${regs.length ? regs.map(r=>`<div class="est-row"><span class="mono">${fmtDataISO(r.data)}</span><b>${fmtNum(Number(r.horas))} h</b><span class="desc" title="${escHtml(r.desc||'')}">${escHtml(r.desc||'—')}</span><button class="icon-btn" onclick="removerRegistroEstagio('${r.id}')" aria-label="Remover registro de ${fmtDataISO(r.data)}"><svg><use href="#i-x"/></svg></button></div>`).join('')
+        : '<div class="empty">Nenhum registro ainda. Adicione as horas de cada dia de estágio acima.</div>'}</div>`;
+}
+
+/* ---------- exportação PNG / PDF ---------- */
+const LIBS = {
+    img: 'https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js',
+    pdf: 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+};
+const scriptsCarregando = {};
+function carregarScript(src) {
+    return scriptsCarregando[src] ??= new Promise((ok, falha) => {
+        const s = document.createElement('script'); s.src = src; s.async = true;
+        s.onload = ok; s.onerror = () => { delete scriptsCarregando[src]; s.remove(); falha(new Error('sem conexão com a CDN')); };
+        document.head.appendChild(s);
+    });
+}
+let exportAlvo = null, exportBotao = null;
+function abrirMenuExport(ev, alvo) {
+    ev.stopPropagation();
+    const pop = document.getElementById('export-pop'), r = ev.currentTarget.getBoundingClientRect();
+    if (!pop.hidden && exportAlvo===alvo) { fecharMenuExport(); return; }
+    exportAlvo = alvo; exportBotao = ev.currentTarget;
+    pop.hidden = false;
+    const w = pop.offsetWidth, hgt = pop.offsetHeight;
+    pop.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.right - w)) + 'px';
+    pop.style.top = (r.bottom + 6 + hgt > innerHeight ? r.top - hgt - 6 : r.bottom + 6) + 'px';
+    pop.querySelector('button').focus();
+}
+function fecharMenuExport() { document.getElementById('export-pop').hidden = true; }
+
+function montarFolhaExport(alvo) {
+    const fdcSel = document.getElementById('seletor-fdc');
+    const titulos = {organograma:'Organograma do curso', plano:'Previsão de formatura', conquistas:'Conquistas'};
+    const folha = document.createElement('div');
+    folha.className = 'export-sheet';
+    folha.innerHTML = `<div class="ex-head"><div class="brand-mark">ECA</div><div><h1>${titulos[alvo]}</h1>
+        <small>Eng. de Controle e Automação · UFRGS · ${fdcSel.options[fdcSel.selectedIndex].text} · ${document.getElementById('pct-total').textContent} do curso concluído · ${new Date().toLocaleDateString('pt-BR')}</small></div></div>`;
+    let corpo, origem;
+    if (alvo === 'organograma') {
+        folha.insertAdjacentHTML('beforeend', `<div class="legend ex-legend">${document.querySelector('#organograma .legend').innerHTML}</div>`);
+        origem = document.querySelector('#orga-wrapper .orga-content'); corpo = origem.cloneNode(true);
+        corpo.querySelectorAll('.coluna-semestre').forEach(c => c.classList.remove('col-celebra','col-saindo'));
+        folha.style.width = 'max-content';
+    } else if (alvo === 'plano') {
+        origem = document.getElementById('plano-conteudo'); corpo = origem.cloneNode(true);
+        folha.style.width = '1180px';
+    } else {
+        origem = document.querySelector('#conquistas'); corpo = origem.cloneNode(true);
+        corpo.querySelectorAll('.ach-head button').forEach(b => b.remove());
+        corpo.classList.remove('card','panel');
+        folha.style.width = '1180px';
+    }
+    // selects viram texto; ids duplicados saem do clone
+    const selOrig = [...origem.querySelectorAll('select')]; // o valor escolhido não é copiado pelo cloneNode
+    corpo.querySelectorAll('select').forEach((s,i) => { const o=selOrig[i]||s; const t=document.createElement('span'); t.className='ex-status'; t.textContent=o.options[o.selectedIndex]?.text||''; s.replaceWith(t); });
+    corpo.querySelectorAll('[id]').forEach(n => n.removeAttribute('id')); corpo.removeAttribute('id');
+    corpo.querySelectorAll('.hover-focus,.hover-req,.hover-succ,.fresh').forEach(n => n.classList.remove('hover-focus','hover-req','hover-succ','fresh'));
+    corpo.style.display = 'block';
+    folha.appendChild(corpo);
+    // <use href="#..."> aponta para símbolos fora do clone: embute o desenho
+    folha.querySelectorAll('svg use').forEach(u => {
+        const sym = document.querySelector(u.getAttribute('href')), svg = u.closest('svg'); if (!sym || !svg) return;
+        ['viewBox','fill','stroke','stroke-width','stroke-linecap','stroke-linejoin'].forEach(a => { if (sym.hasAttribute(a)) svg.setAttribute(a, sym.getAttribute(a)); });
+        svg.innerHTML = sym.innerHTML;
+    });
+    folha.insertAdjacentHTML('beforeend', `<div class="ex-foot">Gerado pelo Simulador do Curso ECA</div>`);
+    document.body.appendChild(folha);
+    if (alvo === 'organograma') { // eletivas quebram linha na largura do quadro
+        const board = corpo.querySelector('.org-board'), row = corpo.querySelector('.eletivas-row');
+        if (board && row) { row.style.maxWidth = '0px'; row.style.maxWidth = board.scrollWidth + 'px'; } // mede o quadro sem a linha de eletivas
+    }
+    return folha;
+}
+async function exportar(alvo, fmt) {
+    fecharMenuExport();
+    const btn = exportBotao; if (btn) btn.disabled = true;
+    mostrarToast(`Gerando ${fmt.toUpperCase()}…`, null);
+    let folha;
+    try {
+        await carregarScript(LIBS.img);
+        if (fmt === 'pdf') await carregarScript(LIBS.pdf);
+        folha = montarFolhaExport(alvo);
+        const w = Math.ceil(folha.scrollWidth), hgt = Math.ceil(folha.scrollHeight);
+        const opts = {width:w, height:hgt, pixelRatio:2, cacheBust:true,
+            backgroundColor: getComputedStyle(document.body).backgroundColor,
+            style:{position:'static', left:'0', top:'0'}};
+        const nome = `${alvo}-eca-${hojeISO()}`;
+        if (fmt === 'png') {
+            baixar(await window.htmlToImage.toPng(folha, opts), nome + '.png');
+        } else {
+            const canvas = await window.htmlToImage.toCanvas(folha, opts);
+            const {jsPDF} = window.jspdf, pw = w*0.75, ph = hgt*0.75; // px → pt
+            const pdf = new jsPDF({orientation: pw>ph?'landscape':'portrait', unit:'pt', format:[pw, ph], compress:true});
+            pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, pw, ph);
+            pdf.save(nome + '.pdf');
+        }
+        mostrarToast(`✓ ${fmt.toUpperCase()} exportado`, null);
+    } catch (err) {
+        console.error(err);
+        mostrarToast(`Não foi possível exportar: ${err.message||'erro'}`, null);
+    } finally {
+        folha?.remove(); if (btn) btn.disabled = false;
+    }
+}
+function baixar(url, nome) { const a=document.createElement('a'); a.href=url; a.download=nome; document.body.appendChild(a); a.click(); a.remove(); }
+
 /* ---------- conquistas ---------- */
 // Preencher com os códigos das disciplinas (ex.: 'MAT01353')
 const LISTA_CAMPUS_VALE = ['MAT01355','INF01202','MAT01353','MAT01354','MAT01169','MAT01167','FIS01182','FIS01181','FIS01183','MAT01168','MAT02219','INF01057','QUI01009'];
@@ -1147,6 +1462,9 @@ const CONQUISTAS = [
         prog:c=>[Math.min(c.compl,METAS.compl)+Math.min(c.tipos,METAS.tiposCompl), METAS.compl+METAS.tiposCompl],
         cond:c=>c.compl>=METAS.compl && c.tipos>=METAS.tiposCompl},
     {id:'extensao', icone:'🤝', nome:'Extensão', desc:'Complete a carga horária de extensão necessária.', unid:' h', prog:c=>[Math.min(c.extObtida,c.metaExt),c.metaExt]},
+    {id:'estagio_liberado', icone:'🎫', nome:'Portas abertas', desc:`Libere o estágio concluindo as etapas 1 a ${ESTAGIO_ETAPA}.`, prog:c=>[c.est.reqOk,c.est.reqTot]},
+    {id:'estagio_inicio', icone:'🪪', nome:'Crachá novo', desc:'Comece o estágio (registre a data de início ou as primeiras horas).', prog:c=>[c.est.iniciado?1:0,1]},
+    {id:'estagio_fim', icone:'💼', nome:'Profissional', desc:`Conclua as ${ESTAGIO_HORAS} horas de estágio.`, unid:' h', prog:c=>[Math.min(Math.floor(c.est.horas),ESTAGIO_HORAS),ESTAGIO_HORAS]},
     {id:'overkill', icone:'💥', nome:'Overkill', desc:'Ultrapasse em 25% o necessário em extensão, eletivos ou complementares.', unid:'%',
         prog:c=>{const r=Math.max(c.ele/METAS.ele, c.compl/METAS.compl, c.metaExt?c.extObtida/c.metaExt:0); return [Math.min(125,Math.floor(r*100)),125]},
         cond:c=>c.ele>=METAS.ele*1.25 || c.compl>=METAS.compl*1.25 || (c.metaExt>0 && c.extObtida>=c.metaExt*1.25)},
@@ -1191,6 +1509,7 @@ function RenderizarConquistas(c) {
         <div class="bar"><i style="width:${Math.round(feitas/total*100)}%"></i></div>
         <button class="btn" onclick="toggleSom()" aria-pressed="${!!estadoUsuario.som}">${estadoUsuario.som?'🔊 Som ligado':'🔇 Som desligado'}</button>
         <button class="btn ghost" onclick="zerarConquistas()">Zerar</button>
+        <button class="btn" onclick="abrirMenuExport(event,'conquistas')"><svg><use href="#i-down"/></svg>Exportar</button>
       </div><div class="ach-grid">${CONQUISTAS.map(a => {
         const quando = estadoUsuario.conquistas[a.id];
         const [v,m] = a.prog(c);
@@ -1373,8 +1692,11 @@ function inicializar() {
         const atual=estadoUsuario.status[detalheId]||'pendente';
         if(b.dataset.st!==atual) aplicarStatus(detalheId,b.dataset.st);
     }));
-    document.addEventListener('keydown',e=>{if(e.key==='Escape')fecharDetalhe()});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){fecharDetalhe();fecharMenuExport();}});
     document.getElementById('toast-undo').addEventListener('click',desfazer);
+    document.querySelectorAll('#export-pop button').forEach(b=>b.addEventListener('click',()=>exportar(exportAlvo,b.dataset.fmt)));
+    document.addEventListener('click',e=>{ if(!e.target.closest('#export-pop')) fecharMenuExport(); });
+    window.addEventListener('scroll',fecharMenuExport,{passive:true});
     document.getElementById('cfg-max').addEventListener('change',e=>{estadoUsuario.planoMaxCr=Math.min(60,Math.max(4,Number(e.target.value)||30));e.target.value=estadoUsuario.planoMaxCr;salvarEstado();atualizarTudo()});
     document.getElementById('opt-etapas').addEventListener('change',e=>{estadoUsuario.ocultarEtapas=e.target.checked;salvarEstado();atualizarTudo();atualizarSombras()});
     document.getElementById('opt-cadeiras').addEventListener('change',e=>{estadoUsuario.ocultarCadeiras=e.target.checked;salvarEstado();atualizarTudo();atualizarSombras()});

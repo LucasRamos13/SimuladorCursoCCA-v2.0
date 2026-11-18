@@ -148,6 +148,11 @@ select:hover {border-color:var(--sub)}
 .coluna-semestre.col-celebra .org-card {animation:cardWave .6s ease both}
 @keyframes colGlow {0%,100%{outline-color:var(--c-verde-border)} 30%{outline-color:var(--ok);box-shadow:0 0 0 6px color-mix(in srgb,var(--c-verde-bg) 60%,transparent),0 0 40px color-mix(in srgb,var(--ok) 45%,transparent)}}
 @keyframes cardWave {50%{transform:translateY(-6px) scale(1.03)}}
+.semestre.sem-celebra {border-color:var(--c-verde-border);outline:2px solid var(--ok);outline-offset:3px;animation:semGlow 1.4s ease}
+.semestre.sem-celebra .disciplina {animation:cardWave .6s ease both}
+@keyframes semGlow {30%{box-shadow:0 0 36px color-mix(in srgb,var(--ok) 40%,transparent)}}
+.semestre.sem-saindo {overflow:hidden;pointer-events:none;transition:max-height .45s ease,opacity .35s ease,margin .45s ease,padding .45s ease,border-width .45s ease}
+.semestre.sem-saindo.fechar {max-height:0!important;opacity:0;margin-bottom:0;padding-top:0;padding-bottom:0;border-width:0}
 .coluna-semestre.col-saindo {animation:colOut .45s ease forwards;pointer-events:none;overflow:hidden}
 @keyframes colOut {to{opacity:0;transform:scale(.85);width:0;margin-right:-44px}} /* fecha também o espaço entre colunas */
 .coluna-semestre.col-oculta {display:none}
@@ -462,7 +467,13 @@ body.light-mode .toast button {color:#8fb8ff}
   </div>
  </section>
 
- <section id="simulador" class="card panel" role="tabpanel" aria-labelledby="btn-simulador"><div id="semestres-container"></div></section>
+ <section id="simulador" class="card panel" role="tabpanel" aria-labelledby="btn-simulador">
+  <div class="org-opts" style="margin-top:0">
+   <label class="switch"><input type="checkbox" id="mat-opt-etapas"><span class="sw"></span><span class="lbl">Ocultar semestres concluídos</span></label>
+   <label class="switch"><input type="checkbox" id="mat-opt-cadeiras"><span class="sw"></span><span class="lbl">Ocultar cadeiras concluídas</span></label>
+  </div>
+  <div id="semestres-container"></div>
+ </section>
  <section id="plano" class="card panel" role="tabpanel" aria-labelledby="btn-plano">
   <div class="plano-cfg">
    <label for="cfg-max">Máx. de créditos por semestre <input type="number" inputmode="numeric" id="cfg-max" class="num-input sm" min="4" max="60"></label>
@@ -588,7 +599,7 @@ const STORAGE_KEY = 'eca_simulador_status_v6';
 const HORAS_POR_CREDITO = 15; // UFRGS: 1 crédito = 15 horas
 const DEFAULT_STATE = {status:{}, compl:0, ext:0, extNecessaria:420, complTipos:0, tema:null, fdc:'cadcam', aba:'organograma',
     conquistas:{}, reprovadas:[], som:true, planoMaxCr:30, planoImpar:1, fraseNova:false, fraseIdx:null,
-    ocultarEtapas:true, ocultarCadeiras:false};
+    ocultarEtapas:true, ocultarCadeiras:false, matOcultarEtapas:true, matOcultarCadeiras:false};
 const STATUS_LABEL = {pendente:'Pendente', cursando:'Cursando', concluida:'Concluída', reprovada:'Reprovada'};
 const OFERTA_LABEL = {ambos:'todo semestre', impar:'semestres ímpares', par:'semestres pares'};
 const isTouch = () => window.matchMedia('(hover: none)').matches;
@@ -633,6 +644,8 @@ function sincronizarInputs() {
     document.getElementById('cfg-impar').value = String(estadoUsuario.planoImpar ?? 1);
     document.getElementById('opt-etapas').checked = estadoUsuario.ocultarEtapas !== false;
     document.getElementById('opt-cadeiras').checked = !!estadoUsuario.ocultarCadeiras;
+    document.getElementById('mat-opt-etapas').checked = estadoUsuario.matOcultarEtapas !== false;
+    document.getElementById('mat-opt-cadeiras').checked = !!estadoUsuario.matOcultarCadeiras;
     document.body.classList.toggle('light-mode', temaAtual() === 'light');
 }
 function toggleTema() {
@@ -882,20 +895,53 @@ function atualizarTudo() {
 }
 function ofertaValida(semestre,regra){if(regra==='ambos'||!regra)return true;if(regra==='impar')return semestre%2!==0;if(regra==='par')return semestre%2===0;return false}
 
+let semCompletosAnt = null;
+const semCelebrando = new Set();
+function recolherSemestres(lista) {
+    lista.forEach(s=>{
+        if(!semCelebrando.has(s)) return; // reaberto durante a comemoração
+        const b=document.getElementById('sem-bloco-'+s);
+        semCelebrando.delete(s);
+        if(!b) return;
+        b.classList.remove('sem-celebra');
+        b.style.maxHeight = b.scrollHeight+'px';
+        b.classList.add('sem-saindo');
+        void b.offsetHeight; // força o layout antes de animar até 0
+        b.classList.add('fechar');
+        if (estadoUsuario.aba==='simulador') tocarWhoosh();
+        setTimeout(()=>{ if(b.isConnected && semCompletosAnt.has(s)) b.remove(); }, 460);
+    });
+}
 function RenderizarSimulador(timeline) {
     const c=document.getElementById('semestres-container'); if(!c) return;
     c.innerHTML='';
     const sems=Object.keys(timeline).map(Number).sort((a,b)=>a-b);
     const fdcAtual=document.getElementById('seletor-fdc').value;
 
-    sems.forEach(sem=>{
-        const normal=timeline[sem].filter(d=>d.tipoNesteFDC!=='eletiva');
-        if(normal.length) c.appendChild(criarBlocoSemestre(`Semestre ${sem}`,normal,false));
+    const ocultarSem = estadoUsuario.matOcultarEtapas !== false, ocultarCad = !!estadoUsuario.matOcultarCadeiras;
+    // 1º passo: quais semestres estão completos e quais acabaram de completar
+    const blocos = sems.map(sem=>({sem, normal:timeline[sem].filter(d=>d.tipoNesteFDC!=='eletiva')})).filter(b=>b.normal.length);
+    const completos = new Set(blocos.filter(b=>b.normal.every(d=>d.statusReal==='concluida')).map(b=>b.sem));
+    const novos = (semCompletosAnt && !inicializando) ? [...completos].filter(s=>!semCompletosAnt.has(s)) : [];
+    semCompletosAnt = completos;
+    [...semCelebrando].forEach(s=>{ if(!completos.has(s)) semCelebrando.delete(s); });
+    if (ocultarSem && novos.length) {
+        novos.forEach(s=>semCelebrando.add(s));
+        anunciarEtapas(novos);
+        setTimeout(()=>recolherSemestres(novos), 1400);
+    }
+    // 2º passo: desenhar
+    blocos.forEach(({sem,normal})=>{
+        if (completos.has(sem) && ocultarSem && !semCelebrando.has(sem)) return; // semestre concluído fica oculto
+        const bloco = criarBlocoSemestre(`Semestre ${sem}`,normal,false,false,ocultarCad);
+        bloco.id = 'sem-bloco-'+sem;
+        if (semCelebrando.has(sem)) bloco.classList.add('sem-celebra');
+        c.appendChild(bloco);
     });
 
     const eletivas=disciplinas.filter(d=>d.fdc[fdcAtual]==='eletiva').map(d=>ultimoMapa[d.id]);
     if(eletivas.length){
-        const bloco=criarBlocoSemestre('Eletivas',eletivas,true);
+        const bloco=criarBlocoSemestre('Eletivas',eletivas,true,false,ocultarCad);
         c.appendChild(bloco);
     }
 }
@@ -903,6 +949,20 @@ function RenderizarSimulador(timeline) {
 function iconeStatus(cor) {
     const map={'status-concluida':'i-check','status-cursando':'i-play','status-liberada':'i-open','status-bloqueada':'i-lock','status-reprovada':'i-x'};
     return `<svg class="oc-ico" aria-hidden="true"><use href="#${map[cor]}"/></svg>`;
+}
+let etapasAnunciar = null;
+function anunciarEtapas(nums) {
+    // junta o que organograma e matrícula concluíram no mesmo render: um só sino e um só aviso
+    if (!etapasAnunciar) {
+        etapasAnunciar = new Set();
+        setTimeout(() => {
+            const l = [...etapasAnunciar].sort((a,b)=>a-b); etapasAnunciar = null;
+            // se uma conquista saiu no mesmo clique, o sino espera o arpejo dela terminar
+            tocarSomEtapa(performance.now()-ultimaCelebracao<100 ? 1.1 : 0);
+            setTimeout(()=>mostrarToast(`🎉 <b>${l.map(s=>'Etapa '+s).join(', ')}</b> concluída${l.length>1?'s':''}!`, document.getElementById('toast').classList.contains('show') ? snapshotDesfazer : null), 150);
+        }, 0);
+    }
+    nums.forEach(n=>etapasAnunciar.add(n));
 }
 let etapasCompletasAnt = null;          // etapas completas no render anterior (para detectar as novas)
 const etapasCelebrando = new Set();      // etapas em comemoração antes de recolher
@@ -936,10 +996,7 @@ function RenderizarOrganograma(mapa) {
     [...etapasCelebrando].forEach(s=>{ if(!completas.has(s)) etapasCelebrando.delete(s); });
     if (ocultarEtapas && novas.length) {
         novas.forEach(s=>etapasCelebrando.add(s));
-        // se uma conquista saiu no mesmo clique, o sino espera o arpejo dela terminar
-        setTimeout(()=>tocarSomEtapa(performance.now()-ultimaCelebracao<100 ? 1.1 : 0), 0);
-        const nomes = novas.map(s=>'Etapa '+s).join(', ');
-        setTimeout(()=>mostrarToast(`🎉 <b>${nomes}</b> concluída${novas.length>1?'s':''}!`, document.getElementById('toast').classList.contains('show') ? snapshotDesfazer : null), 150);
+        anunciarEtapas(novas);
         setTimeout(()=>recolherEtapas(novas), 1400);
     }
 
@@ -1256,7 +1313,7 @@ function confete(intenso) {
     })(t0);
 }
 
-function criarBlocoSemestre(titulo,lista,isEletivas,soTotal=false) {
+function criarBlocoSemestre(titulo,lista,isEletivas,soTotal=false,ocultarConcluidas=false) {
     const div=document.createElement('div');div.className='semestre'+(isEletivas?' eletivas-semestre':'');
     const completas=lista.length>0&&lista.every(d=>d.statusReal==='concluida');
     const crOk=lista.filter(d=>d.statusReal==='concluida').reduce((s,d)=>s+d.creditos,0);
@@ -1270,7 +1327,9 @@ function criarBlocoSemestre(titulo,lista,isEletivas,soTotal=false) {
     const metaHtml = soTotal ? `${crTot} créditos` : `${meta.ok} / ${meta.tot} ${meta.txt}<div class="bar ${p>=100?'done':''}"><i style="width:${p}%"></i></div>`;
     div.innerHTML=`<div class="semestre-head"><h3>${titulo}</h3><div class="semestre-meta">${metaHtml}</div></div><div class="disciplinas-grid"></div>`;
     const grid=div.querySelector('.disciplinas-grid');
-    lista.forEach(d=>{
+    const visiveis = ocultarConcluidas ? lista.filter(d=>d.statusReal!=='concluida') : lista;
+    if (ocultarConcluidas && lista.length && !visiveis.length) grid.outerHTML = `<p class="vazio">✓ ${isEletivas?'Nenhuma eletiva pendente':'Todas concluídas'}</p>`;
+    visiveis.forEach(d=>{
         const card=document.createElement('div');card.className=`disciplina ${d.corAtual}`;
         card.innerHTML=`<div class="d-top"><span class="tag-info">${d.id}</span><span>${d.creditos} cr</span></div><div class="d-nome">${d.nome}</div>
         <select class="status-selector" aria-label="Status de ${d.nome}"><option value="pendente">Pendente</option><option value="cursando">Cursando</option><option value="concluida">Concluída</option><option value="reprovada">Reprovada</option></select>`;
@@ -1319,6 +1378,8 @@ function inicializar() {
     document.getElementById('cfg-max').addEventListener('change',e=>{estadoUsuario.planoMaxCr=Math.min(60,Math.max(4,Number(e.target.value)||30));e.target.value=estadoUsuario.planoMaxCr;salvarEstado();atualizarTudo()});
     document.getElementById('opt-etapas').addEventListener('change',e=>{estadoUsuario.ocultarEtapas=e.target.checked;salvarEstado();atualizarTudo();atualizarSombras()});
     document.getElementById('opt-cadeiras').addEventListener('change',e=>{estadoUsuario.ocultarCadeiras=e.target.checked;salvarEstado();atualizarTudo();atualizarSombras()});
+    document.getElementById('mat-opt-etapas').addEventListener('change',e=>{estadoUsuario.matOcultarEtapas=e.target.checked;salvarEstado();atualizarTudo()});
+    document.getElementById('mat-opt-cadeiras').addEventListener('change',e=>{estadoUsuario.matOcultarCadeiras=e.target.checked;salvarEstado();atualizarTudo()});
     document.getElementById('cfg-impar').addEventListener('change',e=>{estadoUsuario.planoImpar=Number(e.target.value);salvarEstado();atualizarTudo()});
 
     // Roda do mouse rola o organograma na horizontal, mas libera a página nas bordas

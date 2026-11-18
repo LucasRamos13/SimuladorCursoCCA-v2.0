@@ -143,17 +143,14 @@ select:hover {border-color:var(--sub)}
 .switch input:checked + .sw::after {transform:translateX(16px)}
 .switch input:checked ~ .lbl {color:var(--ink)}
 .switch input:focus-visible + .sw {outline:2px solid var(--accent);outline-offset:2px}
-/* etapa concluída: comemora, depois recolhe numa faixa */
+/* etapa concluída: comemora e depois some */
 .coluna-semestre.col-celebra {border-radius:12px;outline:2px solid var(--c-verde-border);outline-offset:6px;background:color-mix(in srgb,var(--c-verde-bg) 60%,transparent);box-shadow:0 0 0 6px color-mix(in srgb,var(--c-verde-bg) 60%,transparent);animation:colGlow 1.4s ease}
 .coluna-semestre.col-celebra .org-card {animation:cardWave .6s ease both}
 @keyframes colGlow {0%,100%{outline-color:var(--c-verde-border)} 30%{outline-color:var(--ok);box-shadow:0 0 0 6px color-mix(in srgb,var(--c-verde-bg) 60%,transparent),0 0 40px color-mix(in srgb,var(--ok) 45%,transparent)}}
 @keyframes cardWave {50%{transform:translateY(-6px) scale(1.03)}}
-.coluna-semestre.col-saindo {animation:colOut .4s ease forwards;pointer-events:none}
-@keyframes colOut {to{opacity:0;transform:scale(.85)}}
-.coluna-semestre.col-oculta {width:34px}
-.faixa {flex:1;writing-mode:vertical-rl;transform:rotate(180deg);display:flex;align-items:center;justify-content:center;gap:8px;min-height:180px;border:1px dashed var(--c-verde-border);background:var(--c-verde-bg);color:var(--c-verde-txt);border-radius:10px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
-.faixa.entra {animation:faixaIn .45s cubic-bezier(.2,1.4,.4,1) both}
-@keyframes faixaIn {from{opacity:0;transform:rotate(180deg) scaleY(.4)}}
+.coluna-semestre.col-saindo {animation:colOut .45s ease forwards;pointer-events:none;overflow:hidden}
+@keyframes colOut {to{opacity:0;transform:scale(.85);width:0;margin-right:-44px}} /* fecha também o espaço entre colunas */
+.coluna-semestre.col-oculta {display:none}
 .col-vazia {font-size:12px;font-weight:600;color:var(--c-verde-txt);border:1px dashed var(--c-verde-border);border-radius:10px;padding:14px 10px;text-align:center}
 .org-card {all:unset;box-sizing:border-box;width:100%;padding:10px 11px;border-radius:10px;border:1.5px solid;display:flex;flex-direction:column;gap:4px;cursor:pointer;position:relative;transition:transform .15s,box-shadow .15s,opacity .2s,filter .2s;user-select:none;-webkit-user-select:none}
 .org-card .oc-top {display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:10.5px;opacity:.85}
@@ -950,7 +947,7 @@ function RenderizarOrganograma(mapa) {
         const h=col.querySelector('h4'); h.querySelector('small').textContent=`${ok}/${tot} cr`;
         const completa = completas.has(s);
         if(completa) h.classList.add('col-done');
-        if (completa && ocultarEtapas && !etapasCelebrando.has(s)) virarFaixa(col, s, false);
+        if (completa && ocultarEtapas && !etapasCelebrando.has(s)) ocultarColuna(col);
         else {
             if (etapasCelebrando.has(s)) { col.classList.add('col-celebra'); h.firstChild.textContent=`Etapa ${s} ✓ `; }
             if (ocultarCad && n>0 && nOk===n) col.insertAdjacentHTML('beforeend','<div class="col-vazia">✓ Todas concluídas</div>');
@@ -959,9 +956,9 @@ function RenderizarOrganograma(mapa) {
     if (foco) { const el=document.getElementById(foco); if(el) el.focus({preventScroll:true}); }
     if (window.ultimoHover) mostrarLinhas(window.ultimoHover);
 }
-function virarFaixa(col, s, animar) {
+function ocultarColuna(col) {
     col.className='coluna-semestre col-oculta';
-    col.innerHTML=`<div class="faixa ${animar?'entra':''}" title="Etapa ${s} concluída (oculta)">✓ Etapa ${s}</div>`;
+    col.innerHTML='';
 }
 function recolherEtapas(lista) {
     lista.forEach(s=>{
@@ -972,9 +969,9 @@ function recolherEtapas(lista) {
         setTimeout(()=>{
             etapasCelebrando.delete(s);
             const c=document.getElementById('col-etapa-'+s);
-            if(c && estadoUsuario.ocultarEtapas!==false && etapasCompletasAnt.has(s)) virarFaixa(c, s, true);
+            if(c && estadoUsuario.ocultarEtapas!==false && etapasCompletasAnt.has(s)) ocultarColuna(c);
             atualizarSombras(); if(window.ultimoHover) mostrarLinhas(window.ultimoHover);
-        }, 400);
+        }, 450);
     });
 }
 

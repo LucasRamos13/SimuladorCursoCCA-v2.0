@@ -1,6 +1,7 @@
 // Engenharia de Controle e Automação — dados revisados manualmente
 // PPC 2022 (COMGRAD/CCA, seção 6.6.3): estágio obrigatório habilita após 200 créditos do currículo; TCC sem mínimo de créditos.
-// A 5ª etapa citada no PPC é requisito do estágio NÃO obrigatório.
+// A 5ª etapa citada no PPC é requisito do estágio NÃO obrigatório (liberacaoNaoObrigatorio); quase todos fazem
+// o não obrigatório e pedem depois para ele valer como obrigatório.
 registrarCurso({
  "id": "eca",
  "sigla": "ECA",
@@ -38,6 +39,9 @@ registrarCurso({
   "horas": 200,
   "liberacao": {
    "creditos": 200
+  },
+  "liberacaoNaoObrigatorio": {
+   "etapa": 5
   }
  },
  "extensaoAtividades": {

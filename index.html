@@ -353,6 +353,12 @@ body.light-mode .toast button {color:#8fb8ff}
 .export-sheet .ex-foot {font-size:11px;color:var(--muted);text-align:right}
 
 /* ============ ESTÁGIO ============ */
+.est-fases {display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.est-fase {display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surface-2);font-size:13px}
+.est-fase.ok {border-color:var(--c-verde-border)}
+.est-fase > span:last-child {color:var(--sub);font-size:12px}
+.est-fases .hint {grid-column:1/-1;margin:0}
+@media (max-width:560px){.est-fases {grid-template-columns:1fr}}
 .est-top {display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
 .est-card {padding:20px;display:flex;flex-direction:column;gap:12px}
 .est-big {display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;font-variant-numeric:tabular-nums}
@@ -947,8 +953,10 @@ function atualizarTudo() {
     const est = infoEstagio(fdcAtual, statusOf, obr, obr+ele);
     setProgresso('est', est.horas, pct(est.horas, ESTAGIO_HORAS));
     document.getElementById('cred-est').textContent = fmtNum(est.horas);
-    document.getElementById('foot-est').innerHTML = !est.liberado
-        ? `🔒 Libera ao ${regraEstagio()} · ${est.reqOk}/${est.reqTot}`
+    const naoObrLib = est.naoObr && est.naoObr.liberado;
+    document.getElementById('foot-est').innerHTML = !est.liberado && !naoObrLib
+        ? (est.naoObr ? `🔒 Não obrigatório libera ao ${regraEstagio(ESTAGIO.liberacaoNaoObrigatorio)} · ${est.naoObr.reqOk}/${est.naoObr.reqTot}` : `🔒 Libera ao ${regraEstagio()} · ${est.reqOk}/${est.reqTot}`)
+        : !est.liberado && est.horas<ESTAGIO_HORAS ? `Não obrigatório liberado (obrigatório: ${est.credReq ? `${est.credObr}/${est.credReq} cr` : `${est.reqOk}/${est.reqTot}`}) · <button class="tile-link" onclick="mudarAba('estagio')">registrar horas →</button>`
         : est.horas>=ESTAGIO_HORAS ? '✓ Carga horária cumprida'
         : `Faltam ${fmtNum(ESTAGIO_HORAS-est.horas)} h · <button class="tile-link" onclick="mudarAba('estagio')">registrar horas →</button>`;
 
@@ -1257,26 +1265,31 @@ const hojeISO = () => { const d=new Date(); d.setMinutes(d.getMinutes()-d.getTim
 const fmtDataISO = iso => iso ? iso.split('-').reverse().join('/') : '';
 
 /* ---------- estágio ---------- */
-// regra de liberação vem do curso: {etapa:N} | {prereqs:[...], creditosObrigatorios:N} | 'inicio'
-function infoEstagio(fdc, statusOf, credObr=0, credTot=credObr) {
-    const e = estadoUsuario.estagio;
-    const horas = e.registros.reduce((s,r)=>s+(Number(r.horas)||0),0);
-    const iniciado = !!e.inicio || e.registros.length>0;
-    if (!ESTAGIO) return {existe:false, horas:0, iniciado:false, reqOk:0, reqTot:0, faltam:[], credReq:0, credOk:true, liberado:true, acessivel:false};
-    const lib = ESTAGIO.liberacao;
+// regra de liberação vem do curso: {etapa:N} | {prereqs:[...], creditosObrigatorios:N | creditos:N} | 'inicio'
+// liberacaoNaoObrigatorio (opcional): regra mais branda para o estágio NÃO obrigatório; as horas feitas nele
+// costumam ser aproveitadas como obrigatório depois, então contam na simulação
+function avaliarLiberacao(lib, fdc, statusOf, credObr, credTot) {
     let reqs = [], credReq = 0;
     if (lib && lib.etapa) reqs = disciplinas.filter(d => d.fdc[fdc]==='obrigatoria' && d.semIdeal<=lib.etapa && d.id!==ESTAGIO.id);
     else if (lib && lib !== 'inicio') { reqs = (lib.prereqs||[]).map(id=>byId[id]).filter(Boolean); credReq = lib.creditosObrigatorios || lib.creditos || 0; }
     // creditosObrigatorios conta só obrigatórios; creditos conta obrigatórios + eletivos ("créditos do currículo")
     const credAtual = lib && lib.creditos ? credTot : credObr;
     const faltam = reqs.filter(d => statusOf(d.id)!=='concluida');
-    const credOk = credAtual >= credReq, liberado = !faltam.length && credOk;
-    return {existe:true, horas, iniciado, faltam, credReq, credOk, credObr: credAtual, credTipo: lib && lib.creditos ? 'créditos' : 'créditos obrigatórios',
+    const credOk = credAtual >= credReq;
+    return {faltam, credReq, credOk, credObr: credAtual, credTipo: lib && lib.creditos ? 'créditos' : 'créditos obrigatórios',
             reqOk: reqs.length-faltam.length + (credReq && credOk ? 1 : 0), reqTot: reqs.length + (credReq ? 1 : 0),
-            liberado, acessivel: liberado || iniciado};
+            liberado: !faltam.length && credOk};
 }
-function regraEstagio() {
-    const lib = ESTAGIO && ESTAGIO.liberacao;
+function infoEstagio(fdc, statusOf, credObr=0, credTot=credObr) {
+    const e = estadoUsuario.estagio;
+    const horas = e.registros.reduce((s,r)=>s+(Number(r.horas)||0),0);
+    const iniciado = !!e.inicio || e.registros.length>0;
+    if (!ESTAGIO) return {existe:false, horas:0, iniciado:false, reqOk:0, reqTot:0, faltam:[], credReq:0, credOk:true, liberado:true, acessivel:false, naoObr:null};
+    const obr = avaliarLiberacao(ESTAGIO.liberacao, fdc, statusOf, credObr, credTot);
+    const naoObr = ESTAGIO.liberacaoNaoObrigatorio ? avaliarLiberacao(ESTAGIO.liberacaoNaoObrigatorio, fdc, statusOf, credObr, credTot) : null;
+    return {existe:true, horas, iniciado, ...obr, naoObr, acessivel: obr.liberado || iniciado || !!(naoObr && naoObr.liberado)};
+}
+function regraEstagio(lib = ESTAGIO && ESTAGIO.liberacao) {
     if (!lib || lib === 'inicio') return 'iniciar o curso';
     if (lib.etapa) return `concluir as etapas 1 a ${lib.etapa}`;
     const n = (lib.prereqs||[]).length, partes = [];
@@ -1322,14 +1335,15 @@ function RenderizarEstagio(c) {
     const el = document.getElementById('estagio'); if (!el || !ESTAGIO) return;
     const est = c.est, e = estadoUsuario.estagio;
     if (!est.acessivel) {
-        const p = est.reqTot ? Math.round(est.reqOk/est.reqTot*100) : 100;
+        const nb = est.naoObr, r = nb || est, regra = nb ? regraEstagio(ESTAGIO.liberacaoNaoObrigatorio) : regraEstagio();
+        const p = r.reqTot ? Math.round(r.reqOk/r.reqTot*100) : 100;
         el.innerHTML = `<div class="est-lock">
             <div class="est-lock-ico" aria-hidden="true">🔒</div>
             <h3>Estágio bloqueado</h3>
-            <p>Para liberar o acompanhamento do estágio é preciso ${regraEstagio()}.</p>
+            <p>${nb ? `O estágio <b>não obrigatório</b> libera ao ${regra}; o <b>obrigatório</b>, ao ${regraEstagio()}.` : `Para liberar o acompanhamento do estágio é preciso ${regra}.`}</p>
             <div class="bar"><i style="width:${p}%"></i></div>
-            <div class="hint">${est.reqOk} de ${est.reqTot} requisitos cumpridos${est.credReq ? ` · ${est.credTipo}: ${est.credObr}/${est.credReq}` : ''}${est.faltam.length ? ' · faltam:' : ''}</div>
-            <div class="est-faltam">${est.faltam.map(d=>`<span class="${(ultimoMapa[d.id]||{}).corAtual||'status-bloqueada'}"><span class="mono">${d.id}</span>${d.nome}</span>`).join('')}</div>
+            <div class="hint">${r.reqOk} de ${r.reqTot} requisitos cumpridos${r.credReq ? ` · ${r.credTipo}: ${r.credObr}/${r.credReq}` : ''}${r.faltam.length ? ' · faltam:' : ''}</div>
+            <div class="est-faltam">${r.faltam.map(d=>`<span class="${(ultimoMapa[d.id]||{}).corAtual||'status-bloqueada'}"><span class="mono">${d.id}</span>${d.nome}</span>`).join('')}</div>
         </div>`;
         return;
     }
@@ -1344,7 +1358,14 @@ function RenderizarEstagio(c) {
     }
     const peso = (ESTAGIO_HORAS/HORAS_POR_CREDITO) / c.totalNec * 100;
     const regs = [...e.registros].sort((a,b)=>b.data.localeCompare(a.data) || b.id.localeCompare(a.id));
-    el.innerHTML = `<div class="est-top">
+    const fases = est.naoObr ? `<div class="est-fases">
+        <div class="est-fase ${est.naoObr.liberado?'ok':''}"><span class="chip ${est.naoObr.liberado?'good':'bad'}">${est.naoObr.liberado?'✓ liberado':`🔒 ${est.naoObr.reqOk}/${est.naoObr.reqTot}`}</span><b>Não obrigatório</b><span>após ${regraEstagio(ESTAGIO.liberacaoNaoObrigatorio).replace(/^concluir /,'')}</span></div>
+        <div class="est-fase ${est.liberado?'ok':''}"><span class="chip ${est.liberado?'good':'bad'}">${est.liberado?'✓ liberado':`🔒 ${est.credReq ? `${est.credObr}/${est.credReq} cr` : `${est.reqOk}/${est.reqTot}`}`}</span><b>Obrigatório</b><span>após ${regraEstagio().replace(/^concluir /,'')}</span></div>
+        <p class="hint">${est.liberado
+            ? 'Horas feitas como estágio não obrigatório podem ser aproveitadas como obrigatório: peça o aproveitamento à COMGRAD.'
+            : 'Quase todos começam como não obrigatório e, ao atingir o requisito do obrigatório, pedem para o estágio valer como obrigatório. As horas registradas já contam aqui.'}</p>
+    </div>` : '';
+    el.innerHTML = `${fases}<div class="est-top">
         <div class="card est-card">
             <div class="eyebrow tile-label">Horas de estágio</div>
             <div class="est-big"><b>${fmtNum(h)}</b><span>/ ${ESTAGIO_HORAS} h</span><span class="pct ${p>=100?'done':''}">${p}%</span></div>
@@ -1549,7 +1570,8 @@ const CONQUISTAS = [
         prog:c=>[Math.min(c.compl,METAS.compl)+Math.min(c.tipos,METAS.tiposCompl), METAS.compl+METAS.tiposCompl],
         cond:c=>c.compl>=METAS.compl && c.tipos>=METAS.tiposCompl},
     {id:'extensao', ativa:()=>METAS.extPadrao>0, icone:'🤝', nome:'Extensão', desc:'Complete a carga horária de extensão necessária.', unid:' h', prog:c=>[Math.min(c.extObtida,c.metaExt),c.metaExt]},
-    {id:'estagio_liberado', ativa:()=>!!ESTAGIO && ESTAGIO.liberacao!=='inicio', icone:'🎫', nome:'Portas abertas', desc:`Libere o estágio: ${regraEstagio()}.`, prog:c=>[c.est.reqOk,c.est.reqTot]},
+    {id:'estagio_nao_obr', ativa:()=>!!ESTAGIO && !!ESTAGIO.liberacaoNaoObrigatorio, icone:'🚪', nome:'Pé na porta', desc:`Libere o estágio não obrigatório: ${ESTAGIO && regraEstagio(ESTAGIO.liberacaoNaoObrigatorio)}.`, prog:c=>[c.est.naoObr.reqOk,c.est.naoObr.reqTot]},
+    {id:'estagio_liberado', ativa:()=>!!ESTAGIO && ESTAGIO.liberacao!=='inicio', icone:'🎫', nome:'Portas abertas', desc:`Libere o estágio${ESTAGIO && ESTAGIO.liberacaoNaoObrigatorio?' obrigatório':''}: ${regraEstagio()}.`, prog:c=>[c.est.reqOk,c.est.reqTot]},
     {id:'estagio_inicio', ativa:()=>!!ESTAGIO, icone:'🪪', nome:'Crachá novo', desc:'Comece o estágio (registre a data de início ou as primeiras horas).', prog:c=>[c.est.iniciado?1:0,1]},
     {id:'estagio_fim', ativa:()=>!!ESTAGIO, icone:'💼', nome:'Profissional', desc:`Conclua as ${ESTAGIO_HORAS} horas de estágio.`, unid:' h', prog:c=>[Math.min(Math.floor(c.est.horas),ESTAGIO_HORAS),ESTAGIO_HORAS]},
     {id:'overkill', icone:'💥', nome:'Overkill', desc:'Ultrapasse em 25% o necessário em extensão, eletivos ou complementares.', unid:'%',

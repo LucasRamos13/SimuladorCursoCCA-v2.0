@@ -282,7 +282,7 @@ body.light-mode .toast button {color:#8fb8ff}
 .plano-resumo .sub {color:var(--sub);font-size:13px;font-weight:600}
 .semestre .vazio {font-size:13px;color:var(--sub);margin:0}
 .aviso {border:1px solid var(--c-laranja-border);background:var(--c-laranja-bg);color:var(--c-laranja-txt);border-radius:10px;padding:10px 14px;font-size:13px;margin:12px 0}
-.frase {margin:8px 0 0;padding:18px 22px 18px 54px;border-radius:12px;position:relative;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--border));border-left:4px solid var(--accent);background:linear-gradient(135deg,var(--accent-soft),transparent 70%)}
+.frase {margin:24px 0 4px;padding:18px 22px 18px 54px;border-radius:12px;position:relative;border:1px solid color-mix(in srgb,var(--accent) 35%,var(--border));border-left:4px solid var(--accent);background:linear-gradient(135deg,var(--accent-soft),transparent 70%)}
 .frase.nova {animation:fraseIn .6s ease both}
 .frase::before {content:"“";position:absolute;left:16px;top:6px;font-size:52px;line-height:1;font-family:Georgia,serif;color:var(--accent);opacity:.7}
 .frase blockquote {margin:0;font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:16.5px;line-height:1.5;color:var(--ink)}
@@ -1049,9 +1049,6 @@ function RenderizarSimulador(timeline) {
         c.appendChild(bloco);
     });
 
-    const frase = fraseParaExibir(), nova = frase !== ultimaFraseMostrada; ultimaFraseMostrada = frase;
-    c.insertAdjacentHTML('beforeend', `<figure class="frase${nova ? ' nova' : ''}"><blockquote>${frase.t}</blockquote><figcaption>— <b>${frase.a}</b>, ${frase.f}</figcaption></figure>`);
-
     const eletivas=disciplinas.filter(d=>d.fdc[fdcAtual]==='eletiva').map(d=>ultimoMapa[d.id]);
     if(eletivas.length && !window.eletivasOcultas){
         const bloco=criarBlocoSemestre('Eletivas',eletivas,true,false,ocultarCad);
@@ -1243,6 +1240,10 @@ function RenderizarPlano() {
         if (!lista.length) bloco.querySelector('.disciplinas-grid').outerHTML = '<p class="vazio">Nenhuma obrigatória disponível neste semestre (oferta ou pré‑requisitos). Bom momento para eletivas, estágio ou extensão.</p>';
         container.appendChild(bloco);
     });
+
+    // frase motivacional sempre no fim da previsão
+    const frase = fraseParaExibir(), nova = frase !== ultimaFraseMostrada; ultimaFraseMostrada = frase;
+    container.insertAdjacentHTML('beforeend', `<figure class="frase${nova ? ' nova' : ''}"><blockquote>${frase.t}</blockquote><figcaption>— <b>${frase.a}</b>, ${frase.f}</figcaption></figure>`);
 
 
 }
